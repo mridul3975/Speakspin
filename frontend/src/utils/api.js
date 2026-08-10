@@ -2,6 +2,9 @@
  * API client for SpeakSpin backend services.
  */
 
+// Dynamically use Render backend URL in production, or fallback to local proxy in dev
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 let authToken = null;
 
 /**
@@ -31,7 +34,7 @@ function getHeaders(extraHeaders = {}) {
 
 export async function loginWithGoogle(credential) {
   try {
-    const response = await fetch('/api/auth/google', {
+    const response = await fetch(`${API_BASE}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,7 +58,7 @@ export async function loginWithGoogle(credential) {
 
 export async function fetchCurrentUser() {
   try {
-    const response = await fetch('/api/auth/me', {
+    const response = await fetch(`${API_BASE}/api/auth/me`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -76,7 +79,7 @@ export async function fetchCurrentUser() {
 
 export async function analyzeText({ transcript, topic, category, targetDuration, actualDuration }) {
   try {
-    const response = await fetch('/api/analyze-text', {
+    const response = await fetch(`${API_BASE}/api/analyze-text`, {
       method: 'POST',
       headers: getHeaders({
         'Content-Type': 'application/json',
@@ -109,7 +112,7 @@ export async function transcribeAudio(audioBlob) {
     const formData = new FormData();
     formData.append('audio', audioBlob, 'speech.webm');
 
-    const response = await fetch('/api/transcribe', {
+    const response = await fetch(`${API_BASE}/api/transcribe`, {
       method: 'POST',
       headers: getHeaders(),
       body: formData,
@@ -131,7 +134,7 @@ export async function transcribeAudio(audioBlob) {
 
 export async function fetchHistory() {
   try {
-    const response = await fetch('/api/sessions', {
+    const response = await fetch(`${API_BASE}/api/sessions`, {
       method: 'GET',
       headers: getHeaders(),
     });
@@ -150,7 +153,7 @@ export async function fetchHistory() {
 
 export async function clearHistoryDB() {
   try {
-    const response = await fetch('/api/sessions', {
+    const response = await fetch(`${API_BASE}/api/sessions`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
