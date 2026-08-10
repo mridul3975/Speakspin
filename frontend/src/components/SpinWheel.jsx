@@ -10,9 +10,10 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
   const [wheelTopics, setWheelTopics] = useState([]);
   
   const segments = 10;
+  // High-contrast alternating monochrome color palette
   const colors = [
-    '#FF6B6B', '#4ECDC4', '#FFEAA7', '#FF8E53', '#A062FF',
-    '#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6'
+    '#000000', '#ffffff', '#eeeeee', '#000000', '#ffffff',
+    '#dadada', '#000000', '#ffffff', '#f5f3f3', '#000000'
   ];
 
   // Pick 10 random topics from the categories on mount
@@ -24,13 +25,12 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
       });
     });
 
-    // Shuffle and pick 10
     const shuffled = [...allTopics].sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, segments);
     setWheelTopics(selected);
   }, []);
 
-  // Draw the wheel on canvas whenever wheelTopics or rotation changes
+  // Draw the wheel on canvas
   useEffect(() => {
     if (wheelTopics.length === 0) return;
     
@@ -43,7 +43,6 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
 
     ctx.clearRect(0, 0, size, size);
 
-    // Save current context state
     ctx.save();
     ctx.translate(center, center);
     ctx.rotate((rotation * Math.PI) / 180);
@@ -52,47 +51,51 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
 
     for (let i = 0; i < segments; i++) {
       const angle = i * arcSize;
+      const bgColor = colors[i % colors.length];
       
       // Draw slice
       ctx.beginPath();
-      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillStyle = bgColor;
       ctx.moveTo(0, 0);
       ctx.arc(0, 0, radius, angle, angle + arcSize);
       ctx.lineTo(0, 0);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(10, 10, 26, 0.4)';
+      ctx.strokeStyle = '#000000';
       ctx.lineWidth = 2;
       ctx.stroke();
 
       // Draw Text
       ctx.save();
       ctx.rotate(angle + arcSize / 2);
-      ctx.fillStyle = '#0a0a1a';
-      ctx.font = 'bold 12px Inter';
+      
+      // Dynamic text color (white on black, black on white/grey)
+      ctx.fillStyle = bgColor === '#000000' ? '#ffffff' : '#000000';
+      ctx.font = 'bold 11px Montserrat';
       ctx.textAlign = 'right';
       
-      // Truncate topic text to fit wheel slice
       const text = wheelTopics[i].topic;
-      const displayName = text.length > 22 ? text.substring(0, 20) + '...' : text;
+      const displayName = text.length > 22 ? text.substring(0, 19) + '...' : text;
       
-      ctx.fillText(displayName, radius - 15, 4);
+      ctx.fillText(displayName.toUpperCase(), radius - 15, 4);
       ctx.restore();
     }
 
     // Draw center circle hub
     ctx.restore();
     ctx.beginPath();
+    ctx.fillStyle = '#000000';
+    ctx.arc(center, center, 24, 0, 2 * Math.PI);
+    ctx.fill();
+
+    ctx.beginPath();
     ctx.fillStyle = '#ffffff';
     ctx.arc(center, center, 20, 0, 2 * Math.PI);
     ctx.fill();
-    ctx.strokeStyle = '#4ECDC4';
-    ctx.lineWidth = 4;
-    ctx.stroke();
     
-    ctx.fillStyle = '#0a0a1a';
-    ctx.font = 'bold 12px Inter';
+    ctx.fillStyle = '#000000';
+    ctx.font = '900 9px Montserrat';
     ctx.textAlign = 'center';
-    ctx.fillText('SPIN', center, center + 4);
+    ctx.fillText('SPIN', center, center + 3);
   }, [rotation, wheelTopics]);
 
   const spin = () => {
@@ -100,9 +103,9 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
     setIsSpinning(true);
     setSelectedTopic(null);
 
-    const spinDuration = 4000; // 4 seconds
+    const spinDuration = 4000;
     const startRotation = rotation % 360;
-    const additionalSpins = 5 + Math.floor(Math.random() * 5); // 5 to 9 full spins
+    const additionalSpins = 5 + Math.floor(Math.random() * 5);
     const targetAngle = Math.floor(Math.random() * 360);
     const finalRotation = startRotation + additionalSpins * 360 + targetAngle;
 
@@ -112,7 +115,6 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
       const elapsed = time - startTime;
       const progress = Math.min(elapsed / spinDuration, 1);
       
-      // Cubic ease-out
       const ease = 1 - Math.pow(1 - progress, 3);
       const currentRot = startRotation + (finalRotation - startRotation) * ease;
       
@@ -121,14 +123,7 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
       if (progress < 1) {
         requestAnimationFrame(animateSpin);
       } else {
-        // Completed spinning
         const endAngle = currentRot % 360;
-        
-        // Calculate winning index:
-        // Angle starts at 0 rad (pointing right) and moves clockwise.
-        // The pointer is at top center (270 degrees / -90 degrees).
-        // To find the slice under the pointer:
-        // normalizedAngle = (360 - endAngle + 90) % 360
         const normalizedAngle = (360 - (endAngle % 360) + 90) % 360;
         const segmentAngle = 360 / segments;
         const winnerIndex = Math.floor(normalizedAngle / segmentAngle) % segments;
@@ -137,7 +132,6 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
         setSelectedTopic(winner);
         setIsSpinning(false);
 
-        // Auto-navigate after 2 second delay
         setTimeout(() => {
           onTopicSelected(winner);
         }, 2500);
@@ -148,40 +142,39 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
   };
 
   return (
-    <div className="wheel-container">
-      <h2 className="wheel-title">🎰 Spin to Decide Your Topic</h2>
+    <div className="spinning-container">
+      <h2 className="spin-title">🎰 Spin to Decide Your Topic</h2>
       
       <div className="wheel-wrapper">
-        {/* Pointer at the top center */}
-        <div className="wheel-pointer">▼</div>
+        <div className="wheel-pointer"></div>
         <canvas
           ref={canvasRef}
-          width={400}
-          height={400}
+          width={320}
+          height={320}
           onClick={spin}
           style={{ cursor: isSpinning ? 'default' : 'pointer' }}
         />
       </div>
 
       {!isSpinning && !selectedTopic && (
-        <button className="btn btn-primary btn-spin-now" onClick={spin}>
+        <button className="btn btn-primary" onClick={spin}>
+          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>casino</span>
           Spin Wheel!
         </button>
       )}
 
       {selectedTopic && (
         <motion.div
-          className="winner-announcement-card"
-          initial={{ opacity: 0, scale: 0.9 }}
+          className="topic-announcement"
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2 }}
         >
-          <span className="category-pill">{selectedTopic.category}</span>
-          <p className="winner-topic">"{selectedTopic.topic}"</p>
-          <p className="winner-duration">You have {selectedDuration}s to speak!</p>
-          <div className="preparing-indicator">
-            <span className="dot-pulse"></span> Preparing recorder...
-          </div>
+          <span className="winner-category-tag">{selectedTopic.category}</span>
+          <p className="winner-topic-text">"{selectedTopic.topic}"</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700, marginTop: '0.5rem' }}>
+            Duration: {selectedDuration}s | Preparing recorder...
+          </p>
         </motion.div>
       )}
     </div>

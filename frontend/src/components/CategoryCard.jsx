@@ -1,29 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import * as Icons from 'lucide-react';
 
 export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
-  // Map category keys to Lucide icons
+  // Map category keys to Material Symbol icons
   const getIcon = (key) => {
     switch (key) {
-      case 'confidence':
-        return <Icons.ShieldCheck className="category-icon" size={20} />;
-      case 'fluency':
-        return <Icons.Waves className="category-icon" size={20} />;
-      case 'relevance':
-        return <Icons.Target className="category-icon" size={20} />;
-      case 'vocabulary':
-        return <Icons.BookOpen className="category-icon" size={20} />;
-      case 'structure':
-        return <Icons.GitMerge className="category-icon" size={20} />; // or Layers
-      case 'clarity':
-        return <Icons.Volume2 className="category-icon" size={20} />;
-      case 'engagement':
-        return <Icons.Sparkles className="category-icon" size={20} />;
-      case 'timeManagement':
-        return <Icons.Clock className="category-icon" size={20} />;
-      default:
-        return <Icons.HelpCircle className="category-icon" size={20} />;
+      case 'confidence': return 'shield';
+      case 'fluency': return 'waves';
+      case 'relevance': return 'target';
+      case 'vocabulary': return 'menu_book';
+      case 'structure': return 'account_tree';
+      case 'clarity': return 'volume_up';
+      case 'engagement': return 'auto_awesome';
+      case 'timeManagement': return 'schedule';
+      default: return 'help';
     }
   };
 
@@ -41,37 +31,29 @@ export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
     }
   };
 
-  const getColor = (val) => {
-    if (val >= 80) return '#4ECDC4'; // teal
-    if (val >= 60) return '#FFEAA7'; // yellow
-    if (val >= 40) return '#FFA502'; // orange
-    return '#FF6B6B'; // red
-  };
-
-  const color = getColor(score);
-
   return (
     <div className="category-card">
-      <div className="category-card-header">
-        <div className="category-title-wrapper">
-          {getIcon(categoryKey)}
-          <h4 className="category-name">{getCategoryTitle(categoryKey)}</h4>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span className="material-symbols-outlined text-xl">{getIcon(categoryKey)}</span>
+          <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
+            {getCategoryTitle(categoryKey)}
+          </h4>
         </div>
-        <span className="category-score" style={{ color }}>{score}</span>
+        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.1rem' }}>{score}</span>
       </div>
       
-      {/* Horizontal progress bar */}
-      <div className="progress-bar-track">
+      {/* Horizontal progress bar (Brutalist thick track/fill) */}
+      <div className="category-bar-container">
         <motion.div
-          className="progress-bar-fill"
-          style={{ backgroundColor: color }}
+          className="category-bar-fill"
           initial={{ width: 0 }}
           animate={{ width: `${score}%` }}
           transition={{ duration: 1, ease: 'easeOut' }}
         />
       </div>
 
-      <p className="category-feedback">{feedback}</p>
+      <p className="category-desc">{feedback}</p>
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Mic, Square, Sparkles, RotateCcw, Edit2, Loader2, Volume2 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
 import { transcribeAudio } from '../utils/api';
@@ -33,14 +32,12 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const localStreamRef = useRef(null);
   const audioChunksRef = useRef([]);
 
-  // Sync speech recognition output with local state
   useEffect(() => {
     if (transcript) {
       setEditableTranscript(transcript);
     }
   }, [transcript]);
 
-  // Clean up timer and streams on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -55,7 +52,6 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     }
   };
 
-  // Countdown timer effect
   useEffect(() => {
     if (recorderState !== 'countdown') return;
 
@@ -74,7 +70,6 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     return () => clearInterval(interval);
   }, [recorderState]);
 
-  // Recording countdown timer effect
   useEffect(() => {
     if (recorderState !== 'recording') return;
 
@@ -109,11 +104,8 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     setEditableTranscript('');
     setAudioBlob(null);
     audioChunksRef.current = [];
-
-    // Start Web Speech Recognition
     startListening();
 
-    // Directly request mic access for MediaRecorder
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       localStreamRef.current = stream;
@@ -134,20 +126,17 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
       mediaRecorder.onstop = () => {
         const blob = new Blob(audioChunksRef.current, { type: mimeType });
         setAudioBlob(blob);
-        stopLocalStream(); // Release microphone
+        stopLocalStream();
       };
 
-      mediaRecorder.start(250); // Slice audio chunks frequently
+      mediaRecorder.start(250);
     } catch (err) {
-      console.error('Failed to start MediaRecorder on startRecording:', err);
+      console.error('Failed to start MediaRecorder:', err);
     }
   };
 
   const stopRecording = () => {
-    // Stop Web Speech
     stopListening();
-
-    // Stop MediaRecorder
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       try {
         mediaRecorderRef.current.stop();
@@ -155,7 +144,6 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         console.error(e);
       }
     }
-
     if (timerRef.current) clearInterval(timerRef.current);
     setRecorderState('completed');
   };
@@ -171,10 +159,9 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     setRecorderState('idle');
   };
 
-  // Triggers Whisper transcription
   const handleWhisperTranscribe = async () => {
     if (!audioBlob) {
-      alert('⚠️ No audio recording found to transcribe. Please speak into your microphone while recording.');
+      alert('⚠️ No audio recording found to transcribe.');
       return;
     }
 
@@ -185,8 +172,8 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         setEditableTranscript(response.text);
       }
     } catch (err) {
-      console.error('Whisper transcription failed:', err);
-      alert('❌ Groq Whisper transcription failed. Please check the backend console or edit manually.');
+      console.error('Whisper failed:', err);
+      alert('❌ Transcription failed. Please write manually.');
     } finally {
       setIsTranscribing(false);
     }
@@ -197,11 +184,11 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
     
     if (wordCount === 0) {
-      alert('⚠️ No speech detected. Please record and speak, click Whisper transcribe, or write manually.');
+      alert('⚠️ No speech detected. Please record and speak, or write manually.');
       return;
     }
     if (wordCount < 10) {
-      alert('⚠️ Speech too short! Please provide at least 10 words for a constructive AI analysis.');
+      alert('⚠️ Speech too short! Please provide at least 10 words.');
       return;
     }
     
@@ -211,16 +198,13 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     });
   };
 
-  // Timer SVG Ring setup
-  const size = 150;
-  const strokeWidth = 8;
+  // Timer SVG configurations (Swiss / Editorial Style)
+  const size = 160;
+  const strokeWidth = 4;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const progressRatio = timeLeft / targetDuration;
   const strokeDashoffset = circumference - progressRatio * circumference;
-
-  const isLowTime = timeLeft <= 10;
-  const strokeColor = isLowTime ? '#FF6B6B' : '#4ECDC4';
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -232,26 +216,37 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
 
   return (
-    <div className="recorder-container">
-      {/* Countdown Overlay */}
+    <div className="recorder-card">
+      {/* Countdown overlay styled as high-contrast brutalist canvas */}
       <AnimatePresence>
         {recorderState === 'countdown' && (
           <motion.div
-            className="countdown-overlay"
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: '#fbf9f9',
+              zIndex: 99,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '2rem',
+              textAlign: 'center'
+            }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="countdown-content">
-              <span className="countdown-sub">Get ready to speak about:</span>
-              <h2 className="countdown-topic">"{topic.topic}"</h2>
+            <div style={{ border: '2px solid #000000', padding: '3rem 2rem', backgroundColor: '#ffffff', width: '100%', maxWidth: '600px' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Get ready to speak about:</span>
+              <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0' }}>"{topic.topic}"</h2>
               <motion.div
                 key={countdown}
-                className="countdown-number"
-                initial={{ scale: 0, opacity: 0 }}
+                style={{ fontSize: '6rem', fontWeight: 900, fontFamily: 'var(--font-heading)' }}
+                initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 1.5, opacity: 0 }}
-                transition={{ duration: 0.8 }}
+                exit={{ scale: 1.2, opacity: 0 }}
+                transition={{ duration: 0.85 }}
               >
                 {countdown}
               </motion.div>
@@ -260,45 +255,56 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         )}
       </AnimatePresence>
 
-      {/* Header and Topic */}
-      <div className="recorder-header-bar">
+      {/* Top Details */}
+      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
         {recorderState === 'idle' && (
           <button className="btn-back-ghost" onClick={onBack}>
-            <ArrowLeft size={18} /> Back
+            <span className="material-symbols-outlined text-sm">arrow_back</span> BACK
           </button>
         )}
-        <div className="recorder-topic-pill">{topic.category}</div>
+        <div style={{ flexGrow: recorderState === 'idle' ? 0 : 1, textAlign: recorderState === 'idle' ? 'right' : 'center' }}>
+          <span className="winner-category-tag">{topic.category}</span>
+        </div>
       </div>
 
-      <h2 className="recorder-topic-title">"{topic.topic}"</h2>
+      <h1 className="recorder-topic-title">"{topic.topic}"</h1>
 
-      {/* Timer Ring */}
-      <div className={`timer-ring-wrapper ${isLowTime && recorderState === 'recording' ? 'pulse-danger' : ''}`}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {/* Dynamic microphone levels visualizer - solid black bars */}
+      {recorderState === 'recording' && (
+        <div className="audio-visualizer-container">
+          {audioLevels.map((lvl, index) => (
+            <div
+              key={index}
+              className="visualizer-bar"
+              style={{
+                height: `${Math.max(4, lvl * 50)}px`,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Timer display */}
+      <div className="timer-container">
+        <svg className="timer-circle-svg" width={size} height={size}>
           <circle
+            className="timer-circle-track"
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            fill="transparent"
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth={strokeWidth}
           />
           <motion.circle
+            className="timer-circle-fill"
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            fill="transparent"
-            stroke={strokeColor}
-            strokeWidth={strokeWidth}
             strokeDasharray={circumference}
             animate={{ strokeDashoffset }}
             transition={{ duration: 0.5, ease: 'linear' }}
-            strokeLinecap="round"
-            transform={`rotate(-90 ${size / 2} ${size / 2})`}
           />
         </svg>
-        <div className="timer-text-content">
-          <span className="timer-digits">{formatTime(timeLeft)}</span>
+        <div className="timer-time-display">
+          <span className="timer-val">{formatTime(timeLeft)}</span>
           <span className="timer-label">
             {recorderState === 'idle' && 'READY'}
             {recorderState === 'recording' && 'REMAINING'}
@@ -307,44 +313,24 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         </div>
       </div>
 
-      {/* Visualizer (Only visible while recording) */}
-      <div className="visualizer-container" style={{ visibility: recorderState === 'recording' ? 'visible' : 'hidden' }}>
-        {audioLevels.map((lvl, index) => (
-          <motion.div
-            key={index}
-            className="visualizer-bar"
-            style={{
-              height: `${Math.max(4, lvl * 60)}px`,
-            }}
-            animate={{
-              background: `linear-gradient(to top, #4ECDC4, #FF6B6B)`
-            }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          />
-        ))}
-      </div>
-
-      {/* Transcript Box */}
-      <div className="transcript-card">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-          <h3 style={{ margin: 0 }}>Transcript Box</h3>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Edit2 size={12} /> Editable
+      {/* Transcript text box with brutalist outlines */}
+      <div className="transcript-wrapper">
+        <div className="transcript-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <span>TRANSCRIPT BOX</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
+            <span className="material-symbols-outlined text-xs">edit</span> EDITABLE
           </span>
         </div>
-        
         <textarea
-          className="transcript-box-scroll"
+          className="transcript-body"
           style={{
             width: '100%',
             background: 'transparent',
             border: 'none',
             outline: 'none',
             color: 'var(--text-primary)',
-            fontSize: '0.95rem',
-            lineHeight: '1.5',
             resize: 'none',
-            fontFamily: 'inherit'
+            fontFamily: 'var(--font-body)'
           }}
           disabled={isTranscribing}
           value={isTranscribing ? 'Transcribing audio via Groq Whisper... Please wait.' : editableTranscript}
@@ -356,51 +342,41 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
           }
         />
         {interimTranscript && (
-          <p className="interim-text" style={{ fontSize: '0.95rem', marginTop: '0.25rem', opacity: 0.7 }}>
+          <p style={{ fontStyle: 'italic', opacity: 0.6, fontSize: '0.9rem', marginTop: '0.25rem' }}>
             {interimTranscript}
           </p>
         )}
+        <div className="transcript-meta">
+          <span>WORDS: <strong style={{ color: 'var(--text-primary)' }}>{wordCount}</strong></span>
+          <span>WPM: <strong style={{ color: 'var(--text-primary)' }}>{wpm}</strong></span>
+        </div>
       </div>
 
-      {/* Word stats */}
-      <div className="recorder-stats-row">
-        <span>Words: <strong>{wordCount}</strong></span>
-        <span>WPM: <strong>{wpm}</strong></span>
-      </div>
-
-      {/* Errors or unsupported alerts */}
-      {!isSupported && <div className="recorder-alert-warning">⚠️ {speechError}</div>}
+      {/* Error Warnings */}
+      {!isSupported && <div style={{ color: 'var(--accent-coral)', fontWeight: 700, fontSize: '0.85rem' }}>⚠️ {speechError}</div>}
       {isSupported && speechError && (
-        <div className="recorder-alert-danger" style={{ marginBottom: '1.25rem' }}>
-          ⚠️ {speechError} 
-          <span style={{ display: 'block', fontSize: '0.8rem', marginTop: '0.25rem', opacity: 0.9 }}>
-            No problem! Click "🤖 Transcribe Audio" below to translate your voice recording using Groq Whisper.
-          </span>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', border: '1px dashed #000000', padding: '0.75rem', width: '100%', textAlign: 'left' }}>
+          ⚠️ {speechError} (You can still type your speech manually or transcribe audio via Whisper below).
         </div>
       )}
 
-      {/* Control Buttons */}
-      <div className="recorder-controls" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
+      {/* Controls */}
+      <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
         {recorderState === 'idle' && (
           <>
             <button className="btn btn-primary" onClick={startCountdown} disabled={!isSupported}>
-              <Mic size={18} /> Start Recording
+              <span className="material-symbols-outlined text-sm">mic</span> START RECORDING
             </button>
             <button className="btn btn-secondary" onClick={() => setRecorderState('completed')}>
-              ✍️ Write Text
+              <span className="material-symbols-outlined text-sm">edit_document</span> WRITE TEXT
             </button>
           </>
         )}
 
         {recorderState === 'recording' && (
-          <motion.button
-            className="btn btn-danger btn-pulse"
-            onClick={stopRecording}
-            animate={{ boxShadow: ['0 0 0 0 rgba(255, 107, 107, 0.4)', '0 0 0 15px rgba(255, 107, 107, 0)', '0 0 0 0 rgba(255, 107, 107, 0.4)'] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-          >
-            <Square size={18} /> Stop Recording
-          </motion.button>
+          <button className="btn btn-primary" onClick={stopRecording} style={{ borderColor: 'var(--accent-coral)' }}>
+            <span className="material-symbols-outlined text-sm">stop</span> STOP RECORDING
+          </button>
         )}
 
         {recorderState === 'completed' && (
@@ -410,25 +386,19 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
                 className="btn btn-secondary" 
                 onClick={handleWhisperTranscribe} 
                 disabled={isTranscribing}
-                style={{ flex: '1 1 100%', border: '1px solid var(--accent-teal)', color: 'var(--accent-teal)' }}
+                style={{ width: '100%' }}
               >
-                {isTranscribing ? (
-                  <>
-                    <Loader2 className="animate-spin" size={18} style={{ marginRight: '0.5rem' }} /> Transcribing...
-                  </>
-                ) : (
-                  <>
-                    <Volume2 size={18} style={{ marginRight: '0.5rem' }} /> 🤖 Transcribe Audio (Groq Whisper)
-                  </>
-                )}
+                <span className="material-symbols-outlined text-sm">volume_up</span> 
+                {isTranscribing ? 'TRANSCRIBING...' : 'TRANSCRIBE AUDIO (GROQ WHISPER)'}
               </button>
             )}
             
             <button className="btn btn-primary" onClick={handleAnalyzeClick} disabled={isTranscribing}>
-              <Sparkles size={18} /> Analyze My Speech
+              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span> 
+              ANALYZE MY SPEECH
             </button>
             <button className="btn btn-secondary" onClick={tryAgain} disabled={isTranscribing}>
-              <RotateCcw size={18} /> Try Again
+              <span className="material-symbols-outlined text-sm">rotate_left</span> TRY AGAIN
             </button>
           </>
         )}

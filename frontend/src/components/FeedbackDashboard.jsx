@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, Home, ClipboardList, BarChart3, Heart, Lightbulb, AlertTriangle, CheckCircle2, ChevronRight, Award, Copy, Check } from 'lucide-react';
 import ScoreCircle from './ScoreCircle';
 import CategoryCard from './CategoryCard';
 
@@ -21,11 +20,11 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
   } = analysis;
 
   const tabs = [
-    { id: 'overview', label: '📋 Overview', icon: ClipboardList },
-    { id: 'details', label: '📊 Details', icon: BarChart3 },
-    { id: 'anxiety', label: '🧘 Anxiety', icon: Heart },
-    { id: 'tips', label: '💡 Tips', icon: Lightbulb },
-    { id: 'exemplar', label: '🏆 Exemplar', icon: Award },
+    { id: 'overview', label: 'Overview', icon: 'summarize' },
+    { id: 'details', label: 'Details', icon: 'bar_chart' },
+    { id: 'anxiety', label: 'Anxiety', icon: 'heart_broken' },
+    { id: 'tips', label: 'Tips', icon: 'emoji_objects' },
+    { id: 'exemplar', label: 'Exemplar', icon: 'emoji_events' },
   ];
 
   const handleCopy = () => {
@@ -35,7 +34,6 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Helper to format category title
   const getCategoryTitle = (key) => {
     switch (key) {
       case 'confidence': return 'Confidence';
@@ -50,26 +48,12 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
     }
   };
 
-  const getScoreColor = (val) => {
-    if (val >= 80) return '#4ECDC4';
-    if (val >= 60) return '#FFEAA7';
-    if (val >= 40) return '#FFA502';
-    return '#FF6B6B';
-  };
-
-  const getAnxietyBadgeClass = (lvl) => {
-    const cleanLvl = String(lvl).toLowerCase();
-    if (cleanLvl === 'high') return 'anxiety-badge-high';
-    if (cleanLvl === 'moderate') return 'anxiety-badge-moderate';
-    return 'anxiety-badge-low';
-  };
-
   return (
     <div className="dashboard-container">
       {/* Header */}
       <div className="dashboard-header">
-        <span className="dashboard-label">📊 Your Speech Analysis</span>
-        <h2 className="dashboard-topic">Topic: <span className="topic-name-italic">"{topic.topic}"</span></h2>
+        <span className="dashboard-label">YOUR SPEECH ANALYSIS</span>
+        <h2 className="dashboard-topic">TOPIC: <span style={{ fontStyle: 'italic' }}>"{topic.topic}"</span></h2>
       </div>
 
       {/* Main Score Area */}
@@ -80,7 +64,6 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
       {/* Tab Navigation */}
       <div className="dashboard-tabs">
         {tabs.map((tab) => {
-          const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
             <button
@@ -88,7 +71,7 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
               className={`dashboard-tab-btn ${isActive ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <Icon size={16} />
+              <span className="material-symbols-outlined text-sm">{tab.icon}</span>
               <span>{tab.label}</span>
             </button>
           );
@@ -101,23 +84,20 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
           {activeTab === 'overview' && (
             <motion.div
               key="overview"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
               className="tab-view-overview"
             >
-              {/* Mini Scores Grid (2x4) */}
+              {/* Category Breakdown */}
               <div className="mini-scores-card">
                 <h3>Category Breakdown</h3>
                 <div className="mini-scores-grid">
                   {Object.entries(categories).map(([key, data]) => (
                     <div key={key} className="mini-score-item">
-                      <div
-                        className="mini-score-circle"
-                        style={{ borderColor: getScoreColor(data.score) }}
-                      >
-                        <span className="mini-score-val" style={{ color: getScoreColor(data.score) }}>{data.score}</span>
+                      <div className="mini-score-circle">
+                        <span className="mini-score-val">{data.score}</span>
                       </div>
                       <span className="mini-score-label">{getCategoryTitle(key)}</span>
                     </div>
@@ -125,11 +105,11 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                 </div>
               </div>
 
-              {/* Overall Feedback & Filler Words row */}
+              {/* Overall Feedback & Filler Words */}
               <div className="overview-row">
                 <div className="overview-feedback-card">
                   <h3>Coach Feedback</h3>
-                  <p>{overallFeedback}</p>
+                  <p style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>{overallFeedback}</p>
                 </div>
 
                 <div className="filler-words-card">
@@ -146,7 +126,9 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                       ))}
                     </div>
                   ) : (
-                    <p className="no-fillers-text">🎉 No filler words detected! Clean speech flow.</p>
+                    <p style={{ fontStyle: 'italic', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                      🎉 No filler words detected! Clean speech flow.
+                    </p>
                   )}
 
                   <p className="filler-advice">{fillerWords.feedback}</p>
@@ -158,11 +140,10 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
           {activeTab === 'details' && (
             <motion.div
               key="details"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-              className="tab-view-details"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="details-grid">
                 {Object.entries(categories).map(([key, data]) => (
@@ -180,15 +161,14 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
           {activeTab === 'anxiety' && (
             <motion.div
               key="anxiety"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-              className="tab-view-anxiety"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
             >
-              <div className={`anxiety-level-banner ${getAnxietyBadgeClass(anxietyIndicators.level)}`}>
+              <div className="anxiety-level-banner">
                 <div className="anxiety-badge-header">
-                  <Heart size={24} className="heart-icon-badge" />
+                  <span className="material-symbols-outlined text-3xl">heart_broken</span>
                   <div>
                     <h4 className="anxiety-badge-title">Anxiety Level</h4>
                     <span className="anxiety-badge-text">{String(anxietyIndicators.level).toUpperCase()}</span>
@@ -198,7 +178,9 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
 
               <div className="anxiety-grid">
                 <div className="anxiety-list-card">
-                  <h3><AlertTriangle size={18} className="text-coral inline-icon" /> Signs Detected</h3>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="material-symbols-outlined">warning</span> Signs Detected
+                  </h3>
                   {anxietyIndicators.signs.length > 0 ? (
                     <ul>
                       {anxietyIndicators.signs.map((sign, idx) => (
@@ -206,12 +188,14 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                       ))}
                     </ul>
                   ) : (
-                    <p className="empty-list-text">No notable anxiety cues detected. Well controlled!</p>
+                    <p style={{ fontStyle: 'italic', fontSize: '0.9rem' }}>No notable anxiety cues detected. Well controlled!</p>
                   )}
                 </div>
 
                 <div className="anxiety-list-card">
-                  <h3><CheckCircle2 size={18} className="text-teal inline-icon" /> Calm Down Tips</h3>
+                  <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="material-symbols-outlined">check_circle</span> Calm Down Tips
+                  </h3>
                   <ul>
                     {anxietyIndicators.tips.map((tip, idx) => (
                       <li key={idx}>{tip}</li>
@@ -225,27 +209,26 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
           {activeTab === 'tips' && (
             <motion.div
               key="tips"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-              className="tab-view-tips"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="tips-row">
-                <div className="tips-card card-strengths">
+                <div className="tips-card">
                   <h3>💪 Your Strengths</h3>
                   <ul>
                     {strengths.map((str, idx) => (
-                      <li key={idx}>✓ {str}</li>
+                      <li key={idx}>{str}</li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="tips-card card-improvements">
+                <div className="tips-card">
                   <h3>📈 Areas to Improve</h3>
                   <ul>
                     {improvements.map((imp, idx) => (
-                      <li key={idx}>🎯 {imp}</li>
+                      <li key={idx}>{imp}</li>
                     ))}
                   </ul>
                 </div>
@@ -253,7 +236,7 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
 
               <div className="challenge-gradient-card">
                 <div className="challenge-header">
-                  <span className="challenge-trophy">🏆</span>
+                  <span className="material-symbols-outlined text-3xl">emoji_events</span>
                   <div>
                     <h4>Next Session Challenge</h4>
                     <p className="challenge-content">{challengeForNext}</p>
@@ -266,17 +249,16 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
           {activeTab === 'exemplar' && (
             <motion.div
               key="exemplar"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-              className="tab-view-exemplar"
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
             >
               <div className="exemplar-card">
                 <div className="exemplar-card-header">
                   <h3>🏆 Perfect 100/100 Speech</h3>
                   <button className="btn btn-secondary btn-copy-exemplar" onClick={handleCopy}>
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                    <span className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
                     <span>{copied ? 'Copied!' : 'Copy Speech'}</span>
                   </button>
                 </div>
@@ -292,24 +274,14 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
       </div>
 
       {/* Navigation Buttons */}
-      <div className="dashboard-actions">
-        <motion.button
-          className="btn btn-primary"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onPracticeAgain}
-        >
-          <RefreshCw size={18} /> Practice Again
-        </motion.button>
+      <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
+        <button className="btn btn-primary" onClick={onPracticeAgain}>
+          <span className="material-symbols-outlined text-sm">replay</span> Practice Again
+        </button>
 
-        <motion.button
-          className="btn btn-secondary"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onGoHome}
-        >
-          <Home size={18} /> Home
-        </motion.button>
+        <button className="btn btn-secondary" onClick={onGoHome}>
+          <span className="material-symbols-outlined text-sm">home</span> Home
+        </button>
       </div>
     </div>
   );

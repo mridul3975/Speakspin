@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { LogOut } from 'lucide-react';
 import LandingScreen from './components/LandingScreen';
 import TimerSelector from './components/TimerSelector';
 import SpinWheel from './components/SpinWheel';
@@ -48,11 +47,9 @@ export function App() {
       if (savedToken) {
         try {
           setAuthToken(savedToken);
-          // Verify JWT with backend
           const profile = await fetchCurrentUser();
           setUser(profile);
 
-          // Fetch MongoDB speech history
           const sessions = await fetchHistory();
           setHistory(sessions);
         } catch (error) {
@@ -72,12 +69,10 @@ export function App() {
   const handleLoginSuccess = async (response) => {
     setLoadingUser(true);
     try {
-      // Exchange Google ID token for backend session JWT
       const data = await loginWithGoogle(response.credential);
       localStorage.setItem('speakspin-token', data.token);
       setUser(data.user);
 
-      // Load user database history
       const sessions = await fetchHistory();
       setHistory(sessions);
       
@@ -86,6 +81,7 @@ export function App() {
       console.error('Google Sign-In backend verification failed:', err);
       alert('❌ Authentication failed. Please check backend connection.');
     } finally {
+      setUser(null); // Fallback safe resets
       setLoadingUser(false);
     }
   };
@@ -118,14 +114,13 @@ export function App() {
       const result = await analyzeText({
         transcript,
         topic: currentTopic.topic,
-        category: currentTopic.category, // Pass category for database schema
+        category: currentTopic.category,
         targetDuration: selectedDuration,
         actualDuration,
       });
 
       setAnalysisResults(result);
 
-      // Reload database logs
       const sessions = await fetchHistory();
       setHistory(sessions);
 
@@ -133,7 +128,7 @@ export function App() {
     } catch (error) {
       console.error('Analysis failed:', error);
       alert('❌ Failed to connect to AI Speech Coach. Please verify your internet connection or check the backend server logs.');
-      navigateTo(SCREENS.RECORDER); // Allow retry
+      navigateTo(SCREENS.RECORDER);
     }
   };
 
@@ -151,9 +146,11 @@ export function App() {
   if (loadingUser) {
     return (
       <div className="app-container" style={{ justifyContent: 'center' }}>
-        <div className="analyzing-robot" style={{ animation: 'spin 2s linear infinite', fontSize: '3rem' }}>🎯</div>
-        <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          Initializing SpeakSpin session...
+        <div style={{ display: 'inline-block', fontSize: '3rem', animation: 'spin 3s linear infinite' }}>
+          <span className="material-symbols-outlined text-5xl">sync</span>
+        </div>
+        <p style={{ marginTop: '1.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 700, textTransform: 'uppercase' }}>
+          Initializing session...
         </p>
       </div>
     );
@@ -174,21 +171,21 @@ export function App() {
   return (
     <div className="app-container">
       {/* User Session Profile Header */}
-      <div className="app-user-header" style={{ width: '100%', maxWidth: '1100px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', padding: '0 0.5rem' }}>
+      <div className="app-user-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {user.picture ? (
-            <img src={user.picture} alt={user.name} style={{ width: '32px', height: '32px', borderRadius: '50%', border: '1px solid var(--accent-teal)' }} />
+            <img src={user.picture} alt={user.name} style={{ width: '32px', height: '32px', border: '1px solid #000000' }} />
           ) : (
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', backgroundColor: 'var(--bg-card)', border: '1px solid var(--accent-teal)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem' }}>🎯</div>
+            <div style={{ width: '32px', height: '32px', border: '1px solid #000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800 }}>SP</div>
           )}
           <div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', lineHeight: 1.2 }}>Welcome,</span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>{user.name}</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block', lineHeight: 1.2, fontWeight: 700, textTransform: 'uppercase' }}>Welcome,</span>
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{user.name}</span>
           </div>
         </div>
         
-        <button onClick={handleSignOut} className="btn-back-ghost" style={{ fontSize: '0.85rem', color: 'var(--accent-coral)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <LogOut size={14} /> Log Out
+        <button onClick={handleSignOut} className="btn-back-ghost" style={{ fontSize: '0.8rem', color: 'var(--accent-coral)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}>
+          <span className="material-symbols-outlined text-sm">logout</span> LOG OUT
         </button>
       </div>
 
@@ -196,9 +193,9 @@ export function App() {
         {screen === SCREENS.LANDING && (
           <motion.div
             key="landing"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
             style={{ width: '100%' }}
           >
@@ -212,9 +209,9 @@ export function App() {
         {screen === SCREENS.SETUP && (
           <motion.div
             key="setup"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
@@ -230,9 +227,9 @@ export function App() {
         {screen === SCREENS.SPINNING && (
           <motion.div
             key="spinning"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
@@ -246,9 +243,9 @@ export function App() {
         {screen === SCREENS.RECORDER && (
           <motion.div
             key="recorder"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
@@ -277,9 +274,9 @@ export function App() {
         {screen === SCREENS.FEEDBACK && (
           <motion.div
             key="feedback"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
@@ -295,9 +292,9 @@ export function App() {
         {screen === SCREENS.HISTORY && (
           <motion.div
             key="history"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.3 }}
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >

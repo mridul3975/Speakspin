@@ -13,18 +13,18 @@ export function LandingScreen({ onStart, onViewProgress }) {
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 15 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: 'easeOut' },
+      transition: { duration: 0.4, ease: 'easeOut' },
     },
   };
 
   const cards = [
-    { icon: '🎰', title: 'Spin & Speak', desc: 'Random topics to challenge your impromptu skills' },
-    { icon: '🎤', title: 'Record', desc: 'Speak for 30s, 1, 2, or 5 minutes to practice pacing' },
-    { icon: '🤖', title: 'AI Analysis', desc: 'Get detailed feedback instantly across 8 key speech dimensions' },
+    { icon: 'casino', title: 'Spin & Speak', desc: 'Random topics to challenge your impromptu skills' },
+    { icon: 'mic', title: 'Record', desc: 'Speak for 30s, 1, 2, or 5 minutes to practice pacing' },
+    { icon: 'smart_toy', title: 'AI Analysis', desc: 'Get detailed feedback instantly across 8 key speech dimensions' },
   ];
 
   return (
@@ -37,14 +37,14 @@ export function LandingScreen({ onStart, onViewProgress }) {
       {/* Animated Logo */}
       <motion.div
         className="landing-logo"
-        animate={{ y: [0, -10, 0] }}
+        animate={{ y: [0, -6, 0] }}
         transition={{
           repeat: Infinity,
-          duration: 2.5,
+          duration: 3,
           ease: 'easeInOut',
         }}
       >
-        🎯
+        <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>track_changes</span>
       </motion.div>
 
       {/* Title */}
@@ -58,15 +58,17 @@ export function LandingScreen({ onStart, onViewProgress }) {
       </motion.p>
 
       {/* Features list */}
-      <motion.div className="landing-cards" variants={itemVariants}>
+      <motion.div className="landing-cards-grid" variants={itemVariants}>
         {cards.map((card, idx) => (
           <motion.div
             key={idx}
             className="landing-card"
-            whileHover={{ y: -5, boxShadow: '0 8px 30px rgba(78, 205, 196, 0.15)' }}
             variants={itemVariants}
+            whileHover={{ y: -2 }}
           >
-            <div className="card-emoji">{card.icon}</div>
+            <div className="landing-card-icon">
+              <span className="material-symbols-outlined text-4xl">{card.icon}</span>
+            </div>
             <h3>{card.title}</h3>
             <p>{card.desc}</p>
           </motion.div>
@@ -77,20 +79,20 @@ export function LandingScreen({ onStart, onViewProgress }) {
       <motion.div className="landing-actions" variants={itemVariants}>
         <motion.button
           className="btn btn-primary"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onStart}
         >
-          🚀 Start Speaking
+          <span className="material-symbols-outlined text-sm">rocket_launch</span>
+          Start Speaking
         </motion.button>
         
         <motion.button
           className="btn btn-secondary"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onViewProgress}
         >
-          📊 View Progress
+          <span className="material-symbols-outlined text-sm">bar_chart</span>
+          View Progress
         </motion.button>
       </motion.div>
     </motion.div>
