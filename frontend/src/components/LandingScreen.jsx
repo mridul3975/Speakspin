@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export function LandingScreen({ onStart, onViewProgress }) {
+export function LandingScreen({ onStart, onViewProgress, onStartMultiplayer }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -84,6 +84,16 @@ export function LandingScreen({ onStart, onViewProgress }) {
         >
           <span className="material-symbols-outlined text-sm">rocket_launch</span>
           Start Speaking
+        </motion.button>
+
+        <motion.button
+          className="btn btn-primary"
+          whileTap={{ scale: 0.98 }}
+          onClick={onStartMultiplayer}
+          style={{ backgroundColor: '#ffffff', color: '#000000', borderColor: '#ffffff' }}
+        >
+          <span className="material-symbols-outlined text-sm">swords</span>
+          Multiplayer Battle
         </motion.button>
         
         <motion.button

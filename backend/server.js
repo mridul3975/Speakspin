@@ -3,9 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
 import connectDB from './config/db.js';
 import authRouter from './routes/auth.js';
 import analyzeRouter from './routes/analyze.js';
+import { initSocket } from './socket.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,7 +41,11 @@ app.get('/health', (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Setup WebSockets
+const server = createServer(app);
+initSocket(server);
+
 // Start Server
-app.listen(PORT, () => {
-  console.log(`SpeakSpin Backend server running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`SpeakSpin Backend server running on port ${PORT} with WebSockets enabled`);
 });

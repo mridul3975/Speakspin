@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import io from 'socket.io-client';
 import LandingScreen from './components/LandingScreen';
 import TimerSelector from './components/TimerSelector';
 import SpinWheel from './components/SpinWheel';
@@ -8,6 +9,9 @@ import AnalyzingScreen from './components/AnalyzingScreen';
 import FeedbackDashboard from './components/FeedbackDashboard';
 import ProgressHistory from './components/ProgressHistory';
 import LoginScreen from './components/LoginScreen';
+import MultiplayerLobby from './components/MultiplayerLobby';
+import MultiplayerBattle from './components/MultiplayerBattle';
+import BattleResult from './components/BattleResult';
 import { 
   analyzeText, 
   loginWithGoogle, 
@@ -26,6 +30,9 @@ const SCREENS = {
   ANALYZING: 'ANALYZING',
   FEEDBACK: 'FEEDBACK',
   HISTORY: 'HISTORY',
+  LOBBY: 'LOBBY',
+  BATTLE: 'BATTLE',
+  BATTLE_RESULT: 'BATTLE_RESULT'
 };
 
 export function App() {
@@ -39,6 +46,11 @@ export function App() {
   // Auth States
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // WebSockets State
+  const [socket, setSocket] = useState(null);
+  const [matchDetails, setMatchDetails] = useState(null);
+  const [battleResults, setBattleResults] = useState(null);
 
   // Validate active auth tokens on mount
   useEffect(() => {
@@ -97,6 +109,10 @@ export function App() {
     setHistory([]);
     setCurrentTopic(null);
     setAnalysisResults(null);
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
     setScreen(SCREENS.LANDING);
   };
 
@@ -139,6 +155,42 @@ export function App() {
       console.error('Failed to clear history in database:', err);
       alert('❌ Failed to clear history logs. Please try again later.');
     }
+  };
+
+  // --- MULTIPLAYER FLOWS ---
+  const startMultiplayer = () => {
+    const API_URL = window.location.hostname === 'localhost' 
+      ? 'http://localhost:3001' 
+      : window.location.origin.replace('5173', '3001'); // Auto-target backend on preview/production
+    const newSocket = io(API_URL);
+    setSocket(newSocket);
+    navigateTo(SCREENS.LOBBY);
+  };
+
+  const handleMatchFound = (details) => {
+    setMatchDetails(details);
+    navigateTo(SCREENS.BATTLE);
+  };
+
+  const handleBattleFinished = (results) => {
+    setBattleResults(results);
+    navigateTo(SCREENS.BATTLE_RESULT);
+  };
+
+  const handleLeaveBattle = () => {
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
+    }
+    setMatchDetails(null);
+    setBattleResults(null);
+    navigateTo(SCREENS.LANDING);
+  };
+
+  const handleBattleAgain = () => {
+    setMatchDetails(null);
+    setBattleResults(null);
+    navigateTo(SCREENS.LOBBY);
   };
 
   // 1. Initial Loading Screen
@@ -201,6 +253,7 @@ export function App() {
             <LandingScreen
               onStart={() => navigateTo(SCREENS.SETUP)}
               onViewProgress={() => navigateTo(SCREENS.HISTORY)}
+              onStartMultiplayer={startMultiplayer}
             />
           </motion.div>
         )}
@@ -301,6 +354,64 @@ export function App() {
               history={history}
               onBack={() => navigateTo(SCREENS.LANDING)}
               onClearHistory={clearHistory}
+            />
+          </motion.div>
+        )}
+
+        {/* Multiplayer Lobby Screen */}
+        {screen === SCREENS.LOBBY && (
+          <motion.div
+            key="lobby"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <MultiplayerLobby
+              socket={socket}
+              user={user}
+              onMatchFound={handleMatchFound}
+              onBack={handleLeaveBattle}
+            />
+          </motion.div>
+        )}
+
+        {/* Multiplayer Battle Screen */}
+        {screen === SCREENS.BATTLE && matchDetails && (
+          <motion.div
+            key="battle"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <MultiplayerBattle
+              socket={socket}
+              user={user}
+              matchDetails={matchDetails}
+              onBattleFinished={handleBattleFinished}
+              onLeave={handleLeaveBattle}
+            />
+          </motion.div>
+        )}
+
+        {/* Multiplayer Battle Results Comparison */}
+        {screen === SCREENS.BATTLE_RESULT && battleResults && (
+          <motion.div
+            key="battleResult"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <BattleResult
+              user={user}
+              results={battleResults}
+              onBattleAgain={handleBattleAgain}
+              onGoHome={handleLeaveBattle}
             />
           </motion.div>
         )}
