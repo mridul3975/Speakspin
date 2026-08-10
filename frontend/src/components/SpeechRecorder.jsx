@@ -376,14 +376,9 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
       {/* Controls */}
       <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
         {recorderState === 'idle' && (
-          <>
-            <button className="btn btn-primary" onClick={startCountdown} disabled={!isSupported}>
-              <span className="material-symbols-outlined text-sm">mic</span> START RECORDING
-            </button>
-            <button className="btn btn-secondary" onClick={() => setRecorderState('completed')}>
-              <span className="material-symbols-outlined text-sm">edit_document</span> WRITE TEXT
-            </button>
-          </>
+          <button className="btn btn-primary" onClick={startCountdown} disabled={!isSupported}>
+            <span className="material-symbols-outlined text-sm">mic</span> START RECORDING
+          </button>
         )}
 
         {recorderState === 'recording' && (
