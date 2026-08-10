@@ -56,6 +56,9 @@ export function useSpeechRecognition() {
       } else {
         setError(`Speech recognition issue: ${event.error}`);
       }
+      // Halt auto-restart loop on errors to avoid infinite loops and InvalidStateErrors
+      shouldListenRef.current = false;
+      setIsListening(false);
     };
 
     recognition.onend = () => {
