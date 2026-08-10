@@ -9,7 +9,13 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Setup environment variables relative to backend folder
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+const envPath = path.resolve(__dirname, '.env');
+console.log(`[DEBUG] Attempting to load .env from: ${envPath}`);
+dotenv.config({ path: envPath });
+console.log(`[DEBUG] GROQ_API_KEY exists: ${!!process.env.GROQ_API_KEY}`);
+if (process.env.GROQ_API_KEY) {
+  console.log(`[DEBUG] GROQ_API_KEY prefix: ${process.env.GROQ_API_KEY.substring(0, 7)}...`);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
