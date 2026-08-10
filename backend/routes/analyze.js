@@ -6,15 +6,19 @@ import fs from 'fs';
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-// Initialize OpenAI client if API key is provided and looks valid
-const apiKey = process.env.OPENAI_API_KEY;
-const isKeyValid = apiKey && apiKey !== 'sk-your-key-here' && apiKey.trim() !== '';
+// Initialize OpenAI client pointing to Groq's API endpoint
+const apiKey = process.env.GROQ_API_KEY;
+const isKeyValid = apiKey && apiKey !== 'gsk_your-key-here' && apiKey.trim() !== '';
 
 let openai = null;
 if (isKeyValid) {
-  openai = new OpenAI({ apiKey });
+  openai = new OpenAI({
+    apiKey,
+    baseURL: 'https://api.groq.com/openai/v1',
+  });
+  console.log('Groq API Client initialized.');
 } else {
-  console.warn('WARNING: OPENAI_API_KEY is not set or is using the placeholder. Running in MOCK mode.');
+  console.warn('WARNING: GROQ_API_KEY is not set or is using the placeholder. Running in MOCK mode.');
 }
 
 // Helper to generate mock fallback analysis based on transcript keywords
@@ -22,7 +26,6 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
   const wordCount = transcript.split(/\s+/).filter(Boolean).length;
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
   
-  // Count basic filler words
   const fillers = ['um', 'uh', 'like', 'so', 'you know', 'actually', 'basically'];
   const detectedFillers = [];
   let fillerCount = 0;
@@ -36,7 +39,6 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
     }
   });
 
-  // Calculate scores based on WPM, duration matching, filler words, and length
   const wpmScore = wpm >= 110 && wpm <= 150 ? 95 : (wpm < 80 ? 60 : 80);
   const timeRatio = actualDuration / targetDuration;
   const timeScore = timeRatio >= 0.8 && timeRatio <= 1.2 ? 95 : (timeRatio < 0.5 ? 50 : 75);
@@ -126,7 +128,6 @@ router.post('/analyze-text', async (req, res) => {
   // Check if we should use Mock Mode
   if (!openai) {
     console.log("Using Mock AI Speech Coach response...");
-    // Simulate slight network delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     const analysis = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
     return res.json(analysis);
@@ -175,8 +176,9 @@ Return this exact JSON structure:
   "challengeForNext": string
 }`;
 
+    // Querying Groq using the OpenAI SDK compatible wrapper
     const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "llama-3.1-70b-versatile",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -189,29 +191,25 @@ Return this exact JSON structure:
     const analysisResult = JSON.parse(resultText);
     res.json(analysisResult);
   } catch (error) {
-    console.error("OpenAI API call failed, falling back to mock analysis:", error);
-    // Graceful fallback to mock response in case of API keys error, limit error, or internet down
+    console.error("Groq API call failed, falling back to mock analysis:", error);
     const fallback = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
     res.json(fallback);
   }
 });
 
-// POST /api/transcribe (Whisper Audio Upload endpoint)
+// POST /api/transcribe (Whisper Audio Upload endpoint via Groq)
 router.post('/transcribe', upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Audio file is required" });
   }
 
-  // If openai is not initialized, mock transcription using a simple check or generic note
   if (!openai) {
     console.log("Mock Transcribing audio file...");
-    // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1500));
-    // Clean up uploaded file
     try { fs.unlinkSync(req.file.path); } catch (e) {}
 
     return res.json({
-      text: "This is a mock transcription because no valid OpenAI API Key was detected in the environment. Please check the Web Speech API transcription on the frontend, which handles live audio without an API key.",
+      text: "This is a mock transcription because no valid Groq API Key was detected in the environment. Please check the Web Speech API transcription on the frontend, which handles live audio without an API key.",
       duration: 10,
       language: "en"
     });
@@ -220,19 +218,18 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
   try {
     const transcription = await openai.audio.transcriptions.create({
       file: fs.createReadStream(req.file.path),
-      model: "whisper-1",
+      model: "whisper-large-v3", // Groq's high-fidelity Whisper model
     });
 
-    // Clean up uploaded file
     try { fs.unlinkSync(req.file.path); } catch (e) {}
 
     res.json({
       text: transcription.text,
-      duration: 0, // Whisper doesn't easily return duration directly in basic response
+      duration: 0,
       language: "en"
     });
   } catch (error) {
-    console.error("Whisper transcription failed:", error);
+    console.error("Groq Whisper transcription failed:", error);
     try { fs.unlinkSync(req.file.path); } catch (e) {}
     res.status(500).json({ error: "Transcription failed" });
   }
