@@ -333,6 +333,9 @@ body {
   width: 260px;
   height: 260px;
   border: var(--border) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .wheel-canvas {

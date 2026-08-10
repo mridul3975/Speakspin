@@ -10,13 +10,11 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
   const [wheelTopics, setWheelTopics] = useState([]);
   
   const segments = 10;
-  // High-contrast alternating monochrome color palette
   const colors = [
     '#000000', '#ffffff', '#eeeeee', '#000000', '#ffffff',
     '#dadada', '#000000', '#ffffff', '#f5f3f3', '#000000'
   ];
 
-  // Pick 10 random topics from the categories on mount
   useEffect(() => {
     const allTopics = [];
     Object.keys(TOPIC_BANK).forEach((category) => {
@@ -30,7 +28,6 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
     setWheelTopics(selected);
   }, []);
 
-  // Draw the wheel on canvas
   useEffect(() => {
     if (wheelTopics.length === 0) return;
     
@@ -39,7 +36,7 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
     const ctx = canvas.getContext('2d');
     const size = canvas.width;
     const center = size / 2;
-    const radius = center - 10;
+    const radius = center - 8;
 
     ctx.clearRect(0, 0, size, size);
 
@@ -53,7 +50,6 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
       const angle = i * arcSize;
       const bgColor = colors[i % colors.length];
       
-      // Draw slice
       ctx.beginPath();
       ctx.fillStyle = bgColor;
       ctx.moveTo(0, 0);
@@ -64,36 +60,33 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Draw Text
       ctx.save();
       ctx.rotate(angle + arcSize / 2);
       
-      // Dynamic text color (white on black, black on white/grey)
       ctx.fillStyle = bgColor === '#000000' ? '#ffffff' : '#000000';
-      ctx.font = 'bold 11px Montserrat';
+      ctx.font = 'bold 9px Montserrat';
       ctx.textAlign = 'right';
       
       const text = wheelTopics[i].topic;
-      const displayName = text.length > 22 ? text.substring(0, 19) + '...' : text;
+      const displayName = text.length > 18 ? text.substring(0, 15) + '...' : text;
       
-      ctx.fillText(displayName.toUpperCase(), radius - 15, 4);
+      ctx.fillText(displayName.toUpperCase(), radius - 12, 3);
       ctx.restore();
     }
 
-    // Draw center circle hub
     ctx.restore();
     ctx.beginPath();
     ctx.fillStyle = '#000000';
-    ctx.arc(center, center, 24, 0, 2 * Math.PI);
+    ctx.arc(center, center, 20, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.beginPath();
     ctx.fillStyle = '#ffffff';
-    ctx.arc(center, center, 20, 0, 2 * Math.PI);
+    ctx.arc(center, center, 16, 0, 2 * Math.PI);
     ctx.fill();
     
     ctx.fillStyle = '#000000';
-    ctx.font = '900 9px Montserrat';
+    ctx.font = '900 8px Montserrat';
     ctx.textAlign = 'center';
     ctx.fillText('SPIN', center, center + 3);
   }, [rotation, wheelTopics]);
@@ -149,8 +142,9 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
         <div className="wheel-pointer"></div>
         <canvas
           ref={canvasRef}
-          width={320}
-          height={320}
+          className="wheel-canvas"
+          width={254}
+          height={254}
           onClick={spin}
           style={{ cursor: isSpinning ? 'default' : 'pointer' }}
         />
