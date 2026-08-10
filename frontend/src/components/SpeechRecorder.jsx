@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Mic, Square, Sparkles, RotateCcw, Edit2 } from 'lucide-react';
+import { ArrowLeft, Mic, Square, Sparkles, RotateCcw, Edit2, Loader2 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
+import { transcribeAudio } from '../utils/api';
 
 export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const [recorderState, setRecorderState] = useState('idle'); // idle | countdown | recording | completed
@@ -10,6 +11,8 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const [timeLeft, setTimeLeft] = useState(targetDuration);
   const [actualDuration, setActualDuration] = useState(0);
   const [editableTranscript, setEditableTranscript] = useState('');
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [audioBlob, setAudioBlob] = useState(null);
 
   const {
     isListening,
@@ -22,12 +25,14 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     resetTranscript,
   } = useSpeechRecognition();
 
-  const { audioLevels } = useAudioLevel(recorderState === 'recording');
+  const { audioLevels, stream } = useAudioLevel(recorderState === 'recording');
 
   const timerRef = useRef(null);
   const actualDurationRef = useRef(0);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
-  // Sync speech recognition output with local editable transcript state
+  // Sync speech recognition output with local state
   useEffect(() => {
     if (transcript) {
       setEditableTranscript(transcript);
@@ -93,11 +98,55 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const startRecording = () => {
     setRecorderState('recording');
     setEditableTranscript('');
+    setAudioBlob(null);
+    audioChunksRef.current = [];
+
+    // Start Web Speech Recognition
     startListening();
+
+    // Start capturing raw audio via MediaRecorder
+    if (stream) {
+      try {
+        const options = { mimeType: 'audio/webm' };
+        // Fallback for Safari/iOS
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
+          ? 'audio/webm' 
+          : 'audio/mp4';
+
+        const mediaRecorder = new MediaRecorder(stream, { mimeType });
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunksRef.current, { type: mimeType });
+          setAudioBlob(blob);
+        };
+
+        mediaRecorder.start(1000); // chunk every 1s
+      } catch (err) {
+        console.error('Failed to start MediaRecorder:', err);
+      }
+    }
   };
 
   const stopRecording = () => {
+    // Stop Web Speech
     stopListening();
+
+    // Stop MediaRecorder
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      try {
+        mediaRecorderRef.current.stop();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     if (timerRef.current) clearInterval(timerRef.current);
     setRecorderState('completed');
   };
@@ -105,10 +154,33 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const tryAgain = () => {
     resetTranscript();
     setEditableTranscript('');
+    setAudioBlob(null);
+    setIsTranscribing(false);
     setTimeLeft(targetDuration);
     setActualDuration(0);
     actualDurationRef.current = 0;
     setRecorderState('idle');
+  };
+
+  // Triggers Whisper transcription if Web Speech transcript is missing
+  const handleWhisperTranscribe = async () => {
+    if (!audioBlob) {
+      alert('⚠️ No audio recording found to transcribe.');
+      return;
+    }
+
+    setIsTranscribing(true);
+    try {
+      const response = await transcribeAudio(audioBlob);
+      if (response && response.text) {
+        setEditableTranscript(response.text);
+      }
+    } catch (err) {
+      console.error('Whisper transcription failed:', err);
+      alert('❌ Groq Whisper transcription failed. Please edit or enter your text manually.');
+    } finally {
+      setIsTranscribing(false);
+    }
   };
 
   const handleAnalyzeClick = () => {
@@ -116,11 +188,11 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
     
     if (wordCount === 0) {
-      alert('⚠️ No speech detected. Please start recording and speak or type your speech in the transcript box.');
+      alert('⚠️ No speech detected. Please start recording and speak, trigger Whisper transcription, or type manually.');
       return;
     }
     if (wordCount < 10) {
-      alert('⚠️ Speech too short! Please speak or write at least 10 words for a constructive AI analysis.');
+      alert('⚠️ Speech too short! Please provide at least 10 words for a constructive AI analysis.');
       return;
     }
     
@@ -243,7 +315,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         ))}
       </div>
 
-      {/* Transcript Box - Make it a textarea for edit/manual entry support */}
+      {/* Transcript Box */}
       <div className="transcript-card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
           <h3 style={{ margin: 0 }}>Transcript Box</h3>
@@ -265,12 +337,13 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
             resize: 'none',
             fontFamily: 'inherit'
           }}
-          value={editableTranscript}
+          disabled={isTranscribing}
+          value={isTranscribing ? 'Transcribing audio via Groq Whisper... Please wait.' : editableTranscript}
           onChange={(e) => setEditableTranscript(e.target.value)}
           placeholder={
             recorderState === 'recording'
               ? 'Listening... Start speaking into your mic now!'
-              : 'Microphone speech will appear here. Alternatively, you can type your speech here manually if speech recognition fails.'
+              : 'Recorded speech will appear here. If the browser speech recognition drops, click "Transcribe Audio" below to run Groq Whisper, or write it manually.'
           }
         />
         {interimTranscript && (
@@ -289,22 +362,21 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
       {/* Errors or unsupported alerts */}
       {!isSupported && <div className="recorder-alert-warning">⚠️ {speechError}</div>}
       {isSupported && speechError && (
-        <div className="recorder-alert-danger">
+        <div className="recorder-alert-danger" style={{ marginBottom: '1.25rem' }}>
           ⚠️ {speechError} 
-          <span style={{ display: 'block', fontSize: '0.8rem', marginTop: '0.25rem', opacity: 0.8 }}>
-            (You can still type/paste your speech in the text box above to get AI coaching analysis)
+          <span style={{ display: 'block', fontSize: '0.8rem', marginTop: '0.25rem', opacity: 0.9 }}>
+            No problem! Click "🤖 Transcribe Audio" below to translate your voice recording using Groq Whisper.
           </span>
         </div>
       )}
 
       {/* Control Buttons */}
-      <div className="recorder-controls">
+      <div className="recorder-controls" style={{ flexWrap: 'wrap', gap: '0.75rem' }}>
         {recorderState === 'idle' && (
           <>
             <button className="btn btn-primary" onClick={startCountdown} disabled={!isSupported}>
               <Mic size={18} /> Start Recording
             </button>
-            {/* Allow bypassing speech recorder completely to write prompt manually */}
             <button className="btn btn-secondary" onClick={() => setRecorderState('completed')}>
               ✍️ Write Text
             </button>
@@ -324,10 +396,27 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
         {recorderState === 'completed' && (
           <>
-            <button className="btn btn-primary" onClick={handleAnalyzeClick}>
+            {audioBlob && !editableTranscript && (
+              <button 
+                className="btn btn-secondary" 
+                onClick={handleWhisperTranscribe} 
+                disabled={isTranscribing}
+                style={{ flex: '1 1 100%', border: '1px solid var(--accent-yellow)', color: 'var(--accent-yellow)' }}
+              >
+                {isTranscribing ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} /> Transcribing...
+                  </>
+                ) : (
+                  '🤖 Transcribe Audio (Groq Whisper)'
+                )}
+              </button>
+            )}
+            
+            <button className="btn btn-primary" onClick={handleAnalyzeClick} disabled={isTranscribing}>
               <Sparkles size={18} /> Analyze My Speech
             </button>
-            <button className="btn btn-secondary" onClick={tryAgain}>
+            <button className="btn btn-secondary" onClick={tryAgain} disabled={isTranscribing}>
               <RotateCcw size={18} /> Try Again
             </button>
           </>
