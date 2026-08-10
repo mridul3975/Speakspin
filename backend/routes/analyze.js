@@ -4,7 +4,7 @@ import multer from 'multer';
 import fs from 'fs';
 import { rateLimit } from 'express-rate-limit';
 import authMiddleware from '../middleware/authMiddleware.js';
-import Session from '../models/session.js';
+import { pool } from '../config/db.js';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -234,40 +234,67 @@ Return this exact JSON structure:
     }
   }
 
-  // Save the analyzed speech session directly in MongoDB under user's ID
+  // Save the analyzed speech session directly in PostgreSQL
   try {
-    const session = new Session({
-      userId: req.userId,
+    const query = `
+      INSERT INTO sessions (
+        user_id, topic, category, duration, overall_score, overall_feedback,
+        categories, filler_words, anxiety_indicators, strengths, improvements,
+        challenge_for_next, exemplar_speech
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+    `;
+    const values = [
+      req.userId,
       topic,
-      category: category || 'General',
-      duration: actualDuration,
-      overallScore: analysisResult.overallScore,
-      overallFeedback: analysisResult.overallFeedback,
-      categories: analysisResult.categories,
-      fillerWords: analysisResult.fillerWords,
-      anxietyIndicators: analysisResult.anxietyIndicators,
-      strengths: analysisResult.strengths,
-      improvements: analysisResult.improvements,
-      challengeForNext: analysisResult.challengeForNext,
-      exemplarSpeech: analysisResult.exemplarSpeech
-    });
+      category || 'General',
+      actualDuration,
+      analysisResult.overallScore,
+      analysisResult.overallFeedback,
+      JSON.stringify(analysisResult.categories),
+      JSON.stringify(analysisResult.fillerWords),
+      JSON.stringify(analysisResult.anxietyIndicators),
+      JSON.stringify(analysisResult.strengths),
+      JSON.stringify(analysisResult.improvements),
+      analysisResult.challengeForNext,
+      analysisResult.exemplarSpeech
+    ];
 
-    await session.save();
-    console.log(`Saved speech analysis session to MongoDB for user: ${req.userId}`);
+    await pool.query(query, values);
+    console.log(`Saved speech analysis session to PostgreSQL for user: ${req.userId}`);
     res.json(analysisResult);
   } catch (dbError) {
-    console.error("Failed to save session to MongoDB:", dbError);
-    // Return analysis even if database save fails so user gets their result
-    res.json(analysisResult);
+    console.error("Failed to save session to PostgreSQL:", dbError);
+    res.json(analysisResult); // Still return results even if database fails
   }
 });
 
 // GET /api/sessions (JWT Protected - Fetch history)
 router.get('/sessions', authMiddleware, async (req, res) => {
   try {
-    const sessions = await Session.find({ userId: req.userId })
-      .sort({ date: -1 })
-      .limit(50);
+    const sessionsRes = await pool.query(
+      'SELECT * FROM sessions WHERE user_id = $1 ORDER BY date DESC LIMIT 50',
+      [req.userId]
+    );
+
+    // Map database snake_case columns back to the camelCase keys expected by React frontend
+    const sessions = sessionsRes.rows.map(row => ({
+      id: row.id,
+      userId: row.user_id,
+      topic: row.topic,
+      category: row.category,
+      duration: row.duration,
+      overallScore: row.overall_score,
+      overallFeedback: row.overall_feedback,
+      categories: row.categories,
+      fillerWords: row.filler_words,
+      anxietyIndicators: row.anxiety_indicators,
+      strengths: row.strengths,
+      improvements: row.improvements,
+      challengeForNext: row.challenge_for_next,
+      exemplarSpeech: row.exemplar_speech,
+      date: row.date
+    }));
+
     res.json(sessions);
   } catch (error) {
     console.error('Fetch sessions failed:', error);
@@ -278,7 +305,7 @@ router.get('/sessions', authMiddleware, async (req, res) => {
 // DELETE /api/sessions (JWT Protected - Clear history)
 router.delete('/sessions', authMiddleware, async (req, res) => {
   try {
-    await Session.deleteMany({ userId: req.userId });
+    await pool.query('DELETE FROM sessions WHERE user_id = $1', [req.userId]);
     console.log(`Cleared speech history logs for user: ${req.userId}`);
     res.json({ message: 'Speech history cleared successfully' });
   } catch (error) {
@@ -287,7 +314,7 @@ router.delete('/sessions', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/transcribe (JWT Protected - Whisper Audio Upload)
+// POST /api/transcribe with rate limiter
 router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Audio file is required" });

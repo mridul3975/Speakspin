@@ -1,7 +1,7 @@
 import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import User from '../models/user.js';
+import { pool } from '../config/db.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -18,7 +18,7 @@ if (clientID && clientID !== 'your-google-oauth-client-id') {
 
 // Generate JWT token for SpeakSpin session
 function generateToken(userId) {
-  const secret = process.env.JWT_SECRET || 'speakspin-jwt-fallback-secret-key';
+  const secret = process.env.JWT_SECRET || 'speakspin-jwt-fallback-secret-key-123';
   return jwt.sign({ userId }, secret, { expiresIn: '7d' });
 }
 
@@ -34,14 +34,12 @@ router.post('/google', async (req, res) => {
 
   try {
     if (client) {
-      // Verify token via Google API
       const ticket = await client.verifyIdToken({
         idToken: credential,
         audience: clientID,
       });
       profile = ticket.getPayload();
     } else {
-      // Fallback: Mock login parsing or custom token for local development testing
       console.log('Verifying mock credential in development auth mode...');
       if (credential === 'mock-google-token') {
         profile = {
@@ -51,7 +49,6 @@ router.post('/google', async (req, res) => {
           picture: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&q=80',
         };
       } else {
-        // Fallback for decode attempts of custom JSON/mock strings
         try {
           const decodedMock = JSON.parse(credential);
           profile = {
@@ -72,30 +69,32 @@ router.post('/google', async (req, res) => {
 
     const { sub: googleId, email, name, picture } = profile;
 
-    // Find user or create if new
-    let user = await User.findOne({ googleId });
+    // Find user or create if new in PostgreSQL
+    const userRes = await pool.query('SELECT * FROM users WHERE google_id = $1', [googleId]);
+    let user = userRes.rows[0];
+
     if (!user) {
-      user = new User({
-        googleId,
-        email,
-        name,
-        picture,
-      });
-      await user.save();
-      console.log(`Created new user account: ${email}`);
+      const insertRes = await pool.query(
+        'INSERT INTO users (google_id, email, name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
+        [googleId, email, name, picture]
+      );
+      user = insertRes.rows[0];
+      console.log(`Created new user account in PostgreSQL: ${email}`);
     } else {
       // Update details in case user changed picture or name in Google
-      user.name = name;
-      user.picture = picture;
-      await user.save();
+      const updateRes = await pool.query(
+        'UPDATE users SET name = $1, picture = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
+        [name, picture, user.id]
+      );
+      user = updateRes.rows[0];
     }
 
-    const sessionToken = generateToken(user._id);
+    const sessionToken = generateToken(user.id);
 
     res.json({
       token: sessionToken,
       user: {
-        id: user._id,
+        id: user.id,
         email: user.email,
         name: user.name,
         picture: user.picture,
@@ -110,12 +109,15 @@ router.post('/google', async (req, res) => {
 // GET /api/auth/me
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.userId);
+    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
+    const user = userRes.rows[0];
+    
     if (!user) {
       return res.status(404).json({ error: 'User profile not found' });
     }
+    
     res.json({
-      id: user._id,
+      id: user.id,
       email: user.email,
       name: user.name,
       picture: user.picture,
