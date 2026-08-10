@@ -5,11 +5,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import analyzeRouter from './routes/analyze.js';
 
-// Setup environment variables
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Setup environment variables relative to backend folder
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const app = express();
 const PORT = process.env.PORT || 3001;
