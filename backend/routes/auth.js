@@ -1,7 +1,7 @@
 import express from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import jwt from 'jsonwebtoken';
-import { pool } from '../config/db.js';
+import { getPool } from '../config/db.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
@@ -69,12 +69,14 @@ router.post('/google', async (req, res) => {
 
     const { sub: googleId, email, name, picture } = profile;
 
+    const dbPool = getPool();
+
     // Find user or create if new in PostgreSQL
-    const userRes = await pool.query('SELECT * FROM users WHERE google_id = $1', [googleId]);
+    const userRes = await dbPool.query('SELECT * FROM users WHERE google_id = $1', [googleId]);
     let user = userRes.rows[0];
 
     if (!user) {
-      const insertRes = await pool.query(
+      const insertRes = await dbPool.query(
         'INSERT INTO users (google_id, email, name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
         [googleId, email, name, picture]
       );
@@ -82,7 +84,7 @@ router.post('/google', async (req, res) => {
       console.log(`Created new user account in PostgreSQL: ${email}`);
     } else {
       // Update details in case user changed picture or name in Google
-      const updateRes = await pool.query(
+      const updateRes = await dbPool.query(
         'UPDATE users SET name = $1, picture = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
         [name, picture, user.id]
       );
@@ -109,7 +111,8 @@ router.post('/google', async (req, res) => {
 // GET /api/auth/me
 router.get('/me', authMiddleware, async (req, res) => {
   try {
-    const userRes = await pool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
+    const dbPool = getPool();
+    const userRes = await dbPool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
     const user = userRes.rows[0];
     
     if (!user) {

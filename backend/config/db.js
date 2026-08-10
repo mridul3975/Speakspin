@@ -2,19 +2,29 @@ import pg from 'pg';
 
 const { Pool } = pg;
 
-const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/speakspin';
+let poolInstance = null;
 
-// Enable SSL rejectUnauthorized: false only when connecting to Neon to avoid certificate issues
-const isNeon = connectionString.includes('neon.tech');
+/**
+ * Lazily initialize and return the PostgreSQL pool.
+ * This avoids ESM evaluation hoisting issues by reading process.env after config loads.
+ */
+export function getPool() {
+  if (poolInstance) return poolInstance;
 
-export const pool = new Pool({
-  connectionString,
-  ssl: isNeon ? { rejectUnauthorized: false } : false
-});
+  const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/speakspin';
+  const isNeon = connectionString.includes('neon.tech');
+
+  poolInstance = new Pool({
+    connectionString,
+    ssl: isNeon ? { rejectUnauthorized: false } : false
+  });
+
+  return poolInstance;
+}
 
 export async function connectDB() {
   try {
-    // Attempt to test connection
+    const pool = getPool();
     const client = await pool.connect();
     console.log(`PostgreSQL Connected successfully to database.`);
     
@@ -54,7 +64,8 @@ export async function connectDB() {
     console.log('PostgreSQL Tables initialized (users, sessions).');
     client.release();
   } catch (error) {
-    console.error(`PostgreSQL Connection/Initialization Error: ${error.message}`);
+    console.error('PostgreSQL Connection/Initialization Error:');
+    console.error(error);
     process.exit(1);
   }
 }

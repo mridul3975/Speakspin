@@ -4,7 +4,7 @@ import multer from 'multer';
 import fs from 'fs';
 import { rateLimit } from 'express-rate-limit';
 import authMiddleware from '../middleware/authMiddleware.js';
-import { pool } from '../config/db.js';
+import { getPool } from '../config/db.js';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -259,7 +259,7 @@ Return this exact JSON structure:
       analysisResult.exemplarSpeech
     ];
 
-    await pool.query(query, values);
+    await getPool().query(query, values);
     console.log(`Saved speech analysis session to PostgreSQL for user: ${req.userId}`);
     res.json(analysisResult);
   } catch (dbError) {
@@ -271,7 +271,7 @@ Return this exact JSON structure:
 // GET /api/sessions (JWT Protected - Fetch history)
 router.get('/sessions', authMiddleware, async (req, res) => {
   try {
-    const sessionsRes = await pool.query(
+    const sessionsRes = await getPool().query(
       'SELECT * FROM sessions WHERE user_id = $1 ORDER BY date DESC LIMIT 50',
       [req.userId]
     );
@@ -305,7 +305,7 @@ router.get('/sessions', authMiddleware, async (req, res) => {
 // DELETE /api/sessions (JWT Protected - Clear history)
 router.delete('/sessions', authMiddleware, async (req, res) => {
   try {
-    await pool.query('DELETE FROM sessions WHERE user_id = $1', [req.userId]);
+    await getPool().query('DELETE FROM sessions WHERE user_id = $1', [req.userId]);
     console.log(`Cleared speech history logs for user: ${req.userId}`);
     res.json({ message: 'Speech history cleared successfully' });
   } catch (error) {
