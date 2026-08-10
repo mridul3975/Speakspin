@@ -146,7 +146,8 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
       "Practice using deliberate silence instead of vocalized pauses to let points land."
     ],
     overallFeedback: `You did a great job speaking about "${topic}" for ${actualDuration} seconds! Your speech was coherent and relevant, maintaining an average speed of ${wpm} WPM. Focusing on minimizing fillers and incorporating structural signposts will make your next speech even more impactful.`,
-    challengeForNext: "Try to speak for the full target duration while using fewer than 2 filler words."
+    challengeForNext: "Try to speak for the full target duration while using fewer than 2 filler words.",
+    exemplarSpeech: `Here is a perfect 100/100 exemplar speech on "${topic}":\n\n"When we consider the question of "${topic}", we are forced to weigh both its challenges and its possibilities. Historically, our choices have shaped our culture. In the modern era, there are three primary pillars we must emphasize. Firstly, clear communication bridges the gap of misunderstanding. Secondly, consistency of action develops trust in our methods. Finally, a collective vision ensures we progress together. In conclusion, by balancing our immediate goals with our long-term values, we build a legacy of success. Thank you."`
   };
 }
 
@@ -210,7 +211,8 @@ Return this exact JSON structure:
   "strengths": string[],
   "improvements": string[],
   "overallFeedback": string,
-  "challengeForNext": string
+  "challengeForNext": string,
+  "exemplarSpeech": string
 }`;
 
     const response = await client.chat.completions.create({
@@ -258,7 +260,6 @@ router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req
   try {
     fs.renameSync(req.file.path, tempFilePath);
 
-    // Create a proper File object compatible with OpenAI/Groq upload interface
     const audioFile = await toFile(fs.createReadStream(tempFilePath), 'speech.webm', { type: 'audio/webm' });
 
     const transcription = await client.audio.transcriptions.create({

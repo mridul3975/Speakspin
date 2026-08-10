@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, Home, ClipboardList, BarChart3, Heart, Lightbulb, AlertTriangle, CheckCircle2, ChevronRight } from 'lucide-react';
+import { RefreshCw, Home, ClipboardList, BarChart3, Heart, Lightbulb, AlertTriangle, CheckCircle2, ChevronRight, Award, Copy, Check } from 'lucide-react';
 import ScoreCircle from './ScoreCircle';
 import CategoryCard from './CategoryCard';
 
 export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }) {
   const [activeTab, setActiveTab] = useState('overview');
+  const [copied, setCopied] = useState(false);
 
   const {
     overallScore,
@@ -16,6 +17,7 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
     improvements = [],
     overallFeedback = '',
     challengeForNext = '',
+    exemplarSpeech = '',
   } = analysis;
 
   const tabs = [
@@ -23,7 +25,15 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
     { id: 'details', label: '📊 Details', icon: BarChart3 },
     { id: 'anxiety', label: '🧘 Anxiety', icon: Heart },
     { id: 'tips', label: '💡 Tips', icon: Lightbulb },
+    { id: 'exemplar', label: '🏆 Exemplar', icon: Award },
   ];
+
+  const handleCopy = () => {
+    if (!exemplarSpeech) return;
+    navigator.clipboard.writeText(exemplarSpeech);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   // Helper to format category title
   const getCategoryTitle = (key) => {
@@ -248,6 +258,32 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                     <h4>Next Session Challenge</h4>
                     <p className="challenge-content">{challengeForNext}</p>
                   </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === 'exemplar' && (
+            <motion.div
+              key="exemplar"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25 }}
+              className="tab-view-exemplar"
+            >
+              <div className="exemplar-card">
+                <div className="exemplar-card-header">
+                  <h3>🏆 Perfect 100/100 Speech</h3>
+                  <button className="btn btn-secondary btn-copy-exemplar" onClick={handleCopy}>
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                    <span>{copied ? 'Copied!' : 'Copy Speech'}</span>
+                  </button>
+                </div>
+                <div className="exemplar-text-container">
+                  <p className="exemplar-text">
+                    {exemplarSpeech || 'Exemplar speech is not available for this session.'}
+                  </p>
                 </div>
               </div>
             </motion.div>

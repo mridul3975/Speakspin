@@ -79,6 +79,7 @@ export function App() {
         strengths: result.strengths,
         improvements: result.improvements,
         challengeForNext: result.challengeForNext,
+        exemplarSpeech: result.exemplarSpeech,
       };
 
       const updatedHistory = [newEntry, ...history].slice(0, 50);
