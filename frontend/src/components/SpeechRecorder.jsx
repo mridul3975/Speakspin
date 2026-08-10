@@ -123,10 +123,13 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         }
       };
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const blob = new Blob(audioChunksRef.current, { type: mimeType });
         setAudioBlob(blob);
         stopLocalStream();
+
+        // Automate transcription and submit immediately
+        await autoTranscribeAndSubmit(blob);
       };
 
       mediaRecorder.start(250);
@@ -145,7 +148,39 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
       }
     }
     if (timerRef.current) clearInterval(timerRef.current);
+  };
+
+  const autoTranscribeAndSubmit = async (blob) => {
+    setIsTranscribing(true);
     setRecorderState('completed');
+    let finalTranscript = '';
+    
+    try {
+      const response = await transcribeAudio(blob);
+      if (response && response.text) {
+        finalTranscript = response.text;
+        setEditableTranscript(response.text);
+      }
+    } catch (err) {
+      console.error('Whisper auto-transcription failed, falling back to Web Speech API:', err);
+      // Fallback
+      finalTranscript = transcript || editableTranscript;
+    } finally {
+      setIsTranscribing(false);
+    }
+
+    const finalCleanText = finalTranscript.trim();
+    const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
+    
+    if (wordCount < 10) {
+      alert('⚠️ Speech too short or no audio detected. You can edit/retry or type manually.');
+      return;
+    }
+
+    onAnalyze({
+      transcript: finalCleanText,
+      actualDuration: actualDurationRef.current || 1,
+    });
   };
 
   const tryAgain = () => {
@@ -157,26 +192,6 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     setActualDuration(0);
     actualDurationRef.current = 0;
     setRecorderState('idle');
-  };
-
-  const handleWhisperTranscribe = async () => {
-    if (!audioBlob) {
-      alert('⚠️ No audio recording found to transcribe.');
-      return;
-    }
-
-    setIsTranscribing(true);
-    try {
-      const response = await transcribeAudio(audioBlob);
-      if (response && response.text) {
-        setEditableTranscript(response.text);
-      }
-    } catch (err) {
-      console.error('Whisper failed:', err);
-      alert('❌ Transcription failed. Please write manually.');
-    } finally {
-      setIsTranscribing(false);
-    }
   };
 
   const handleAnalyzeClick = () => {
@@ -198,8 +213,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     });
   };
 
-  // Timer SVG configurations (Swiss / Editorial Style)
-  const size = 160;
+  const size = 130;
   const strokeWidth = 4;
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
@@ -217,14 +231,13 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
   return (
     <div className="recorder-card">
-      {/* Countdown overlay styled as high-contrast brutalist canvas */}
       <AnimatePresence>
         {recorderState === 'countdown' && (
           <motion.div
             style={{
               position: 'fixed',
               inset: 0,
-              backgroundColor: '#fbf9f9',
+              backgroundColor: '#000000',
               zIndex: 99,
               display: 'flex',
               flexDirection: 'column',
@@ -237,8 +250,8 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div style={{ border: '2px solid #000000', padding: '3rem 2rem', backgroundColor: '#ffffff', width: '100%', maxWidth: '600px' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Get ready to speak about:</span>
+            <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', width: '100%', maxWidth: '600px', boxShadow: '8px 8px 0px 0px #ffffff' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Get ready to speak about:</span>
               <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0' }}>"{topic.topic}"</h2>
               <motion.div
                 key={countdown}
@@ -269,7 +282,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
       <h1 className="recorder-topic-title">"{topic.topic}"</h1>
 
-      {/* Dynamic microphone levels visualizer - solid black bars */}
+      {/* Dynamic visualizer */}
       {recorderState === 'recording' && (
         <div className="audio-visualizer-container">
           {audioLevels.map((lvl, index) => (
@@ -284,7 +297,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         </div>
       )}
 
-      {/* Timer display */}
+      {/* Timer */}
       <div className="timer-container">
         <svg className="timer-circle-svg" width={size} height={size}>
           <circle
@@ -313,7 +326,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         </div>
       </div>
 
-      {/* Transcript text box with brutalist outlines */}
+      {/* Transcript Box */}
       <div className="transcript-wrapper">
         <div className="transcript-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>TRANSCRIPT BOX</span>
@@ -338,7 +351,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
           placeholder={
             recorderState === 'recording'
               ? 'Listening... Start speaking into your mic now!'
-              : 'Recorded speech will appear here. If the browser speech recognition drops, click "Transcribe Audio" below to run Groq Whisper, or write it manually.'
+              : 'Recorded speech will appear here automatically once recording ends.'
           }
         />
         {interimTranscript && (
@@ -352,11 +365,11 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         </div>
       </div>
 
-      {/* Error Warnings */}
+      {/* Error warnings */}
       {!isSupported && <div style={{ color: 'var(--accent-coral)', fontWeight: 700, fontSize: '0.85rem' }}>⚠️ {speechError}</div>}
       {isSupported && speechError && (
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', border: '1px dashed #000000', padding: '0.75rem', width: '100%', textAlign: 'left' }}>
-          ⚠️ {speechError} (You can still type your speech manually or transcribe audio via Whisper below).
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', border: '2px solid #ffffff', padding: '0.75rem', width: '100%', textAlign: 'left' }}>
+          ⚠️ {speechError}
         </div>
       )}
 
@@ -381,25 +394,22 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
         {recorderState === 'completed' && (
           <>
-            {audioBlob && (
-              <button 
-                className="btn btn-secondary" 
-                onClick={handleWhisperTranscribe} 
-                disabled={isTranscribing}
-                style={{ width: '100%' }}
-              >
-                <span className="material-symbols-outlined text-sm">volume_up</span> 
-                {isTranscribing ? 'TRANSCRIBING...' : 'TRANSCRIBE AUDIO (GROQ WHISPER)'}
-              </button>
+            {isTranscribing && (
+              <div style={{ width: '100%', padding: '1rem', textAlign: 'center', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.85rem' }}>
+                ⚡ Auto-transcribing speech audio...
+              </div>
             )}
-            
-            <button className="btn btn-primary" onClick={handleAnalyzeClick} disabled={isTranscribing}>
-              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span> 
-              ANALYZE MY SPEECH
-            </button>
-            <button className="btn btn-secondary" onClick={tryAgain} disabled={isTranscribing}>
-              <span className="material-symbols-outlined text-sm">rotate_left</span> TRY AGAIN
-            </button>
+            {!isTranscribing && (
+              <>
+                <button className="btn btn-primary" onClick={handleAnalyzeClick}>
+                  <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span> 
+                  ANALYZE MY SPEECH
+                </button>
+                <button className="btn btn-secondary" onClick={tryAgain}>
+                  <span className="material-symbols-outlined text-sm">rotate_left</span> TRY AGAIN
+                </button>
+              </>
+            )}
           </>
         )}
       </div>
