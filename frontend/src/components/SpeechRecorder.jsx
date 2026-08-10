@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Mic, Square, Sparkles, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Mic, Square, Sparkles, RotateCcw, Edit2 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
 
@@ -9,6 +9,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   const [countdown, setCountdown] = useState(3);
   const [timeLeft, setTimeLeft] = useState(targetDuration);
   const [actualDuration, setActualDuration] = useState(0);
+  const [editableTranscript, setEditableTranscript] = useState('');
 
   const {
     isListening,
@@ -25,6 +26,13 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
   const timerRef = useRef(null);
   const actualDurationRef = useRef(0);
+
+  // Sync speech recognition output with local editable transcript state
+  useEffect(() => {
+    if (transcript) {
+      setEditableTranscript(transcript);
+    }
+  }, [transcript]);
 
   // Clean up timer on unmount
   useEffect(() => {
@@ -84,6 +92,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
   const startRecording = () => {
     setRecorderState('recording');
+    setEditableTranscript('');
     startListening();
   };
 
@@ -95,6 +104,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
   const tryAgain = () => {
     resetTranscript();
+    setEditableTranscript('');
     setTimeLeft(targetDuration);
     setActualDuration(0);
     actualDurationRef.current = 0;
@@ -102,18 +112,20 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
   };
 
   const handleAnalyzeClick = () => {
-    const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
+    const finalCleanText = editableTranscript.trim();
+    const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
+    
     if (wordCount === 0) {
-      alert('⚠️ No speech detected. Please start recording and speak into your microphone.');
+      alert('⚠️ No speech detected. Please start recording and speak or type your speech in the transcript box.');
       return;
     }
     if (wordCount < 10) {
-      alert('⚠️ Speech too short! Please speak at least 10 words for a constructive AI analysis.');
+      alert('⚠️ Speech too short! Please speak or write at least 10 words for a constructive AI analysis.');
       return;
     }
     
     onAnalyze({
-      transcript,
+      transcript: finalCleanText,
       actualDuration: actualDurationRef.current || 1,
     });
   };
@@ -135,7 +147,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
+  const wordCount = editableTranscript.trim().split(/\s+/).filter(Boolean).length;
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
 
   return (
@@ -231,23 +243,41 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         ))}
       </div>
 
-      {/* Transcript Box */}
+      {/* Transcript Box - Make it a textarea for edit/manual entry support */}
       <div className="transcript-card">
-        <h3>Live Transcript</h3>
-        <div className="transcript-box-scroll">
-          {transcript ? (
-            <p className="transcript-text">
-              {transcript}
-              <span className="interim-text">{interimTranscript}</span>
-            </p>
-          ) : (
-            <p className="transcript-placeholder">
-              {recorderState === 'recording'
-                ? 'Listening... Start speaking into your mic now!'
-                : 'Start speaking... your words will appear here.'}
-            </p>
-          )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+          <h3 style={{ margin: 0 }}>Transcript Box</h3>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Edit2 size={12} /> Editable
+          </span>
         </div>
+        
+        <textarea
+          className="transcript-box-scroll"
+          style={{
+            width: '100%',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: 'var(--text-primary)',
+            fontSize: '0.95rem',
+            line-height: '1.5',
+            resize: 'none',
+            fontFamily: 'inherit'
+          }}
+          value={editableTranscript}
+          onChange={(e) => setEditableTranscript(e.target.value)}
+          placeholder={
+            recorderState === 'recording'
+              ? 'Listening... Start speaking into your mic now!'
+              : 'Microphone speech will appear here. Alternatively, you can type your speech here manually if speech recognition fails.'
+          }
+        />
+        {interimTranscript && (
+          <p className="interim-text" style={{ fontSize: '0.95rem', marginTop: '0.25rem', opacity: 0.7 }}>
+            {interimTranscript}
+          </p>
+        )}
       </div>
 
       {/* Word stats */}
@@ -258,14 +288,27 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
       {/* Errors or unsupported alerts */}
       {!isSupported && <div className="recorder-alert-warning">⚠️ {speechError}</div>}
-      {isSupported && speechError && <div className="recorder-alert-danger">⚠️ {speechError}</div>}
+      {isSupported && speechError && (
+        <div className="recorder-alert-danger">
+          ⚠️ {speechError} 
+          <span style={{ display: 'block', fontSize: '0.8rem', marginTop: '0.25rem', opacity: 0.8 }}>
+            (You can still type/paste your speech in the text box above to get AI coaching analysis)
+          </span>
+        </div>
+      )}
 
       {/* Control Buttons */}
       <div className="recorder-controls">
         {recorderState === 'idle' && (
-          <button className="btn btn-primary" onClick={startCountdown} disabled={!isSupported}>
-            <Mic size={18} /> Start Recording
-          </button>
+          <>
+            <button className="btn btn-primary" onClick={startCountdown} disabled={!isSupported}>
+              <Mic size={18} /> Start Recording
+            </button>
+            {/* Allow bypassing speech recorder completely to write prompt manually */}
+            <button className="btn btn-secondary" onClick={() => setRecorderState('completed')}>
+              ✍️ Write Text
+            </button>
+          </>
         )}
 
         {recorderState === 'recording' && (
