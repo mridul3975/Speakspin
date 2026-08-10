@@ -2,6 +2,7 @@ import express from 'express';
 import { OpenAI } from 'openai';
 import multer from 'multer';
 import fs from 'fs';
+import { rateLimit } from 'express-rate-limit';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -20,6 +21,29 @@ if (isKeyValid) {
 } else {
   console.warn('WARNING: GROQ_API_KEY is not set or is using the placeholder. Running in MOCK mode.');
 }
+
+// --- RATE LIMITERS ---
+// Limit to 5 text analysis requests per 10 minutes per IP
+const analyzeLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5, 
+  message: {
+    error: "Too many analysis requests from this IP. Please wait 10 minutes before practicing again to protect server resources."
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Limit to 5 transcription requests per 10 minutes per IP
+const transcribeLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 5,
+  message: {
+    error: "Too many transcription requests from this IP. Please try again in 10 minutes."
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Helper to generate mock fallback analysis based on transcript keywords
 function generateMockAnalysis(transcript, topic, targetDuration, actualDuration) {
@@ -114,8 +138,8 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
   };
 }
 
-// POST /api/analyze-text
-router.post('/analyze-text', async (req, res) => {
+// POST /api/analyze-text with rate limiter
+router.post('/analyze-text', analyzeLimiter, async (req, res) => {
   const { transcript, topic, targetDuration, actualDuration } = req.body;
 
   if (!transcript || transcript.trim() === "") {
@@ -125,7 +149,6 @@ router.post('/analyze-text', async (req, res) => {
   const wordCount = transcript.split(/\s+/).filter(Boolean).length;
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
 
-  // Check if we should use Mock Mode
   if (!openai) {
     console.log("Using Mock AI Speech Coach response...");
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -176,7 +199,6 @@ Return this exact JSON structure:
   "challengeForNext": string
 }`;
 
-    // Querying Groq using the OpenAI SDK compatible wrapper
     const response = await openai.chat.completions.create({
       model: "llama-3.1-70b-versatile",
       messages: [
@@ -197,8 +219,8 @@ Return this exact JSON structure:
   }
 });
 
-// POST /api/transcribe (Whisper Audio Upload endpoint via Groq)
-router.post('/transcribe', upload.single('audio'), async (req, res) => {
+// POST /api/transcribe with rate limiter
+router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Audio file is required" });
   }
@@ -218,7 +240,7 @@ router.post('/transcribe', upload.single('audio'), async (req, res) => {
   try {
     const transcription = await openai.audio.transcriptions.create({
       file: fs.createReadStream(req.file.path),
-      model: "whisper-large-v3", // Groq's high-fidelity Whisper model
+      model: "whisper-large-v3",
     });
 
     try { fs.unlinkSync(req.file.path); } catch (e) {}
