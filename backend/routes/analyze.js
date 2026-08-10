@@ -3,6 +3,8 @@ import { OpenAI, toFile } from 'openai';
 import multer from 'multer';
 import fs from 'fs';
 import { rateLimit } from 'express-rate-limit';
+import authMiddleware from '../middleware/authMiddleware.js';
+import Session from '../models/session.js';
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
@@ -151,9 +153,9 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
   };
 }
 
-// POST /api/analyze-text with rate limiter
-router.post('/analyze-text', analyzeLimiter, async (req, res) => {
-  const { transcript, topic, targetDuration, actualDuration } = req.body;
+// POST /api/analyze-text (JWT Protected)
+router.post('/analyze-text', authMiddleware, analyzeLimiter, async (req, res) => {
+  const { transcript, topic, category, targetDuration, actualDuration } = req.body;
 
   if (!transcript || transcript.trim() === "") {
     return res.status(400).json({ error: "Transcript is required" });
@@ -163,18 +165,17 @@ router.post('/analyze-text', analyzeLimiter, async (req, res) => {
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
 
   const client = getOpenAIClient();
+  let analysisResult = null;
 
   if (!client) {
     console.log("Using Mock AI Speech Coach response...");
     await new Promise(resolve => setTimeout(resolve, 1500));
-    const analysis = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
-    return res.json(analysis);
-  }
+    analysisResult = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
+  } else {
+    try {
+      const systemPrompt = `You are a supportive but honest speech coach. Always be encouraging while giving constructive, specific feedback. Respond ONLY with valid JSON, no markdown, no explanation.`;
 
-  try {
-    const systemPrompt = `You are a supportive but honest speech coach. Always be encouraging while giving constructive, specific feedback. Respond ONLY with valid JSON, no markdown, no explanation.`;
-
-    const userPrompt = `You are an expert speech coach. Analyze this speech performance.
+      const userPrompt = `You are an expert speech coach. Analyze this speech performance.
 
 Topic Given: ${topic}
 Target Duration: ${targetDuration} seconds
@@ -215,28 +216,79 @@ Return this exact JSON structure:
   "exemplarSpeech": string
 }`;
 
-    const response = await client.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userPrompt }
-      ],
-      response_format: { type: "json_object" },
-      temperature: 0.7,
+      const response = await client.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
+        ],
+        response_format: { type: "json_object" },
+        temperature: 0.7,
+      });
+
+      const resultText = response.choices[0].message.content;
+      analysisResult = JSON.parse(resultText);
+    } catch (error) {
+      console.error("Groq API call failed, falling back to mock analysis:", error);
+      analysisResult = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
+    }
+  }
+
+  // Save the analyzed speech session directly in MongoDB under user's ID
+  try {
+    const session = new Session({
+      userId: req.userId,
+      topic,
+      category: category || 'General',
+      duration: actualDuration,
+      overallScore: analysisResult.overallScore,
+      overallFeedback: analysisResult.overallFeedback,
+      categories: analysisResult.categories,
+      fillerWords: analysisResult.fillerWords,
+      anxietyIndicators: analysisResult.anxietyIndicators,
+      strengths: analysisResult.strengths,
+      improvements: analysisResult.improvements,
+      challengeForNext: analysisResult.challengeForNext,
+      exemplarSpeech: analysisResult.exemplarSpeech
     });
 
-    const resultText = response.choices[0].message.content;
-    const analysisResult = JSON.parse(resultText);
+    await session.save();
+    console.log(`Saved speech analysis session to MongoDB for user: ${req.userId}`);
     res.json(analysisResult);
-  } catch (error) {
-    console.error("Groq API call failed, falling back to mock analysis:", error);
-    const fallback = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
-    res.json(fallback);
+  } catch (dbError) {
+    console.error("Failed to save session to MongoDB:", dbError);
+    // Return analysis even if database save fails so user gets their result
+    res.json(analysisResult);
   }
 });
 
-// POST /api/transcribe with rate limiter
-router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req, res) => {
+// GET /api/sessions (JWT Protected - Fetch history)
+router.get('/sessions', authMiddleware, async (req, res) => {
+  try {
+    const sessions = await Session.find({ userId: req.userId })
+      .sort({ date: -1 })
+      .limit(50);
+    res.json(sessions);
+  } catch (error) {
+    console.error('Fetch sessions failed:', error);
+    res.status(500).json({ error: 'Failed to retrieve speech history' });
+  }
+});
+
+// DELETE /api/sessions (JWT Protected - Clear history)
+router.delete('/sessions', authMiddleware, async (req, res) => {
+  try {
+    await Session.deleteMany({ userId: req.userId });
+    console.log(`Cleared speech history logs for user: ${req.userId}`);
+    res.json({ message: 'Speech history cleared successfully' });
+  } catch (error) {
+    console.error('Clear history failed:', error);
+    res.status(500).json({ error: 'Failed to clear speech history' });
+  }
+});
+
+// POST /api/transcribe (JWT Protected - Whisper Audio Upload)
+router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Audio file is required" });
   }
@@ -260,6 +312,7 @@ router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req
   try {
     fs.renameSync(req.file.path, tempFilePath);
 
+    // Create a proper File object compatible with OpenAI/Groq upload interface
     const audioFile = await toFile(fs.createReadStream(tempFilePath), 'speech.webm', { type: 'audio/webm' });
 
     const transcription = await client.audio.transcriptions.create({
