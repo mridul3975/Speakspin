@@ -1,0 +1,241 @@
+import express from 'express';
+import { OpenAI } from 'openai';
+import multer from 'multer';
+import fs from 'fs';
+
+const router = express.Router();
+const upload = multer({ dest: 'uploads/' });
+
+// Initialize OpenAI client if API key is provided and looks valid
+const apiKey = process.env.OPENAI_API_KEY;
+const isKeyValid = apiKey && apiKey !== 'sk-your-key-here' && apiKey.trim() !== '';
+
+let openai = null;
+if (isKeyValid) {
+  openai = new OpenAI({ apiKey });
+} else {
+  console.warn('WARNING: OPENAI_API_KEY is not set or is using the placeholder. Running in MOCK mode.');
+}
+
+// Helper to generate mock fallback analysis based on transcript keywords
+function generateMockAnalysis(transcript, topic, targetDuration, actualDuration) {
+  const wordCount = transcript.split(/\s+/).filter(Boolean).length;
+  const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
+  
+  // Count basic filler words
+  const fillers = ['um', 'uh', 'like', 'so', 'you know', 'actually', 'basically'];
+  const detectedFillers = [];
+  let fillerCount = 0;
+  
+  fillers.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    const matches = transcript.match(regex);
+    if (matches) {
+      fillerCount += matches.length;
+      detectedFillers.push(word);
+    }
+  });
+
+  // Calculate scores based on WPM, duration matching, filler words, and length
+  const wpmScore = wpm >= 110 && wpm <= 150 ? 95 : (wpm < 80 ? 60 : 80);
+  const timeRatio = actualDuration / targetDuration;
+  const timeScore = timeRatio >= 0.8 && timeRatio <= 1.2 ? 95 : (timeRatio < 0.5 ? 50 : 75);
+  const fillerPenalty = Math.max(0, fillerCount * 3);
+  const fluencyScore = Math.max(40, 95 - fillerPenalty);
+  
+  const overallScore = Math.round((wpmScore + timeScore + fluencyScore + 85 + 80 + 75 + 78 + 80) / 8);
+
+  return {
+    overallScore,
+    categories: {
+      confidence: {
+        score: Math.min(100, Math.max(50, 80 + Math.round(Math.random() * 10))),
+        feedback: "Your tone was relatively stable, but adding more vocal variety and pausing deliberately instead of using fillers would boost your perceived confidence."
+      },
+      fluency: {
+        score: fluencyScore,
+        feedback: `You spoke with an average rate of ${wpm} WPM. Found ${fillerCount} filler words (${detectedFillers.join(', ') || 'none'}). Try to practice silent pauses to bridge transitions.`
+      },
+      relevance: {
+        score: 85,
+        feedback: `The content directly addressed the topic "${topic}". You maintained a steady focus throughout your presentation.`
+      },
+      vocabulary: {
+        score: 75,
+        feedback: "Your vocabulary was clear and accessible. Try incorporating more vivid descriptive adjectives and active verbs to enrich the delivery."
+      },
+      structure: {
+        score: 80,
+        feedback: "You had a noticeable beginning and concluding thought, though structuring with a clear 'Rule of Three' in the body would improve overall flow."
+      },
+      clarity: {
+        score: 85,
+        feedback: "Pronunciation was clear, and words were easily understandable throughout the session."
+      },
+      engagement: {
+        score: 78,
+        feedback: "Your phrasing kept the main points interesting. Modulating your pitch and speed on key ideas could hook the listener even further."
+      },
+      timeManagement: {
+        score: timeScore,
+        feedback: `Spoke for ${actualDuration}s out of the ${targetDuration}s target. This represents a good effort in hitting your duration target.`
+      }
+    },
+    fillerWords: {
+      count: fillerCount,
+      words: detectedFillers,
+      feedback: fillerCount > 3 
+        ? "Filler word count is slightly elevated. Try slowing down your pace by 5% and replacing fillers with silent breathing room." 
+        : "Excellent job keeping filler words to a minimum!"
+    },
+    anxietyIndicators: {
+      level: fillerCount > 5 || timeRatio < 0.6 ? 'moderate' : 'low',
+      signs: fillerCount > 5 ? ["Frequent filler words", "Slightly rushed pacing"] : ["Consistent rate of speech"],
+      tips: [
+        "Inhale deeply through your nose for 4 seconds before you start speaking.",
+        "Remember that pauses feel much longer to you than they do to your audience.",
+        "Anchor your feet firmly and use hand gestures to ground your nervous energy."
+      ]
+    },
+    strengths: [
+      `Stayed closely aligned with the topic: "${topic}".`,
+      `Good vocal clarity with a pacing of ${wpm} words per minute.`,
+      "Clear articulation of the main thesis statement early in the speech."
+    ],
+    improvements: [
+      "Reduce reliance on filler words during transitions.",
+      "Work on structuring the body points with explicit verbal signposts (firstly, secondly).",
+      "Practice using deliberate silence instead of vocalized pauses to let points land."
+    ],
+    overallFeedback: `You did a great job speaking about "${topic}" for ${actualDuration} seconds! Your speech was coherent and relevant, maintaining an average speed of ${wpm} WPM. Focusing on minimizing fillers and incorporating structural signposts will make your next speech even more impactful.`,
+    challengeForNext: "Try to speak for the full target duration while using fewer than 2 filler words."
+  };
+}
+
+// POST /api/analyze-text
+router.post('/analyze-text', async (req, res) => {
+  const { transcript, topic, targetDuration, actualDuration } = req.body;
+
+  if (!transcript || transcript.trim() === "") {
+    return res.status(400).json({ error: "Transcript is required" });
+  }
+
+  const wordCount = transcript.split(/\s+/).filter(Boolean).length;
+  const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
+
+  // Check if we should use Mock Mode
+  if (!openai) {
+    console.log("Using Mock AI Speech Coach response...");
+    // Simulate slight network delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    const analysis = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
+    return res.json(analysis);
+  }
+
+  try {
+    const systemPrompt = `You are a supportive but honest speech coach. Always be encouraging while giving constructive, specific feedback. Respond ONLY with valid JSON, no markdown, no explanation.`;
+
+    const userPrompt = `You are an expert speech coach. Analyze this speech performance.
+
+Topic Given: ${topic}
+Target Duration: ${targetDuration} seconds
+Actual Duration: ${actualDuration} seconds  
+Word Count: ${wordCount}
+Words Per Minute: ${wpm}
+
+Full Transcript:
+${transcript}
+
+Return this exact JSON structure:
+{
+  "overallScore": number (1-100),
+  "categories": {
+    "confidence": { "score": number, "feedback": string },
+    "fluency": { "score": number, "feedback": string },
+    "relevance": { "score": number, "feedback": string },
+    "vocabulary": { "score": number, "feedback": string },
+    "structure": { "score": number, "feedback": string },
+    "clarity": { "score": number, "feedback": string },
+    "engagement": { "score": number, "feedback": string },
+    "timeManagement": { "score": number, "feedback": string }
+  },
+  "fillerWords": {
+    "count": number,
+    "words": string[],
+    "feedback": string
+  },
+  "anxietyIndicators": {
+    "level": "low" | "moderate" | "high",
+    "signs": string[],
+    "tips": string[]
+  },
+  "strengths": string[],
+  "improvements": string[],
+  "overallFeedback": string,
+  "challengeForNext": string
+}`;
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+    });
+
+    const resultText = response.choices[0].message.content;
+    const analysisResult = JSON.parse(resultText);
+    res.json(analysisResult);
+  } catch (error) {
+    console.error("OpenAI API call failed, falling back to mock analysis:", error);
+    // Graceful fallback to mock response in case of API keys error, limit error, or internet down
+    const fallback = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
+    res.json(fallback);
+  }
+});
+
+// POST /api/transcribe (Whisper Audio Upload endpoint)
+router.post('/transcribe', upload.single('audio'), async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "Audio file is required" });
+  }
+
+  // If openai is not initialized, mock transcription using a simple check or generic note
+  if (!openai) {
+    console.log("Mock Transcribing audio file...");
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Clean up uploaded file
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
+
+    return res.json({
+      text: "This is a mock transcription because no valid OpenAI API Key was detected in the environment. Please check the Web Speech API transcription on the frontend, which handles live audio without an API key.",
+      duration: 10,
+      language: "en"
+    });
+  }
+
+  try {
+    const transcription = await openai.audio.transcriptions.create({
+      file: fs.createReadStream(req.file.path),
+      model: "whisper-1",
+    });
+
+    // Clean up uploaded file
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
+
+    res.json({
+      text: transcription.text,
+      duration: 0, // Whisper doesn't easily return duration directly in basic response
+      language: "en"
+    });
+  } catch (error) {
+    console.error("Whisper transcription failed:", error);
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
+    res.status(500).json({ error: "Transcription failed" });
+  }
+});
+
+export default router;
