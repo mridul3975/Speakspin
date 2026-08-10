@@ -261,7 +261,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
             outline: 'none',
             color: 'var(--text-primary)',
             fontSize: '0.95rem',
-            line-height: '1.5',
+            lineHeight: '1.5',
             resize: 'none',
             fontFamily: 'inherit'
           }}
