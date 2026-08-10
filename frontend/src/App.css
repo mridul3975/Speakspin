@@ -1,21 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;700;800;900&display=swap');
 
 :root {
-  --bg-app: #fbf9f9;
-  --bg-card: #ffffff;
-  --bg-card-alt: #f5f3f3;
-  --text-primary: #000000;
-  --text-secondary: #5d5f5f;
-  --accent-teal: #000000;
-  --accent-coral: #ba1a1a;
-  --border: 2px solid #000000;
-  --border-thin: 1px solid #000000;
-  --border-variant: 2px dashed #000000;
+  --bg-app: #000000;
+  --bg-card: #000000;
+  --bg-card-alt: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #c6c6c7;
+  --accent-teal: #ffffff;
+  --accent-coral: #ff5555;
+  --border: 4px solid #ffffff;
+  --border-thin: 2px solid #ffffff;
+  --border-variant: 4px dashed #ffffff;
   --radius-sm: 0px;
   --radius-md: 0px;
   --radius-lg: 0px;
   --font-heading: 'Montserrat', sans-serif;
   --font-body: 'Inter', sans-serif;
+  --shadow: 8px 8px 0px 0px #ffffff;
 }
 
 * {
@@ -49,7 +50,7 @@ body {
 .app-user-header {
   border-bottom: var(--border) !important;
   padding-bottom: 1rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 3.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -67,14 +68,15 @@ body {
   justify-content: center;
   gap: 0.5rem;
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.85rem;
-  padding: 0.85rem 1.75rem;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  padding: 1rem 2rem;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.15s ease-in-out;
   border: var(--border) !important;
+  box-shadow: var(--shadow);
 }
 
 .btn-primary {
@@ -83,22 +85,26 @@ body {
 }
 
 .btn-primary:hover {
-  background-color: transparent;
-  color: var(--text-primary);
+  transform: translate(6px, 6px);
+  box-shadow: none;
+  background-color: var(--text-primary);
+  color: var(--bg-card);
 }
 
 .btn-secondary {
-  background-color: transparent;
+  background-color: var(--bg-card);
   color: var(--text-primary);
 }
 
 .btn-secondary:hover {
+  transform: translate(6px, 6px);
+  box-shadow: none;
   background-color: var(--bg-card-alt);
 }
 
 .btn-back-ghost {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   font-size: 0.8rem;
   color: var(--text-primary);
@@ -109,9 +115,11 @@ body {
   align-items: center;
   gap: 0.25rem;
   padding: 0.5rem;
+  transition: opacity 0.2s ease;
 }
 
 .btn-back-ghost:hover {
+  opacity: 0.8;
   text-decoration: underline;
 }
 
@@ -122,81 +130,89 @@ body {
   align-items: center;
   text-align: center;
   width: 100%;
-  max-width: 900px;
+  max-width: 950px;
   margin-top: 2rem;
 }
 
 .landing-logo {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
 }
 
 .landing-title {
   font-family: var(--font-heading);
-  font-size: 4rem;
+  font-size: 5rem;
   font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1.1;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .landing-title .text-teal {
-  color: var(--text-primary) !important; /* Remove colored text */
+  color: var(--text-primary) !important;
   font-style: italic;
 }
 
 .landing-tagline {
-  font-size: 1.15rem;
-  color: var(--text-secondary);
+  font-size: 1.25rem;
+  color: var(--text-primary);
   max-width: 600px;
   margin-bottom: 3.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background-color: var(--text-primary);
+  color: var(--bg-card);
+  padding: 0.5rem 1.5rem;
+  display: inline-block;
+  letter-spacing: 0.05em;
 }
 
 .landing-cards-grid {
   display: grid;
   grid-template-cols: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
   width: 100%;
-  margin-bottom: 3.5rem;
+  margin-bottom: 4.5rem;
 }
 
 .landing-card {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 2rem;
   text-align: center;
-  transition: background-color 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .landing-card:hover {
-  background-color: var(--bg-card-alt);
+  background-color: var(--text-primary);
+  color: var(--bg-card);
 }
 
 .landing-card-icon {
-  font-size: 2.25rem;
-  margin-bottom: 1.25rem;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .landing-card h3 {
   font-family: var(--font-heading);
-  font-size: 1.15rem;
-  font-weight: 800;
+  font-size: 1.25rem;
+  font-weight: 900;
   text-transform: uppercase;
   margin-bottom: 0.75rem;
 }
 
 .landing-card p {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1rem;
+  gap: 1.5rem;
   width: 100%;
 }
 
@@ -204,7 +220,8 @@ body {
 .setup-container {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 3rem 2rem;
+  box-shadow: var(--shadow);
+  padding: 3.5rem 2.5rem;
   width: 100%;
   max-width: 750px;
   display: flex;
@@ -220,18 +237,18 @@ body {
 
 .setup-header h2 {
   font-family: var(--font-heading);
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.01em;
 }
 
 .setup-instruction {
-  font-size: 1rem;
-  color: var(--text-secondary);
+  font-size: 1.1rem;
+  color: var(--text-primary);
   text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-align: center;
   margin-bottom: 1rem;
 }
@@ -239,13 +256,13 @@ body {
 .timer-selector-grid {
   display: grid;
   grid-template-cols: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .timer-card {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 1.5rem 1rem;
+  padding: 1.75rem 1rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -258,19 +275,20 @@ body {
 .timer-card.selected {
   background-color: var(--text-primary) !important;
   color: var(--bg-card) !important;
+  border-color: var(--text-primary) !important;
 }
 
 .timer-card-val {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
+  font-size: 1.85rem;
   font-weight: 900;
   margin-bottom: 0.5rem;
 }
 
 .timer-card-label {
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 800;
+  font-size: 0.8rem;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
@@ -291,8 +309,8 @@ body {
 
 .spin-title {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   text-align: center;
@@ -306,19 +324,19 @@ body {
 }
 
 .wheel-canvas {
-  border-radius: 50% !important; /* Circle wheel shape is canvas specific */
+  border-radius: 50% !important;
 }
 
 .wheel-pointer {
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 12px solid transparent;
-  border-right: 12px solid transparent;
-  border-top: 24px solid var(--text-primary);
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 26px solid var(--text-primary);
   z-index: 10;
 }
 
@@ -326,7 +344,8 @@ body {
 .topic-announcement {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 2rem;
+  box-shadow: var(--shadow);
+  padding: 2.5rem;
   text-align: center;
   width: 100%;
   max-width: 600px;
@@ -334,20 +353,20 @@ body {
 
 .winner-category-tag {
   display: inline-block;
-  background-color: var(--bg-card-alt);
-  color: var(--text-primary);
+  background-color: var(--text-primary);
+  color: var(--bg-card);
   border: var(--border-thin) !important;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .winner-topic-text {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 800;
+  font-size: 1.75rem;
+  font-weight: 900;
   font-style: italic;
   line-height: 1.4;
   margin-bottom: 0.5rem;
@@ -357,22 +376,23 @@ body {
 .recorder-card {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 3rem 2rem;
+  box-shadow: var(--shadow);
+  padding: 3.5rem 2.5rem;
   width: 100%;
   max-width: 800px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   text-align: center;
 }
 
 .recorder-topic-title {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 900;
   font-style: italic;
-  max-width: 600px;
+  max-width: 650px;
   line-height: 1.4;
   text-align: center;
 }
@@ -382,14 +402,14 @@ body {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
   height: 50px;
-  width: 200px;
+  width: 220px;
   margin-top: 1rem;
 }
 
 .visualizer-bar {
-  width: 8px;
+  width: 10px;
   background-color: var(--text-primary);
   height: 4px;
   transition: height 0.1s ease-out;
@@ -415,13 +435,13 @@ body {
 .timer-circle-track {
   fill: none;
   stroke: var(--bg-card-alt);
-  stroke-width: 4;
+  stroke-width: 5;
 }
 
 .timer-circle-fill {
   fill: none;
   stroke: var(--text-primary);
-  stroke-width: 4;
+  stroke-width: 5;
   transition: stroke-dashoffset 0.2s linear;
 }
 
@@ -434,7 +454,7 @@ body {
 
 .timer-val {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -442,8 +462,8 @@ body {
 
 .timer-label {
   font-family: var(--font-heading);
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
   color: var(--text-secondary);
   margin-top: 0.35rem;
@@ -453,30 +473,30 @@ body {
 /* Transcript Box */
 .transcript-wrapper {
   width: 100%;
-  background-color: var(--bg-card-alt);
+  background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 1.5rem;
-  text-align: center; /* Center transcript texts */
+  padding: 1.75rem;
+  text-align: center;
 }
 
 .transcript-header {
   border-bottom: var(--border-thin) !important;
-  padding-bottom: 0.5rem;
-  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
   font-family: var(--font-heading);
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 900;
   text-transform: uppercase;
   display: flex;
-  justify-content: center; /* Center-align the header contents */
+  justify-content: center;
   gap: 0.5rem;
 }
 
 .transcript-body {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  min-height: 100px;
-  text-align: center; /* Center aligned input transcript text */
+  font-size: 1rem;
+  line-height: 1.7;
+  min-height: 120px;
+  text-align: center;
 }
 
 .transcript-meta {
@@ -484,11 +504,11 @@ body {
   padding-top: 0.75rem;
   margin-top: 1rem;
   display: flex;
-  justify-content: center; /* Center stats counters */
-  gap: 2rem;
+  justify-content: center;
+  gap: 3rem;
   font-family: var(--font-heading);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
@@ -503,32 +523,32 @@ body {
 }
 
 .analyzing-robot {
-  font-size: 4rem;
+  font-size: 4.5rem;
   margin-bottom: 2rem;
 }
 
 .analyzing-title {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 900;
   text-transform: uppercase;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 .analyzing-steps {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
   width: 100%;
-  max-width: 400px;
+  max-width: 450px;
 }
 
 .analyzing-step {
   border: var(--border-thin) !important;
   background-color: var(--bg-card);
-  padding: 1rem;
-  font-weight: 600;
-  font-size: 0.9rem;
+  padding: 1.25rem;
+  font-weight: 800;
+  font-size: 0.95rem;
   text-transform: uppercase;
 }
 
@@ -538,7 +558,7 @@ body {
   max-width: 900px;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
 }
 
 .dashboard-header {
@@ -547,17 +567,17 @@ body {
 
 .dashboard-label {
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 0.85rem;
   text-transform: uppercase;
   color: var(--text-secondary);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
 
 .dashboard-topic {
   font-family: var(--font-heading);
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 900;
   margin-top: 0.5rem;
 }
 
@@ -599,15 +619,15 @@ body {
 
 .score-num {
   font-family: var(--font-heading);
-  font-size: 3.5rem;
+  font-size: 3.75rem;
   font-weight: 900;
   line-height: 1;
 }
 
 .score-label {
   font-family: var(--font-heading);
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
@@ -618,7 +638,7 @@ body {
   flex-wrap: wrap;
   border-bottom: var(--border) !important;
   width: 100%;
-  gap: 2px;
+  gap: 4px;
 }
 
 .dashboard-tab-btn {
@@ -626,10 +646,10 @@ body {
   color: var(--text-primary);
   border: var(--border-thin) !important;
   border-bottom: none !important;
-  padding: 0.75rem 1.25rem;
+  padding: 0.85rem 1.5rem;
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.8rem;
+  font-weight: 800;
+  font-size: 0.85rem;
   text-transform: uppercase;
   cursor: pointer;
   display: flex;
@@ -643,14 +663,15 @@ body {
   color: var(--bg-card) !important;
   border: var(--border) !important;
   border-bottom: none !important;
-  transform: translateY(2px);
+  transform: translateY(4px);
 }
 
 /* Tab Panel content */
 .dashboard-content-panel {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow);
+  padding: 3rem 2.5rem;
   width: 100%;
   min-height: 300px;
 }
@@ -659,30 +680,31 @@ body {
 .details-grid {
   display: grid;
   grid-template-cols: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 /* Category Card */
 .category-card {
   border: var(--border-thin) !important;
-  padding: 1.5rem;
+  padding: 1.75rem;
   background-color: var(--bg-card);
 }
 
 .category-card h4 {
   font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 1rem;
+  font-weight: 900;
   text-transform: uppercase;
   margin-bottom: 0.75rem;
 }
 
 .category-bar-container {
-  height: 6px;
+  height: 8px;
   background-color: var(--bg-card-alt);
   width: 100%;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   overflow: hidden;
+  border: 1px solid var(--text-primary);
 }
 
 .category-bar-fill {
@@ -691,21 +713,21 @@ body {
 }
 
 .category-desc {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Overview Tab layout */
 .tab-view-overview {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 
 .mini-scores-card {
   border: var(--border-thin) !important;
-  padding: 1.5rem;
+  padding: 2rem;
 }
 
 .mini-scores-card h3,
@@ -714,18 +736,18 @@ body {
 .anxiety-list-card h3,
 .tips-card h3 {
   font-family: var(--font-heading);
-  font-size: 1rem;
-  font-weight: 850;
+  font-size: 1.1rem;
+  font-weight: 900;
   text-transform: uppercase;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   border-bottom: var(--border-thin) !important;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 
 .mini-scores-grid {
   display: grid;
   grid-template-cols: repeat(auto-fit, minmax(90px, 1fr));
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .mini-score-item {
@@ -737,8 +759,8 @@ body {
 }
 
 .mini-score-circle {
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   border: var(--border-thin) !important;
   display: flex;
   align-items: center;
@@ -747,14 +769,14 @@ body {
 
 .mini-score-val {
   font-family: var(--font-heading);
-  font-weight: 800;
-  font-size: 0.85rem;
+  font-weight: 900;
+  font-size: 0.9rem;
   color: var(--text-primary) !important;
 }
 
 .mini-score-label {
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
@@ -762,7 +784,7 @@ body {
 .overview-row {
   display: grid;
   grid-template-cols: 1.5fr 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -773,7 +795,7 @@ body {
 
 .overview-feedback-card, .filler-words-card {
   border: var(--border-thin) !important;
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -781,8 +803,8 @@ body {
 }
 
 .overview-feedback-card p {
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  line-height: 1.7;
 }
 
 .filler-header-row {
@@ -790,19 +812,19 @@ body {
   align-items: baseline;
   justify-content: center;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .filler-count {
   font-family: var(--font-heading);
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 900;
   line-height: 1;
 }
 
 .filler-sub {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 800;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
@@ -811,30 +833,30 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.35rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .filler-tag {
   background-color: var(--bg-card-alt);
   border: var(--border-thin) !important;
-  padding: 0.25rem 0.5rem;
+  padding: 0.35rem 0.75rem;
   font-family: var(--font-heading);
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
 }
 
 .filler-advice {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* Anxiety Tab */
 .anxiety-level-banner {
   border: var(--border) !important;
-  padding: 1.5rem;
+  padding: 1.75rem;
   margin-bottom: 2rem;
   background-color: var(--bg-card-alt);
 }
@@ -848,15 +870,15 @@ body {
 
 .anxiety-badge-title {
   font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 0.75rem;
+  font-weight: 800;
+  font-size: 0.8rem;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
 
 .anxiety-badge-text {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 900;
   letter-spacing: -0.01em;
 }
@@ -864,7 +886,7 @@ body {
 .anxiety-grid {
   display: grid;
   grid-template-cols: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
 }
 
 @media (max-width: 768px) {
@@ -875,7 +897,7 @@ body {
 
 .anxiety-list-card {
   border: var(--border-thin) !important;
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -887,13 +909,13 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
   width: 100%;
 }
 
 .anxiety-list-card li, .tips-card li {
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.95rem;
+  line-height: 1.6;
   text-align: center;
 }
 
@@ -901,7 +923,7 @@ body {
 .tips-row {
   display: grid;
   grid-template-cols: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 2rem;
   margin-bottom: 2rem;
 }
 
@@ -913,7 +935,7 @@ body {
 
 .tips-card {
   border: var(--border-thin) !important;
-  padding: 1.5rem;
+  padding: 2rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -923,7 +945,7 @@ body {
 .challenge-gradient-card {
   border: var(--border) !important;
   background-color: var(--bg-card-alt);
-  padding: 1.75rem;
+  padding: 2rem;
 }
 
 .challenge-header {
@@ -933,20 +955,20 @@ body {
 }
 
 .challenge-trophy {
-  font-size: 2.25rem;
+  font-size: 2.5rem;
 }
 
 .challenge-header h4 {
   font-family: var(--font-heading);
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 900;
   text-transform: uppercase;
   color: var(--text-secondary);
 }
 
 .challenge-content {
-  font-size: 1rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 800;
   margin-top: 0.25rem;
   line-height: 1.5;
 }
@@ -955,7 +977,7 @@ body {
 .exemplar-card {
   background-color: var(--bg-card);
   border: var(--border) !important;
-  padding: 1.75rem;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
 }
@@ -964,23 +986,23 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
   border-bottom: var(--border-thin) !important;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.85rem;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.85rem;
 }
 
 .exemplar-card-header h3 {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
-  font-weight: 850;
+  font-size: 1.25rem;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
 .btn-copy-exemplar {
-  font-size: 0.75rem;
-  padding: 0.45rem 0.9rem;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
 }
 
 .exemplar-text-container {
@@ -989,8 +1011,8 @@ body {
 }
 
 .exemplar-text {
-  font-size: 0.95rem;
-  line-height: 1.7;
+  font-size: 1rem;
+  line-height: 1.8;
   color: var(--text-primary);
   white-space: pre-wrap;
   font-style: italic;
@@ -1002,7 +1024,7 @@ body {
   max-width: 900px;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
 }
 
 .history-header {
@@ -1017,7 +1039,7 @@ body {
 
 .history-title {
   font-family: var(--font-heading);
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.01em;
@@ -1027,19 +1049,19 @@ body {
 .stats-cards-row {
   display: grid;
   grid-template-cols: repeat(3, 1fr);
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .stat-item-card {
   background-color: var(--bg-card);
   border: var(--border-thin) !important;
-  padding: 1.5rem;
+  padding: 1.75rem;
   text-align: center;
 }
 
 .stat-val-huge {
   font-family: var(--font-heading);
-  font-size: 2.5rem;
+  font-size: 2.75rem;
   font-weight: 900;
   line-height: 1;
   margin-bottom: 0.5rem;
@@ -1047,28 +1069,29 @@ body {
 
 .stat-label-caps {
   font-family: var(--font-heading);
-  font-size: 0.7rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 800;
   text-transform: uppercase;
   color: var(--text-secondary);
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
 }
 
 /* Trend Card */
 .trend-card-outlined {
   border: var(--border) !important;
+  box-shadow: var(--shadow);
   background-color: var(--bg-card);
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 2rem;
 }
 
 .trend-card-outlined h3 {
   font-family: var(--font-heading);
-  font-weight: 850;
-  font-size: 1rem;
+  font-weight: 900;
+  font-size: 1.1rem;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
   border-bottom: var(--border-thin) !important;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 
 /* Custom Outlined Columns Chart for Brutalist Vibe */
@@ -1079,7 +1102,7 @@ body {
   height: 180px;
   border-bottom: var(--border) !important;
   padding-bottom: 0.5rem;
-  gap: 8px;
+  gap: 10px;
 }
 
 .chart-bar-column {
@@ -1088,7 +1111,7 @@ body {
   border: var(--border-thin) !important;
   border-bottom: none !important;
   position: relative;
-  transition: all 0.3s ease-in-out;
+  transition: all 0.2s ease-in-out;
   min-height: 4px;
 }
 
@@ -1104,9 +1127,9 @@ body {
   transform: translateX(-50%);
   background-color: var(--text-primary);
   color: var(--bg-card);
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 700;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 800;
   white-space: nowrap;
   z-index: 10;
 }
@@ -1118,33 +1141,34 @@ body {
 /* History List Card */
 .history-list-card {
   border: var(--border) !important;
+  box-shadow: var(--shadow);
   background-color: var(--bg-card);
-  padding: 2rem 1.5rem;
+  padding: 2.5rem 2rem;
 }
 
 .history-list-card h3 {
   font-family: var(--font-heading);
-  font-weight: 850;
-  font-size: 1rem;
+  font-weight: 900;
+  font-size: 1.1rem;
   text-transform: uppercase;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.75rem;
   border-bottom: var(--border-thin) !important;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.75rem;
 }
 
 .history-items-stack {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .history-item-card {
   border: var(--border-thin) !important;
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.15s ease-in-out;
 }
 
 .history-item-card:hover {
@@ -1154,38 +1178,38 @@ body {
 .history-item-info {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
   text-align: left;
 }
 
 .history-item-topic {
   font-family: var(--font-heading);
-  font-size: 0.95rem;
-  font-weight: 800;
+  font-size: 1.1rem;
+  font-weight: 900;
   line-height: 1.3;
 }
 
 .history-item-meta {
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
 .history-item-score-block {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .history-item-score-box {
-  width: 42px;
-  height: 42px;
+  width: 48px;
+  height: 48px;
   border: var(--border) !important;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-heading);
   font-weight: 900;
-  font-size: 1rem;
+  font-size: 1.1rem;
 }
 
 /* --- LOGIN SCREEN --- */
@@ -1197,30 +1221,30 @@ body {
 .login-card {
   background-color: var(--bg-card) !important;
   border: var(--border) !important;
-  box-shadow: none !important;
-  padding: 3rem 2rem !important;
+  box-shadow: var(--shadow) !important;
+  padding: 3.5rem 2.5rem !important;
   max-width: 450px !important;
 }
 
 .login-divider {
   display: flex;
   align-items: center;
-  margin: 1.5rem 0;
+  margin: 1.75rem 0;
 }
 
 .login-divider::before,
 .login-divider::after {
   content: "";
   flex: 1;
-  height: 2px;
+  height: 3px;
   background-color: var(--text-primary);
 }
 
 .login-divider span {
-  padding: 0 1rem;
+  padding: 0 1.25rem;
   font-family: var(--font-heading);
-  font-size: 0.75rem;
-  font-weight: 800;
+  font-size: 0.8rem;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
