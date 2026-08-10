@@ -13,7 +13,7 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
     : 0;
 
   const chartData = [...history]
-    .slice(0, 15) // Show last 15 sessions
+    .slice(0, 15)
     .reverse();
 
   const handleClear = () => {
@@ -92,7 +92,7 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
           </div>
 
           {/* Custom Outlined Chart Section */}
-          <div className="trend-card-outlined">
+          <div className="trend-card-outlined" style={{ textAlign: 'center' }}>
             <h3>SCORE TREND (LAST 15 SESSIONS)</h3>
             <div className="custom-brutalist-chart">
               {chartData.map((session, index) => {
@@ -103,7 +103,6 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
                     className="chart-bar-column"
                     style={{ height: heightPercent }}
                   >
-                    {/* Tooltip on Hover */}
                     <div className="chart-bar-tooltip">
                       Score: {session.overallScore} | "{session.topic}"
                     </div>
@@ -118,14 +117,14 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
           </div>
 
           {/* Session History List */}
-          <div className="history-list-card">
+          <div className="history-list-card" style={{ textAlign: 'center' }}>
             <h3>SESSION HISTORY</h3>
             <div className="history-items-stack">
               {history.map((session) => (
-                <div key={session.id} className="history-item-card">
-                  <div className="history-item-info">
+                <div key={session.id} className="history-item-card" style={{ flexDirection: 'column', textAlign: 'center', gap: '1rem' }}>
+                  <div className="history-item-info" style={{ alignItems: 'center', textAlign: 'center' }}>
                     <h4 className="history-item-topic">"{session.topic}"</h4>
-                    <div className="history-item-meta" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div className="history-item-meta" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap', fontWeight: 700, textTransform: 'uppercase' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                         <span className="material-symbols-outlined text-xs">book</span> {session.category}
                       </span>
@@ -138,7 +137,7 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
                     </div>
                   </div>
 
-                  <div className="history-item-score-block">
+                  <div className="history-item-score-block" style={{ justifyContent: 'center' }}>
                     <div className="history-item-score-box">
                       {session.overallScore}
                     </div>

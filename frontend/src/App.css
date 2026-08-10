@@ -374,6 +374,7 @@ body {
   font-style: italic;
   max-width: 600px;
   line-height: 1.4;
+  text-align: center;
 }
 
 /* Dynamic Mic Visualizer */
@@ -455,7 +456,7 @@ body {
   background-color: var(--bg-card-alt);
   border: var(--border) !important;
   padding: 1.5rem;
-  text-align: left;
+  text-align: center; /* Center transcript texts */
 }
 
 .transcript-header {
@@ -466,12 +467,16 @@ body {
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
+  display: flex;
+  justify-content: center; /* Center-align the header contents */
+  gap: 0.5rem;
 }
 
 .transcript-body {
   font-size: 0.95rem;
   line-height: 1.6;
   min-height: 100px;
+  text-align: center; /* Center aligned input transcript text */
 }
 
 .transcript-meta {
@@ -479,7 +484,8 @@ body {
   padding-top: 0.75rem;
   margin-top: 1rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Center stats counters */
+  gap: 2rem;
   font-family: var(--font-heading);
   font-size: 0.75rem;
   font-weight: 700;
@@ -768,6 +774,10 @@ body {
 .overview-feedback-card, .filler-words-card {
   border: var(--border-thin) !important;
   padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .overview-feedback-card p {
@@ -778,6 +788,7 @@ body {
 .filler-header-row {
   display: flex;
   align-items: baseline;
+  justify-content: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
@@ -799,6 +810,7 @@ body {
 .filler-tags-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.35rem;
   margin-bottom: 1rem;
 }
@@ -830,6 +842,7 @@ body {
 .anxiety-badge-header {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
 }
 
@@ -863,29 +876,25 @@ body {
 .anxiety-list-card {
   border: var(--border-thin) !important;
   padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .anxiety-list-card ul, .tips-card ul {
   list-style: none;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .anxiety-list-card li, .tips-card li {
   font-size: 0.9rem;
   line-height: 1.5;
-  padding-left: 1.25rem;
-  position: relative;
-}
-
-.anxiety-list-card li::before, .tips-card li::before {
-  content: "■";
-  position: absolute;
-  left: 0;
-  color: var(--text-primary);
-  font-size: 0.7rem;
-  top: 1px;
+  text-align: center;
 }
 
 /* Tips & Challenge */
@@ -905,6 +914,10 @@ body {
 .tips-card {
   border: var(--border-thin) !important;
   padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .challenge-gradient-card {

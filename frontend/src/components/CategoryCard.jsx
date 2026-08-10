@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
-  // Map category keys to Material Symbol icons
   const getIcon = (key) => {
     switch (key) {
       case 'confidence': return 'shield';
@@ -32,18 +31,15 @@ export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
   };
 
   return (
-    <div className="category-card">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span className="material-symbols-outlined text-xl">{getIcon(categoryKey)}</span>
-          <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
-            {getCategoryTitle(categoryKey)}
-          </h4>
-        </div>
-        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.1rem' }}>{score}</span>
+    <div className="category-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', marginBottom: '0.75rem' }}>
+        <span className="material-symbols-outlined text-2xl">{getIcon(categoryKey)}</span>
+        <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
+          {getCategoryTitle(categoryKey)}
+        </h4>
+        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.25rem' }}>{score}</span>
       </div>
       
-      {/* Horizontal progress bar (Brutalist thick track/fill) */}
       <div className="category-bar-container">
         <motion.div
           className="category-bar-fill"
