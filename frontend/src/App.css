@@ -131,7 +131,7 @@ body {
   text-align: center;
   width: 100%;
   max-width: 850px;
-  margin-top: 1rem;
+  margin: 1rem auto 0;
 }
 
 .landing-logo {
@@ -176,7 +176,7 @@ body {
   margin-bottom: 3rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .landing-cards-grid {
     grid-template-cols: 1fr; /* Stack vertically only on mobile */
   }
@@ -575,6 +575,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  margin: 0 auto;
 }
 
 .dashboard-header {
@@ -1045,6 +1046,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  margin: 0 auto;
 }
 
 .history-header {
