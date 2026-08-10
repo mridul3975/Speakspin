@@ -170,7 +170,7 @@ body {
 
 .landing-cards-grid {
   display: grid;
-  grid-template-cols: repeat(3, 1fr); /* Force 3 columns horizontally */
+  grid-template-columns: repeat(3, 1fr); /* Force 3 columns horizontally */
   gap: 1.25rem;
   width: 100%;
   margin-bottom: 3rem;
@@ -178,7 +178,7 @@ body {
 
 @media (max-width: 480px) {
   .landing-cards-grid {
-    grid-template-cols: 1fr; /* Stack vertically only on mobile */
+    grid-template-columns: 1fr; /* Stack vertically only on mobile */
   }
 }
 
@@ -261,13 +261,13 @@ body {
 
 .timer-selector-grid {
   display: grid;
-  grid-template-cols: repeat(4, 1fr); /* Force horizontal durations */
+  grid-template-columns: repeat(4, 1fr); /* Force horizontal durations */
   gap: 1rem;
 }
 
 @media (max-width: 480px) {
   .timer-selector-grid {
-    grid-template-cols: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -696,13 +696,13 @@ body {
 
 @media (max-width: 900px) {
   .details-grid {
-    grid-template-cols: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 480px) {
   .details-grid {
-    grid-template-cols: 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -764,13 +764,13 @@ body {
 
 .mini-scores-grid {
   display: grid;
-  grid-template-cols: repeat(8, 1fr); /* Force horizontal score row */
+  grid-template-columns: repeat(8, 1fr); /* Force horizontal score row */
   gap: 0.5rem;
 }
 
 @media (max-width: 768px) {
   .mini-scores-grid {
-    grid-template-cols: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -807,13 +807,13 @@ body {
 
 .overview-row {
   display: grid;
-  grid-template-cols: 1.5fr 1fr;
+  grid-template-columns: 1.5fr 1fr;
   gap: 1.25rem;
 }
 
 @media (max-width: 640px) {
   .overview-row {
-    grid-template-cols: 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -909,13 +909,13 @@ body {
 
 .anxiety-grid {
   display: grid;
-  grid-template-cols: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
 }
 
 @media (max-width: 640px) {
   .anxiety-grid {
-    grid-template-cols: 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -946,14 +946,14 @@ body {
 /* Tips & Challenge */
 .tips-row {
   display: grid;
-  grid-template-cols: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
   margin-bottom: 1.25rem;
 }
 
 @media (max-width: 640px) {
   .tips-row {
-    grid-template-cols: 1fr;
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1073,7 +1073,7 @@ body {
 /* Stats Card Row */
 .stats-cards-row {
   display: grid;
-  grid-template-cols: repeat(3, 1fr); /* Stay horizontal */
+  grid-template-columns: repeat(3, 1fr); /* Stay horizontal */
   gap: 1rem;
 }
 
