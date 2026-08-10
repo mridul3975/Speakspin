@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Mic, Square, Sparkles, RotateCcw, Edit2, Loader2 } from 'lucide-react';
+import { ArrowLeft, Mic, Square, Sparkles, RotateCcw, Edit2, Loader2, Volume2 } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
 import { transcribeAudio } from '../utils/api';
@@ -25,11 +25,12 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     resetTranscript,
   } = useSpeechRecognition();
 
-  const { audioLevels, stream } = useAudioLevel(recorderState === 'recording');
+  const { audioLevels } = useAudioLevel(recorderState === 'recording');
 
   const timerRef = useRef(null);
   const actualDurationRef = useRef(0);
   const mediaRecorderRef = useRef(null);
+  const localStreamRef = useRef(null);
   const audioChunksRef = useRef([]);
 
   // Sync speech recognition output with local state
@@ -39,12 +40,20 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     }
   }, [transcript]);
 
-  // Clean up timer on unmount
+  // Clean up timer and streams on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      stopLocalStream();
     };
   }, []);
+
+  const stopLocalStream = () => {
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current = null;
+    }
+  };
 
   // Countdown timer effect
   useEffect(() => {
@@ -95,7 +104,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     setRecorderState('countdown');
   };
 
-  const startRecording = () => {
+  const startRecording = async () => {
     setRecorderState('recording');
     setEditableTranscript('');
     setAudioBlob(null);
@@ -104,33 +113,33 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     // Start Web Speech Recognition
     startListening();
 
-    // Start capturing raw audio via MediaRecorder
-    if (stream) {
-      try {
-        const options = { mimeType: 'audio/webm' };
-        // Fallback for Safari/iOS
-        const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
-          ? 'audio/webm' 
-          : 'audio/mp4';
+    // Directly request mic access for MediaRecorder
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localStreamRef.current = stream;
 
-        const mediaRecorder = new MediaRecorder(stream, { mimeType });
-        mediaRecorderRef.current = mediaRecorder;
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
+        ? 'audio/webm' 
+        : 'audio/mp4';
 
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data && event.data.size > 0) {
-            audioChunksRef.current.push(event.data);
-          }
-        };
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorderRef.current = mediaRecorder;
 
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(audioChunksRef.current, { type: mimeType });
-          setAudioBlob(blob);
-        };
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
 
-        mediaRecorder.start(1000); // chunk every 1s
-      } catch (err) {
-        console.error('Failed to start MediaRecorder:', err);
-      }
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: mimeType });
+        setAudioBlob(blob);
+        stopLocalStream(); // Release microphone
+      };
+
+      mediaRecorder.start(250); // Slice audio chunks frequently
+    } catch (err) {
+      console.error('Failed to start MediaRecorder on startRecording:', err);
     }
   };
 
@@ -162,10 +171,10 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     setRecorderState('idle');
   };
 
-  // Triggers Whisper transcription if Web Speech transcript is missing
+  // Triggers Whisper transcription
   const handleWhisperTranscribe = async () => {
     if (!audioBlob) {
-      alert('⚠️ No audio recording found to transcribe.');
+      alert('⚠️ No audio recording found to transcribe. Please speak into your microphone while recording.');
       return;
     }
 
@@ -177,7 +186,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
       }
     } catch (err) {
       console.error('Whisper transcription failed:', err);
-      alert('❌ Groq Whisper transcription failed. Please edit or enter your text manually.');
+      alert('❌ Groq Whisper transcription failed. Please check the backend console or edit manually.');
     } finally {
       setIsTranscribing(false);
     }
@@ -188,7 +197,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
     
     if (wordCount === 0) {
-      alert('⚠️ No speech detected. Please start recording and speak, trigger Whisper transcription, or type manually.');
+      alert('⚠️ No speech detected. Please record and speak, click Whisper transcribe, or write manually.');
       return;
     }
     if (wordCount < 10) {
@@ -396,19 +405,21 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
 
         {recorderState === 'completed' && (
           <>
-            {audioBlob && !editableTranscript && (
+            {audioBlob && (
               <button 
                 className="btn btn-secondary" 
                 onClick={handleWhisperTranscribe} 
                 disabled={isTranscribing}
-                style={{ flex: '1 1 100%', border: '1px solid var(--accent-yellow)', color: 'var(--accent-yellow)' }}
+                style={{ flex: '1 1 100%', border: '1px solid var(--accent-teal)', color: 'var(--accent-teal)' }}
               >
                 {isTranscribing ? (
                   <>
-                    <Loader2 className="animate-spin" size={18} /> Transcribing...
+                    <Loader2 className="animate-spin" size={18} style={{ marginRight: '0.5rem' }} /> Transcribing...
                   </>
                 ) : (
-                  '🤖 Transcribe Audio (Groq Whisper)'
+                  <>
+                    <Volume2 size={18} style={{ marginRight: '0.5rem' }} /> 🤖 Transcribe Audio (Groq Whisper)
+                  </>
                 )}
               </button>
             )}
