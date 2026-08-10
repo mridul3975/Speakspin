@@ -6,14 +6,33 @@ import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-const clientID = process.env.GOOGLE_CLIENT_ID;
-let client = null;
+let oauthClientInstance = null;
+let checkedClientStatus = false;
 
-if (clientID && clientID !== 'your-google-oauth-client-id') {
-  client = new OAuth2Client(clientID);
-  console.log('Google OAuth Client initialized.');
-} else {
-  console.warn('WARNING: GOOGLE_CLIENT_ID is not configured in .env. Authentication will run in MOCK mode.');
+/**
+ * Lazily initialize and return the Google OAuth2 client.
+ * This avoids ESM evaluation hoisting issues by reading process.env after config loads.
+ */
+function getOAuthClient() {
+  if (oauthClientInstance) return oauthClientInstance;
+
+  const clientID = process.env.GOOGLE_CLIENT_ID;
+  const isClientIDValid = clientID && clientID !== 'your-google-oauth-client-id' && clientID.trim() !== '';
+
+  if (isClientIDValid) {
+    oauthClientInstance = new OAuth2Client(clientID);
+    if (!checkedClientStatus) {
+      console.log('Google OAuth Client initialized successfully.');
+      checkedClientStatus = true;
+    }
+    return oauthClientInstance;
+  }
+
+  if (!checkedClientStatus) {
+    console.warn('WARNING: GOOGLE_CLIENT_ID is not configured in .env. Authentication will run in MOCK mode.');
+    checkedClientStatus = true;
+  }
+  return null;
 }
 
 // Generate JWT token for SpeakSpin session
@@ -31,12 +50,14 @@ router.post('/google', async (req, res) => {
   }
 
   let profile = null;
+  const oauthClient = getOAuthClient();
 
   try {
-    if (client) {
-      const ticket = await client.verifyIdToken({
+    if (oauthClient) {
+      // Verify token via Google API using the lazily initialized client
+      const ticket = await oauthClient.verifyIdToken({
         idToken: credential,
-        audience: clientID,
+        audience: process.env.GOOGLE_CLIENT_ID,
       });
       profile = ticket.getPayload();
     } else {
