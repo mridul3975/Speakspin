@@ -253,13 +253,19 @@ router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req
     });
   }
 
+  // Rename file to include webm extension so Groq/OpenAI Whisper API accepts the file format
+  const tempFilePath = `${req.file.path}.webm`;
+  
   try {
+    fs.renameSync(req.file.path, tempFilePath);
+
     const transcription = await client.audio.transcriptions.create({
-      file: fs.createReadStream(req.file.path),
+      file: fs.createReadStream(tempFilePath),
       model: "whisper-large-v3",
     });
 
-    try { fs.unlinkSync(req.file.path); } catch (e) {}
+    // Clean up renamed file
+    try { fs.unlinkSync(tempFilePath); } catch (e) {}
 
     res.json({
       text: transcription.text,
@@ -268,6 +274,8 @@ router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req
     });
   } catch (error) {
     console.error("Groq Whisper transcription failed:", error);
+    // Clean up whatever file is left in case of failure
+    try { fs.unlinkSync(tempFilePath); } catch (e) {}
     try { fs.unlinkSync(req.file.path); } catch (e) {}
     res.status(500).json({ error: "Transcription failed" });
   }
