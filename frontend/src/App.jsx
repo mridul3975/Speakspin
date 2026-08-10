@@ -81,7 +81,6 @@ export function App() {
       console.error('Google Sign-In backend verification failed:', err);
       alert('❌ Authentication failed. Please check backend connection.');
     } finally {
-      setUser(null); // Fallback safe resets
       setLoadingUser(false);
     }
   };
