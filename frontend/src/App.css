@@ -655,10 +655,10 @@ body {
   min-height: 300px;
 }
 
-/* Category grid (Details Tab) */
+/* Category grid (Details Tab) - stacked vertically */
 .details-grid {
   display: grid;
-  grid-template-cols: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-cols: 1fr;
   gap: 1.5rem;
 }
 
@@ -761,14 +761,8 @@ body {
 
 .overview-row {
   display: grid;
-  grid-template-cols: 1.5fr 1fr;
+  grid-template-cols: 1fr;
   gap: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .overview-row {
-    grid-template-cols: 1fr;
-  }
 }
 
 .overview-feedback-card, .filler-words-card {
@@ -863,14 +857,8 @@ body {
 
 .anxiety-grid {
   display: grid;
-  grid-template-cols: 1fr 1fr;
+  grid-template-cols: 1fr;
   gap: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  .anxiety-grid {
-    grid-template-cols: 1fr;
-  }
 }
 
 .anxiety-list-card {
@@ -900,15 +888,9 @@ body {
 /* Tips & Challenge */
 .tips-row {
   display: grid;
-  grid-template-cols: 1fr 1fr;
+  grid-template-cols: 1fr;
   gap: 1.5rem;
   margin-bottom: 2rem;
-}
-
-@media (max-width: 768px) {
-  .tips-row {
-    grid-template-cols: 1fr;
-  }
 }
 
 .tips-card {
@@ -1026,7 +1008,7 @@ body {
 /* Stats Card Row */
 .stats-cards-row {
   display: grid;
-  grid-template-cols: repeat(3, 1fr);
+  grid-template-cols: 1fr;
   gap: 1rem;
 }
 
