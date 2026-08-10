@@ -7,23 +7,36 @@ import { rateLimit } from 'express-rate-limit';
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-// Initialize OpenAI client pointing to Groq's API endpoint
-const apiKey = process.env.GROQ_API_KEY;
-const isKeyValid = apiKey && apiKey !== 'gsk_your-key-here' && apiKey.trim() !== '';
-
+// Defer OpenAI client initialization to run lazily when a request is handled
 let openai = null;
-if (isKeyValid) {
-  openai = new OpenAI({
-    apiKey,
-    baseURL: 'https://api.groq.com/openai/v1',
-  });
-  console.log('Groq API Client initialized.');
-} else {
-  console.warn('WARNING: GROQ_API_KEY is not set or is using the placeholder. Running in MOCK mode.');
+let clientStatusLogged = false;
+
+function getOpenAIClient() {
+  if (openai) return openai;
+
+  const apiKey = process.env.GROQ_API_KEY;
+  const isKeyValid = apiKey && apiKey !== 'gsk_your-key-here' && apiKey.trim() !== '';
+
+  if (isKeyValid) {
+    openai = new OpenAI({
+      apiKey,
+      baseURL: 'https://api.groq.com/openai/v1',
+    });
+    if (!clientStatusLogged) {
+      console.log('Groq API Client initialized successfully.');
+      clientStatusLogged = true;
+    }
+    return openai;
+  }
+
+  if (!clientStatusLogged) {
+    console.warn('WARNING: GROQ_API_KEY is not set or is using the placeholder. Running in MOCK mode.');
+    clientStatusLogged = true;
+  }
+  return null;
 }
 
 // --- RATE LIMITERS ---
-// Limit to 5 text analysis requests per 10 minutes per IP
 const analyzeLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5, 
@@ -34,7 +47,6 @@ const analyzeLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Limit to 5 transcription requests per 10 minutes per IP
 const transcribeLimiter = rateLimit({
   windowMs: 10 * 60 * 1000, // 10 minutes
   max: 5,
@@ -149,7 +161,9 @@ router.post('/analyze-text', analyzeLimiter, async (req, res) => {
   const wordCount = transcript.split(/\s+/).filter(Boolean).length;
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
 
-  if (!openai) {
+  const client = getOpenAIClient();
+
+  if (!client) {
     console.log("Using Mock AI Speech Coach response...");
     await new Promise(resolve => setTimeout(resolve, 1500));
     const analysis = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
@@ -199,7 +213,7 @@ Return this exact JSON structure:
   "challengeForNext": string
 }`;
 
-    const response = await openai.chat.completions.create({
+    const response = await client.chat.completions.create({
       model: "llama-3.1-70b-versatile",
       messages: [
         { role: "system", content: systemPrompt },
@@ -225,7 +239,9 @@ router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req
     return res.status(400).json({ error: "Audio file is required" });
   }
 
-  if (!openai) {
+  const client = getOpenAIClient();
+
+  if (!client) {
     console.log("Mock Transcribing audio file...");
     await new Promise(resolve => setTimeout(resolve, 1500));
     try { fs.unlinkSync(req.file.path); } catch (e) {}
@@ -238,7 +254,7 @@ router.post('/transcribe', transcribeLimiter, upload.single('audio'), async (req
   }
 
   try {
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await client.audio.transcriptions.create({
       file: fs.createReadStream(req.file.path),
       model: "whisper-large-v3",
     });
