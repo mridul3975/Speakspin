@@ -31,13 +31,16 @@ export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
   };
 
   return (
-    <div className="category-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.35rem', marginBottom: '0.75rem' }}>
-        <span className="material-symbols-outlined text-2xl">{getIcon(categoryKey)}</span>
-        <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
-          {getCategoryTitle(categoryKey)}
-        </h4>
-        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.25rem' }}>{score}</span>
+    <div className="category-card">
+      {/* Horizontal Header (Title on left, score on right) */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <span className="material-symbols-outlined text-xl">{getIcon(categoryKey)}</span>
+          <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
+            {getCategoryTitle(categoryKey)}
+          </h4>
+        </div>
+        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.15rem' }}>{score}</span>
       </div>
       
       <div className="category-bar-container">
@@ -49,7 +52,7 @@ export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
         />
       </div>
 
-      <p className="category-desc">{feedback}</p>
+      <p className="category-desc" style={{ textAlign: 'left' }}>{feedback}</p>
     </div>
   );
 }

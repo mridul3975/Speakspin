@@ -117,14 +117,14 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
           </div>
 
           {/* Session History List */}
-          <div className="history-list-card" style={{ textAlign: 'center' }}>
-            <h3>SESSION HISTORY</h3>
+          <div className="history-list-card">
+            <h3 style={{ textAlign: 'center' }}>SESSION HISTORY</h3>
             <div className="history-items-stack">
               {history.map((session) => (
-                <div key={session.id} className="history-item-card" style={{ flexDirection: 'column', textAlign: 'center', gap: '1rem' }}>
-                  <div className="history-item-info" style={{ alignItems: 'center', textAlign: 'center' }}>
+                <div key={session.id} className="history-item-card">
+                  <div className="history-item-info">
                     <h4 className="history-item-topic">"{session.topic}"</h4>
-                    <div className="history-item-meta" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap', fontWeight: 700, textTransform: 'uppercase' }}>
+                    <div className="history-item-meta" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontWeight: 700, textTransform: 'uppercase' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
                         <span className="material-symbols-outlined text-xs">book</span> {session.category}
                       </span>
@@ -137,7 +137,7 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
                     </div>
                   </div>
 
-                  <div className="history-item-score-block" style={{ justifyContent: 'center' }}>
+                  <div className="history-item-score-block">
                     <div className="history-item-score-box">
                       {session.overallScore}
                     </div>
