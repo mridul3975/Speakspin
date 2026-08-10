@@ -9,7 +9,6 @@ import { getPool } from '../config/db.js';
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
 
-// Defer OpenAI client initialization to run lazily when a request is handled
 let openai = null;
 let clientStatusLogged = false;
 
@@ -40,26 +39,26 @@ function getOpenAIClient() {
 
 // --- RATE LIMITERS ---
 const analyzeLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5, 
+  windowMs: 10 * 60 * 1000,
+  max: 10, // Increased limits slightly for testing ease
   message: {
-    error: "Too many analysis requests from this IP. Please wait 10 minutes before practicing again to protect server resources."
+    error: "Too many analysis requests. Please wait before practicing again."
   },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 const transcribeLimiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 5,
+  windowMs: 10 * 60 * 1000,
+  max: 10,
   message: {
-    error: "Too many transcription requests from this IP. Please try again in 10 minutes."
+    error: "Too many transcription requests. Please try again later."
   },
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-// Helper to generate mock fallback analysis based on transcript keywords
+// Helper to generate dynamic mock fallback analysis (rigorous calculations)
 function generateMockAnalysis(transcript, topic, targetDuration, actualDuration) {
   const wordCount = transcript.split(/\s+/).filter(Boolean).length;
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
@@ -77,79 +76,104 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
     }
   });
 
-  const wpmScore = wpm >= 110 && wpm <= 150 ? 95 : (wpm < 80 ? 60 : 80);
+  // Strict WPM logic (Ideal: 110 - 140 WPM)
+  let wpmScore = 90;
+  if (wpm < 80 || wpm > 170) wpmScore = 40;
+  else if (wpm < 100 || wpm > 150) wpmScore = 65;
+
+  // Strict Duration Match (Ideal: 80% to 110% of target)
   const timeRatio = actualDuration / targetDuration;
-  const timeScore = timeRatio >= 0.8 && timeRatio <= 1.2 ? 95 : (timeRatio < 0.5 ? 50 : 75);
-  const fillerPenalty = Math.max(0, fillerCount * 3);
-  const fluencyScore = Math.max(40, 95 - fillerPenalty);
-  
-  const overallScore = Math.round((wpmScore + timeScore + fluencyScore + 85 + 80 + 75 + 78 + 80) / 8);
+  let timeScore = 90;
+  if (timeRatio < 0.5 || timeRatio > 1.5) timeScore = 35;
+  else if (timeRatio < 0.8 || timeRatio > 1.2) timeScore = 60;
+
+  // Strict Fluency Logic (Deduct 8 points per filler word)
+  const fluencyScore = Math.max(20, 95 - (fillerCount * 8));
+
+  // Determine key speech dimensions dynamically
+  const confidenceScore = Math.max(30, 85 - (fillerCount * 5) - (timeRatio < 0.6 ? 20 : 0));
+  const relevanceScore = wordCount < 20 ? 30 : 85;
+  const vocabularyScore = wordCount < 30 ? 45 : 75;
+  const structureScore = wordCount < 40 ? 40 : 78;
+  const clarityScore = Math.max(40, 90 - (fillerCount * 4));
+  const engagementScore = Math.max(30, 80 - (fillerCount * 6));
+
+  const overallScore = Math.round(
+    (wpmScore + timeScore + fluencyScore + confidenceScore + relevanceScore + vocabularyScore + structureScore + clarityScore + engagementScore) / 9
+  );
 
   return {
     overallScore,
     categories: {
       confidence: {
-        score: Math.min(100, Math.max(50, 80 + Math.round(Math.random() * 10))),
-        feedback: "Your tone was relatively stable, but adding more vocal variety and pausing deliberately instead of using fillers would boost your perceived confidence."
+        score: confidenceScore,
+        feedback: fillerCount > 4 
+          ? "Your confidence score was impacted by frequent filler words. Work on pausing silently to gather your thoughts."
+          : "Good composure. You maintained a steady stream of speech."
       },
       fluency: {
         score: fluencyScore,
-        feedback: `You spoke with an average rate of ${wpm} WPM. Found ${fillerCount} filler words (${detectedFillers.join(', ') || 'none'}). Try to practice silent pauses to bridge transitions.`
+        feedback: `You spoke at ${wpm} WPM. Found ${fillerCount} filler words (${detectedFillers.join(', ') || 'none'}). Real-time pacing requires strict focus.`
       },
       relevance: {
-        score: 85,
-        feedback: `The content directly addressed the topic "${topic}". You maintained a steady focus throughout your presentation.`
+        score: relevanceScore,
+        feedback: wordCount < 20 
+          ? "Speech length is too brief to adequately address the topic details."
+          : `The speech stayed focused on the topic "${topic}".`
       },
       vocabulary: {
-        score: 75,
-        feedback: "Your vocabulary was clear and accessible. Try incorporating more vivid descriptive adjectives and active verbs to enrich the delivery."
+        score: vocabularyScore,
+        feedback: wordCount < 30 
+          ? "Repetitive phrasing detected due to limited speech length. Expand your vocabulary range."
+          : "Clear and functional vocabulary. Try to inject active verbal anchors."
       },
       structure: {
-        score: 80,
-        feedback: "You had a noticeable beginning and concluding thought, though structuring with a clear 'Rule of Three' in the body would improve overall flow."
+        score: structureScore,
+        feedback: wordCount < 40
+          ? "Deduction: Speech terminated before establishing a logical introduction, body, and conclusion."
+          : "Structural frame present. Establish clearer signposts between transitions."
       },
       clarity: {
-        score: 85,
-        feedback: "Pronunciation was clear, and words were easily understandable throughout the session."
+        score: clarityScore,
+        feedback: "Clear pronunciation. Focus on deliberate articulation during transitions."
       },
       engagement: {
-        score: 78,
-        feedback: "Your phrasing kept the main points interesting. Modulating your pitch and speed on key ideas could hook the listener even further."
+        score: engagementScore,
+        feedback: "Steady presentation. Work on pitch modulation to keep the audience hooked."
       },
       timeManagement: {
         score: timeScore,
-        feedback: `Spoke for ${actualDuration}s out of the ${targetDuration}s target. This represents a good effort in hitting your duration target.`
+        feedback: `Spoke for ${actualDuration}s out of a ${targetDuration}s target. Keep practicing to hit the target window.`
       }
     },
     fillerWords: {
       count: fillerCount,
       words: detectedFillers,
       feedback: fillerCount > 3 
-        ? "Filler word count is slightly elevated. Try slowing down your pace by 5% and replacing fillers with silent breathing room." 
-        : "Excellent job keeping filler words to a minimum!"
+        ? "Highly elevated filler words count. Focus on replaced breaths instead of vocalizing pauses." 
+        : "Excellent job keeping filler words minimized."
     },
     anxietyIndicators: {
-      level: fillerCount > 5 || timeRatio < 0.6 ? 'moderate' : 'low',
-      signs: fillerCount > 5 ? ["Frequent filler words", "Slightly rushed pacing"] : ["Consistent rate of speech"],
+      level: fillerCount > 6 || timeRatio < 0.5 ? 'high' : (fillerCount > 3 ? 'moderate' : 'low'),
+      signs: fillerCount > 3 ? ["Frequent filler words", "Unbalanced pacing"] : ["Controlled rate of speech"],
       tips: [
         "Inhale deeply through your nose for 4 seconds before you start speaking.",
         "Remember that pauses feel much longer to you than they do to your audience.",
-        "Anchor your feet firmly and use hand gestures to ground your nervous energy."
+        "Practice silent breathing transitions instead of filling space with sounds."
       ]
     },
     strengths: [
-      `Stayed closely aligned with the topic: "${topic}".`,
-      `Good vocal clarity with a pacing of ${wpm} words per minute.`,
-      "Clear articulation of the main thesis statement early in the speech."
+      `Relevant coverage of topic: "${topic}".`,
+      `Stable vocal projection at ${wpm} WPM.`
     ],
     improvements: [
-      "Reduce reliance on filler words during transitions.",
-      "Work on structuring the body points with explicit verbal signposts (firstly, secondly).",
-      "Practice using deliberate silence instead of vocalized pauses to let points land."
+      "Rigorous filler word reduction.",
+      "Expand descriptive speech details.",
+      "Practice timing pacing goals strictly."
     ],
-    overallFeedback: `You did a great job speaking about "${topic}" for ${actualDuration} seconds! Your speech was coherent and relevant, maintaining an average speed of ${wpm} WPM. Focusing on minimizing fillers and incorporating structural signposts will make your next speech even more impactful.`,
+    overallFeedback: `Analysis completed. Overall rating is strictly calculated at ${overallScore}/100. Pacing was measured at ${wpm} WPM. Focus closely on reducing filler usage during pauses to boost your delivery impact.`,
     challengeForNext: "Try to speak for the full target duration while using fewer than 2 filler words.",
-    exemplarSpeech: `Here is a perfect 100/100 exemplar speech on "${topic}":\n\n"When we consider the question of "${topic}", we are forced to weigh both its challenges and its possibilities. Historically, our choices have shaped our culture. In the modern era, there are three primary pillars we must emphasize. Firstly, clear communication bridges the gap of misunderstanding. Secondly, consistency of action develops trust in our methods. Finally, a collective vision ensures we progress together. In conclusion, by balancing our immediate goals with our long-term values, we build a legacy of success. Thank you."`
+    exemplarSpeech: `Here is a structured exemplar speech on "${topic}":\n\n"When we analyze the topic of "${topic}", we must evaluate its core dimensions. In public speaking, clarity is paramount. Firstly, establishing a strong hook captures audience focus. Secondly, backing assertions with precise facts builds credibility. Lastly, summarizing key takeaways reinforces memory. In conclusion, by structuring our points and managing pacing, we achieve highly effective communication. Thank you."`
   };
 }
 
@@ -173,18 +197,27 @@ router.post('/analyze-text', authMiddleware, analyzeLimiter, async (req, res) =>
     analysisResult = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
   } else {
     try {
-      const systemPrompt = `You are a supportive but honest speech coach. Always be encouraging while giving constructive, specific feedback. Respond ONLY with valid JSON, no markdown, no explanation.`;
+      const systemPrompt = `You are a highly critical, strict, and rigorous public speaking coach. You grade speech performances based on professional, standard public speaking frameworks (like Toastmasters). 
+DO NOT inflate scores. Be extremely strict. Use the full 1-100 score range.
+An average speech should get 60-70. If a speech has poor pacing (outside 110-150 WPM), excessive filler words, off-topic details, or is too short, grade it strictly below 50.
+Respond ONLY with a valid JSON object matching the requested schema. Do not write markdown blocks or explanation text outside the JSON.`;
 
-      const userPrompt = `You are an expert speech coach. Analyze this speech performance.
+      const userPrompt = `You are an expert, strict speech evaluator. Analyze this performance:
 
 Topic Given: ${topic}
 Target Duration: ${targetDuration} seconds
 Actual Duration: ${actualDuration} seconds  
 Word Count: ${wordCount}
-Words Per Minute: ${wpm}
+Words Per Minute (WPM): ${wpm}
 
 Full Transcript:
-${transcript}
+"${transcript}"
+
+Grade strictly using these ranges for overallScore:
+- 90-100: Flawless professional execution, structured flow, zero fillers, accurate pacing (120-140 WPM).
+- 75-89: Good speech, minor errors (1-2 fillers), slight pacing deviations.
+- 55-74: Average speech, moderate fillers (3-6), weak vocabulary, or unstructured body.
+- Below 55: Poor speech, excessive fillers (7+), completely off-topic, or extremely short duration.
 
 Return this exact JSON structure:
 {
@@ -223,7 +256,7 @@ Return this exact JSON structure:
           { role: "user", content: userPrompt }
         ],
         response_format: { type: "json_object" },
-        temperature: 0.7,
+        temperature: 0.2, // Lower temperature to follow guidelines strictly
       });
 
       const resultText = response.choices[0].message.content;
@@ -264,11 +297,11 @@ Return this exact JSON structure:
     res.json(analysisResult);
   } catch (dbError) {
     console.error("Failed to save session to PostgreSQL:", dbError);
-    res.json(analysisResult); // Still return results even if database fails
+    res.json(analysisResult);
   }
 });
 
-// GET /api/sessions (JWT Protected - Fetch history)
+// GET /api/sessions (Fetch history)
 router.get('/sessions', authMiddleware, async (req, res) => {
   try {
     const sessionsRes = await getPool().query(
@@ -276,7 +309,6 @@ router.get('/sessions', authMiddleware, async (req, res) => {
       [req.userId]
     );
 
-    // Map database snake_case columns back to the camelCase keys expected by React frontend
     const sessions = sessionsRes.rows.map(row => ({
       id: row.id,
       userId: row.user_id,
@@ -302,7 +334,7 @@ router.get('/sessions', authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE /api/sessions (JWT Protected - Clear history)
+// DELETE /api/sessions (Clear history)
 router.delete('/sessions', authMiddleware, async (req, res) => {
   try {
     await getPool().query('DELETE FROM sessions WHERE user_id = $1', [req.userId]);
@@ -314,7 +346,7 @@ router.delete('/sessions', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/transcribe with rate limiter
+// POST /api/transcribe
 router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Audio file is required" });
@@ -339,7 +371,6 @@ router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('aud
   try {
     fs.renameSync(req.file.path, tempFilePath);
 
-    // Create a proper File object compatible with OpenAI/Groq upload interface
     const audioFile = await toFile(fs.createReadStream(tempFilePath), 'speech.webm', { type: 'audio/webm' });
 
     const transcription = await client.audio.transcriptions.create({
