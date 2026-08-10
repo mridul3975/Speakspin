@@ -14,6 +14,7 @@ const __dirname = path.dirname(__filename);
 const envPath = path.resolve(__dirname, '.env');
 console.log(`[DEBUG] Attempting to load .env from: ${envPath}`);
 dotenv.config({ path: envPath, override: true });
+console.log('[DEBUG] GOOGLE_CLIENT_ID loaded in server.js:', process.env.GOOGLE_CLIENT_ID);
 console.log(`[DEBUG] GROQ_API_KEY exists: ${!!process.env.GROQ_API_KEY}`);
 if (process.env.GROQ_API_KEY) {
   console.log(`[DEBUG] GROQ_API_KEY prefix: ${process.env.GROQ_API_KEY.substring(0, 7)}...`);

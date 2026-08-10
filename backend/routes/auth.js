@@ -17,6 +17,7 @@ function getOAuthClient() {
   if (oauthClientInstance) return oauthClientInstance;
 
   const clientID = process.env.GOOGLE_CLIENT_ID;
+  console.log('[DEBUG] process.env.GOOGLE_CLIENT_ID in auth.js:', clientID);
   const isClientIDValid = clientID && clientID !== 'your-google-oauth-client-id' && clientID.trim() !== '';
 
   if (isClientIDValid) {
