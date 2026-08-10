@@ -13,7 +13,7 @@ const __dirname = path.dirname(__filename);
 // Setup environment variables relative to backend folder
 const envPath = path.resolve(__dirname, '.env');
 console.log(`[DEBUG] Attempting to load .env from: ${envPath}`);
-dotenv.config({ path: envPath });
+dotenv.config({ path: envPath, override: true });
 console.log(`[DEBUG] GROQ_API_KEY exists: ${!!process.env.GROQ_API_KEY}`);
 if (process.env.GROQ_API_KEY) {
   console.log(`[DEBUG] GROQ_API_KEY prefix: ${process.env.GROQ_API_KEY.substring(0, 7)}...`);

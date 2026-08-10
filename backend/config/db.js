@@ -11,7 +11,10 @@ let poolInstance = null;
 export function getPool() {
   if (poolInstance) return poolInstance;
 
+  console.log('[DEBUG] Available env keys:', Object.keys(process.env).filter(k => k.includes('DATABASE') || k.includes('URL') || k.includes('PORT') || k.includes('GROQ')));
+  console.log('[DEBUG] process.env.DATABASE_URL raw value:', process.env.DATABASE_URL);
   const connectionString = process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/speakspin';
+  console.log('[DEBUG] getPool evaluating connectionString:', connectionString ? connectionString.substring(0, 45) + '...' : 'undefined');
   const isNeon = connectionString.includes('neon.tech');
 
   poolInstance = new Pool({
