@@ -82,6 +82,14 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
       clearInterval(interval);
       if (timerRef.current) clearInterval(timerRef.current);
       stopLocalStream();
+      try {
+        stopListening();
+      } catch (e) {}
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        try {
+          mediaRecorderRef.current.stop();
+        } catch (e) {}
+      }
       socket.off('opponentStateUpdated');
       socket.off('opponentSubmittedScore');
       socket.off('battleFinished');
@@ -102,7 +110,11 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
 
     setEditableTranscript('');
     audioChunksRef.current = [];
-    startListening();
+    try {
+      startListening();
+    } catch (e) {
+      console.warn('Speech recognition failed to start:', e);
+    }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });

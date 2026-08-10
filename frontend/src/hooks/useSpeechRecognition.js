@@ -75,6 +75,15 @@ export function useSpeechRecognition() {
     };
 
     recognitionRef.current = recognition;
+
+    return () => {
+      shouldListenRef.current = false;
+      try {
+        recognition.abort();
+      } catch (e) {
+        console.error('Failed to abort speech recognition on cleanup:', e);
+      }
+    };
   }, []);
 
   const startListening = () => {
