@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../../hooks/useAudioLevel';
 import { playTick, playHorn } from '../../utils/battleAudio';
+import { transcribeAudio } from '../../utils/api';
 
 export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaking, onFinishSpeech }) {
   const [hasStarted, setHasStarted] = useState(false);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(duration);
   const [actualDuration, setActualDuration] = useState(0);
   const [editableTranscript, setEditableTranscript] = useState('');
@@ -140,11 +142,27 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     }
   };
 
-  const handleAutoSubmit = (blob) => {
+  const handleAutoSubmit = async (blob) => {
     if (hasSubmittedRef.current) return;
     hasSubmittedRef.current = true;
 
-    const finalCleanText = editableTranscript.trim();
+    let finalTranscript = editableTranscript.trim();
+    setIsTranscribing(true);
+
+    try {
+      if (blob && blob.size > 8000 && actualDuration >= 2) {
+        const response = await transcribeAudio(blob);
+        if (response && response.text) {
+          finalTranscript = response.text;
+        }
+      }
+    } catch (err) {
+      console.warn('Whisper transcription failed, falling back to Web Speech:', err);
+    } finally {
+      setIsTranscribing(false);
+    }
+
+    const finalCleanText = finalTranscript.trim();
     const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
 
     onFinishSpeech({
@@ -195,6 +213,24 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
           >
             🔥 START SPEAKING!
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (isTranscribing) {
+    return (
+      <div className="setup-container" style={{ margin: '3rem auto', maxWidth: '500px', textAlign: 'center' }}>
+        <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
+          <div style={{ display: 'inline-block', fontSize: '3rem', animation: 'spin 3s linear infinite', marginBottom: '1.5rem' }}>
+            <span className="material-symbols-outlined text-5xl">sync</span>
+          </div>
+          <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.25rem', margin: '0 0 0.5rem 0' }}>
+            TRANSCRIBING AUDIO
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
+            AI is analyzing your voice stream to generate a highly accurate speech transcript. Please wait...
+          </p>
         </div>
       </div>
     );
