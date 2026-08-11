@@ -13,10 +13,10 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
   const me = localIsP1 ? player1 : player2;
   const opponent = localIsP1 ? player2 : player1;
 
-  const isWinner = (winner === 'player1' && localIsP1) || (winner === 'player2' && !localIsP1);
-  const isDraw = winner === 'draw';
+  const isWinner = me.overallScore > opponent.overallScore;
+  const isDraw = me.overallScore === opponent.overallScore;
 
-  const [activeTab, setActiveTab] = useState('mine'); // mine | opponent | transcripts
+  const [activeTab, setActiveTab] = useState('mine'); // mine | transcripts
   const [floatingReactions, setFloatingReactions] = useState([]); // array of { id, emoji, left }
   const [opponentWantsRematch, setOpponentWantsRematch] = useState(false);
   const [rematchRequested, setRematchRequested] = useState(false);
@@ -210,45 +210,54 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
           </p>
         </div>
 
-        {/* Categories Bar comparison sheet */}
-        <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#0a0a1a', marginBottom: '2rem' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 1.2fr', borderBottom: '2px solid #ffffff', paddingBottom: '0.75rem', marginBottom: '1rem', fontWeight: 900, fontSize: '0.8rem', textTransform: 'uppercase' }}>
-            <div>{me.name} (YOU)</div>
-            <div style={{ textAlign: 'center', color: 'var(--accent-coral)' }}>VS</div>
-            <div style={{ textAlign: 'right' }}>{opponent.name}</div>
-          </div>
-
-          {/* Score details grid list */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {/* Overall Score */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', marginBottom: '0.25rem' }}>
-                <span style={{ color: isWinner ? '#ffd700' : '#ffffff' }}>OVERALL SCORE: {me.overallScore}</span>
-                <span style={{ color: !isWinner && !isDraw ? '#ffd700' : '#ffffff' }}>{opponent.overallScore}</span>
-              </div>
-              <div style={{ height: '10px', border: '1px solid #ffffff', backgroundColor: '#000000', display: 'flex' }}>
-                <div style={{ width: `${me.overallScore}%`, backgroundColor: isWinner ? 'var(--accent-teal)' : '#555555' }} />
-                <div style={{ width: `${opponent.overallScore}%`, backgroundColor: !isWinner && !isDraw ? 'var(--accent-coral)' : '#333333', marginLeft: 'auto' }} />
-              </div>
+        {/* SCORE COMPARISON - YOURS HIGHLIGHTED & LARGER */}
+        <div style={{ border: '4px solid #ffffff', padding: '1.5rem', backgroundColor: '#000000', marginBottom: '2rem', boxShadow: '5px 5px 0px 0px #ffffff' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.6fr 1.2fr', alignItems: 'center', textAlign: 'center', marginBottom: '1.5rem' }}>
+            {/* Your Score */}
+            <div style={{ padding: '1rem', border: '2px solid var(--accent-teal)', backgroundColor: 'rgba(0, 255, 200, 0.05)' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>YOUR SCORE</span>
+              <span style={{ fontSize: '4.5rem', fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--accent-teal)', display: 'block', lineHeight: '1.1' }}>
+                {me.overallScore}
+              </span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase' }}>{me.name}</span>
             </div>
 
-            {/* Categories map */}
-            {Object.keys(me.categories).map((catKey) => {
-              const myVal = me.categories[catKey].score;
-              const oppVal = opponent.categories[catKey].score;
-              return (
-                <div key={catKey}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.2rem' }}>
-                    <span>{myVal} | {catKey}</span>
-                    <span>{oppVal}</span>
+            {/* VS Divider */}
+            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-coral)', fontFamily: 'var(--font-heading)' }}>
+              VS
+            </div>
+
+            {/* Opponent's Score */}
+            <div style={{ padding: '1rem', border: '2px solid rgba(255,255,255,0.2)', opacity: 0.75 }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>OPPONENT</span>
+              <span style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 900, color: '#ffffff', display: 'block', lineHeight: '1.1', margin: '0.25rem 0' }}>
+                {opponent.overallScore}
+              </span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{opponent.name}</span>
+            </div>
+          </div>
+
+          {/* Categories bar chart showing ONLY YOUR details */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
+            <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.85rem', margin: '0 0 1rem 0', color: 'var(--accent-teal)' }}>
+              🎯 YOUR CATEGORY SCORES
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {Object.keys(me.categories).map((catKey) => {
+                const myVal = me.categories[catKey].score;
+                return (
+                  <div key={catKey}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.2rem' }}>
+                      <span style={{ color: '#ffffff' }}>{catKey}</span>
+                      <span style={{ color: 'var(--accent-teal)', fontWeight: 900 }}>{myVal}/100</span>
+                    </div>
+                    <div style={{ height: '6px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: '#000000' }}>
+                      <div style={{ width: `${myVal}%`, height: '100%', backgroundColor: 'var(--accent-teal)' }} />
+                    </div>
                   </div>
-                  <div style={{ height: '5px', backgroundColor: '#111', display: 'flex' }}>
-                    <div style={{ width: `${myVal}%`, backgroundColor: myVal >= oppVal ? 'var(--accent-teal)' : '#555555' }} />
-                    <div style={{ width: `${oppVal}%`, backgroundColor: oppVal > myVal ? 'var(--accent-coral)' : '#333333', marginLeft: 'auto' }} />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -272,19 +281,13 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
           </div>
         </div>
 
-        {/* Tabs switcher: mine | opponent | transcripts */}
+        {/* Tabs switcher: mine | transcripts */}
         <div style={{ display: 'flex', border: '2px solid #ffffff', borderBottom: 'none', backgroundColor: '#0a0a1a' }}>
           <button
             onClick={() => setActiveTab('mine')}
             style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'mine' ? '#ffffff' : 'transparent', color: activeTab === 'mine' ? '#000000' : '#ffffff', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer' }}
           >
             📋 MY FEEDBACK
-          </button>
-          <button
-            onClick={() => setActiveTab('opponent')}
-            style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'opponent' ? '#ffffff' : 'transparent', color: activeTab === 'opponent' ? '#000000' : '#ffffff', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer' }}
-          >
-            🦊 OPPONENT FEEDBACK
           </button>
           <button
             onClick={() => setActiveTab('transcripts')}
@@ -311,21 +314,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
             </div>
           )}
 
-          {activeTab === 'opponent' && (
-            <div>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-teal)', textTransform: 'uppercase', fontSize: '0.85rem' }}>Their Strengths:</h4>
-              <ul style={{ margin: '0 0 1rem 0', paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                {opponent.strengths?.map((s, i) => <li key={i}>{s}</li>) || <li>Clear delivery layout.</li>}
-              </ul>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-coral)', textTransform: 'uppercase', fontSize: '0.85rem' }}>Their Improvements:</h4>
-              <ul style={{ margin: '0 0 1rem 0', paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                {opponent.improvements?.map((s, i) => <li key={i}>{s}</li>) || <li>Vary the voice pitches.</li>}
-              </ul>
-              <p style={{ fontSize: '0.85rem', lineHeight: '1.5', margin: 0 }}>
-                {opponent.overallFeedback}
-              </p>
-            </div>
-          )}
+          {/* Opponent feedback removed */}
 
           {activeTab === 'transcripts' && (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', fontSize: '0.85rem' }}>

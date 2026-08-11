@@ -423,14 +423,18 @@ async function analyzeAndRevealResults(room, io) {
 
     const score1 = analysis1.overallScore;
     const score2 = analysis2.overallScore;
-    const diff = Math.abs(score1 - score2);
-
     let winner = 'draw';
-    if (diff > 3) {
-      winner = score1 > score2 ? 'player1' : 'player2';
+    if (score1 > score2) {
+      winner = 'player1';
+    } else if (score2 > score1) {
+      winner = 'player2';
     }
 
     const { change1, change2 } = calculateELO(p1.rating, p2.rating, winner);
+    
+    // Update player rating values in socket room memory
+    p1.rating = p1.rating + change1;
+    p2.rating = p2.rating + change2;
 
     io.to(room.roomId).emit('battle_results', {
       winner,
@@ -584,7 +588,7 @@ function resetRoomForRematch(room, io) {
   room.status = 'waiting_ready';
 
   room.players.forEach(p => {
-    p.ready = false;
+    p.ready = p.isBot ? true : false;
     p.submitted = false;
     p.wantsRematch = false;
     p.transcript = '';
@@ -592,20 +596,21 @@ function resetRoomForRematch(room, io) {
     p.wordCount = 0;
   });
 
-  io.to(room.roomId).emit('match_found', {
-    roomId: room.roomId,
-    opponent: {
-      name: room.players[1].isBot ? room.players[1].playerName : room.players[1].playerName,
-      avatar: room.players[1].avatar,
-      rating: room.players[1].rating,
-      tier: getTier(room.players[1].rating).name
-    },
-    yourPosition: 'player1'
+  room.players.forEach(p => {
+    if (p.isBot) return;
+    const opponent = room.players.find(o => o.position !== p.position);
+    p.socket.emit('match_found', {
+      roomId: room.roomId,
+      opponent: {
+        name: opponent.playerName,
+        avatar: opponent.avatar,
+        rating: opponent.rating,
+        tier: getTier(opponent.rating).name,
+        isBot: opponent.isBot
+      },
+      yourPosition: p.position
+    });
   });
-
-  // Automate bot readying
-  const bot = room.players.find(p => p.isBot);
-  if (bot) bot.ready = true;
 }
 
 function getRandomTopic() {
