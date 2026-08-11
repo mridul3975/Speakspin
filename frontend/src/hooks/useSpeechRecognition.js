@@ -50,7 +50,7 @@ export function useSpeechRecognition() {
     };
 
     recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
+      console.warn('Web Speech API browser-side issue (handled by Whisper fallback):', event.error);
       if (event.error === 'not-allowed') {
         setError('Microphone access denied. Please check your browser permissions.');
       } else {
