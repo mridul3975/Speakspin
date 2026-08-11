@@ -361,10 +361,6 @@ export function App() {
               onChangeDuration={setSelectedDuration}
               onNext={() => navigateTo(SCREENS.SPINNING)}
               onBack={() => navigateTo(SCREENS.LANDING)}
-              onStartWithCustomTopic={(topic) => {
-                setCurrentTopic(topic);
-                navigateTo(SCREENS.RECORDER);
-              }}
               selectedCategory={selectedCategory}
               onChangeCategory={setSelectedCategory}
             />
