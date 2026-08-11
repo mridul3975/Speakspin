@@ -76,10 +76,17 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
     }
   });
 
-  // Strict WPM logic (Ideal: 110 - 140 WPM)
-  let wpmScore = 90;
-  if (wpm < 80 || wpm > 170) wpmScore = 40;
-  else if (wpm < 100 || wpm > 150) wpmScore = 65;
+  // Strict WPM logic (Ideal: 130 - 150 WPM)
+  let wpmScore = 95;
+  if (wpm < 110) {
+    wpmScore = 50; // Too slow/under-delivering WPM
+  } else if (wpm > 160) {
+    wpmScore = 55; // Too fast/rushed speech
+  } else if (wpm >= 110 && wpm < 130) {
+    wpmScore = 78; // Slightly slow but acceptable
+  } else if (wpm > 150 && wpm <= 160) {
+    wpmScore = 80; // Slightly fast but acceptable
+  }
 
   // Strict Duration Match (Ideal: 80% to 110% of target)
   const timeRatio = actualDuration / targetDuration;
@@ -173,7 +180,9 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
     ],
     overallFeedback: `Analysis completed. Overall rating is strictly calculated at ${overallScore}/100. Pacing was measured at ${wpm} WPM. Focus closely on reducing filler usage during pauses to boost your delivery impact.`,
     challengeForNext: "Try to speak for the full target duration while using fewer than 2 filler words.",
-    exemplarSpeech: `Here is a structured exemplar speech on "${topic}":\n\n"When we analyze the topic of "${topic}", we must evaluate its core dimensions. In public speaking, clarity is paramount. Firstly, establishing a strong hook captures audience focus. Secondly, backing assertions with precise facts builds credibility. Lastly, summarizing key takeaways reinforces memory. In conclusion, by structuring our points and managing pacing, we achieve highly effective communication. Thank you."`
+    exemplarSpeech: targetDuration <= 60 
+      ? `Here is a perfect 100/100 one-minute speech transcript on "${topic}":\n\n"Today, let us look at "${topic}". It is a subject of growing importance that touches our daily choices. To understand it, we must realize that first, it challenges conventional thinking, forcing us to adapt. Second, it guides how we build relationships and leverage opportunities. In conclusion, embracing "${topic}" is key to progress. Let us carry this understanding forward. Thank you."`
+      : `Here is a perfect 100/100 detailed speech transcript on "${topic}":\n\n"Ladies and gentlemen, let us dive deep into the concept of "${topic}". When we consider this subject, we are looking at a cornerstone of modern development. To unpack this, I want to present three key examples.\n\nFirst, consider the impact on our personal lives. We see daily shifts in how we allocate time and attention. Second, look at the professional landscape. Modern structures have been completely transformed, demanding new skills and resilience. Third, let us analyze the cultural paradigm. It defines our shared values and societal aspirations.\n\nUltimately, this is a call to action. We must adapt, learn, and grow. Let us ask ourselves: how will we leverage this power to shape our tomorrow? Thank you."`
   };
 }
 
@@ -197,10 +206,22 @@ router.post('/analyze-text', authMiddleware, analyzeLimiter, async (req, res) =>
     analysisResult = generateMockAnalysis(transcript, topic, targetDuration, actualDuration);
   } else {
     try {
-      const systemPrompt = `You are a highly critical, strict, and rigorous public speaking coach. You grade speech performances based on professional, standard public speaking frameworks (like Toastmasters). 
-DO NOT inflate scores. Be extremely strict. Use the full 1-100 score range.
-An average speech should get 60-70. If a speech has poor pacing (outside 110-150 WPM), excessive filler words, off-topic details, or is too short, grade it strictly below 50.
-Respond ONLY with a valid JSON object matching the requested schema. Do not write markdown blocks or explanation text outside the JSON.`;
+      const systemPrompt = `You are a highly critical, strict, and rigorous public speaking coach grading speech performances based on professional public speaking frameworks (like Toastmasters). 
+
+CRITICAL GRADING CRITERIA:
+1. Pacing & Pauses:
+   - Reward controlled, deliberate pacing and short pauses (0.5 to 1.0 seconds max). These show confidence, presence, and control. DO NOT penalize these.
+   - Penalize long, dead pauses (2.0 to 3.0+ seconds). These show nervousness, lack of competence, or losing the train of thought.
+2. Words Per Minute (WPM) Calibration:
+   - Confident speaker range: 130 to 150 WPM. If the speaker's average pace is within 130-150 WPM, reward them with high scores.
+   - Slow speaker range: < 110 WPM. Reduce the score for lack of fluency and slow delivery.
+   - Rushed speaker range: > 160 WPM. This is a rushed speech (not confidence), so penalize clarity and fluency.
+3. Structuring Rules:
+   - For targetDuration <= 60 seconds: Requires a quick, compelling hook/opening, body points, and a neat conclusion that is NOT rushed.
+   - For targetDuration > 60 seconds (up to 300 seconds): Requires a formal opening, structured discussion body containing exactly 2 to 3 distinct examples or points, and a powerful conclusion (optionally ending with a question).
+4. Exemplar Speech:
+   - The exemplarSpeech must be a complete, flawless 100/100 speech transcript matching the target duration and topic (NOT tips). It must use strong vocabulary, professional tone, proper opening, discussion/examples, and conclusion.
+5. Respond ONLY with a valid JSON object matching the requested schema. No markdown outside.`;
 
       const userPrompt = `You are an expert, strict speech evaluator. Analyze this performance:
 
@@ -214,7 +235,7 @@ Full Transcript:
 "${transcript}"
 
 Grade strictly using these ranges for overallScore:
-- 90-100: Flawless professional execution, structured flow, zero fillers, accurate pacing (120-140 WPM).
+- 90-100: Structured flow, zero fillers, accurate pacing (130-150 WPM), small pauses (0.5s-1s) for confidence, structured outline.
 - 75-89: Good speech, minor errors (1-2 fillers), slight pacing deviations.
 - 55-74: Average speech, moderate fillers (3-6), weak vocabulary, or unstructured body.
 - Below 55: Poor speech, excessive fillers (7+), completely off-topic, or extremely short duration.

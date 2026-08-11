@@ -486,7 +486,21 @@ async function runParallelSpeechAnalysis(transcript, topic, targetDuration, actu
   const client = getOpenAIClient();
   if (client) {
     try {
-      const systemPrompt = `You are a strict competitive speech judge. Grade this transcript out of 100 strictly based on Toastmasters standards. Return valid JSON only.`;
+      const systemPrompt = `You are a strict competitive speech judge grading speech performances based on professional public speaking frameworks (like Toastmasters).
+
+CRITICAL GRADING CRITERIA:
+1. Pacing & Pauses:
+   - Reward controlled, deliberate pacing and short pauses (0.5 to 1.0 seconds max). These show confidence, presence, and control. DO NOT penalize these.
+   - Penalize long, dead pauses (2.0 to 3.0+ seconds). These show nervousness, lack of competence, or losing the train of thought.
+2. Words Per Minute (WPM) Calibration:
+   - Confident speaker range: 130 to 150 WPM. If the speaker's average pace is within 130-150 WPM, reward them with high scores.
+   - Slow speaker range: < 110 WPM. Reduce the score for lack of fluency and slow delivery.
+   - Rushed speaker range: > 160 WPM. This is a rushed speech (not confidence), so penalize clarity and fluency.
+3. Structuring Rules:
+   - For targetDuration <= 60 seconds: Requires a quick, compelling hook/opening, body points, and a neat conclusion that is NOT rushed.
+   - For targetDuration > 60 seconds (up to 300 seconds): Requires a formal opening, structured discussion body containing exactly 2 to 3 distinct examples or points, and a powerful conclusion (optionally ending with a question).
+
+Return valid JSON only matching the structure requested.`;
       const userPrompt = `BATTLE EVALUATION:
 Topic: "${topic}"
 Duration: ${actualDuration} seconds
@@ -519,12 +533,19 @@ Return JSON with "overallScore" (1-100), "categories" (confidence, fluency, rele
     if (matches) fillerCount += matches.length;
   });
 
+  // Strict WPM logic (Ideal: 130 - 150 WPM)
+  let wpmScore = 95;
+  if (wpm < 110) wpmScore = 50;
+  else if (wpm > 160) wpmScore = 55;
+  else if (wpm >= 110 && wpm < 130) wpmScore = 78;
+  else if (wpm > 150 && wpm <= 160) wpmScore = 80;
+
   const fluencyScore = Math.max(30, 95 - (fillerCount * 7));
   const relevanceScore = wordCount < 15 ? 30 : 85;
   const clarityScore = Math.max(40, 90 - (fillerCount * 5));
   const timeScore = actualDuration >= 45 ? 90 : 50;
 
-  const overall = Math.round((fluencyScore + relevanceScore + clarityScore + timeScore) / 4);
+  const overall = Math.round((fluencyScore + relevanceScore + clarityScore + timeScore + wpmScore) / 5);
 
   return {
     overallScore: overall,
