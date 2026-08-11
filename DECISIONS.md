@@ -148,3 +148,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Integrated a multi-language speaking configuration panel supporting 12 major world language locales in `TimerSelector.jsx`.
 * **The 'Why'**: Diverse global speakers need to practice in their native languages. Whispers multilingual decoder operates best when supplied with appropriate language hints, and browser-side speech fallbacks require strict locale matching.
 * **Impact**: Routes `selectedLanguage` from `App.jsx` to the transcribers in `api.js`, Web Speech APIs in `SpeechRecorder.jsx`, and instructions inside `analyze.js`.
+
+---
+
+### Date/Time: 2026-08-11T21:21:00Z
+* **The Decision**: Mounted a details modal inside `ProgressHistory.jsx` linked to a new `DETAILS` button on each item card.
+* **The 'Why'**: Practice history is much more useful if users can recall exactly what score breakdown, feedback paragraphs, and exemplar speech they received during past attempts.
+* **Impact**: Reuses `FeedbackDashboard.jsx` to display stored Postgres JSONB session results.

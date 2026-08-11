@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Interactive Progress History Analysis Details**: Added a "DETAILS" button to each speech session card inside the single-player `ProgressHistory.jsx` view. Clicking it opens a modal overlay that formats and parses the stored PostgreSQL metrics (confidence, fluency, strengths, improvements, filler counts, and full exemplar speech transcripts) using the `<FeedbackDashboard>` module.
 * **Multilingual Speech Support & Grading**: Added a "Select Speaking Language" dropdown in `TimerSelector.jsx` supporting 12 major locales (English US/UK, Spanish Spain/Mexico, French, German, Hindi, Italian, Japanese, Portuguese, Chinese, Arabic). Wired parameters dynamically down to browser Web Speech API, Groq Whisper transcription hints, and LLM prompts. The coach evaluates the speech native structure and generates exemplars in the chosen language, keeping critique commentary in English.
-* **Mic-Only Speech Capture (No Text Writing)**: Changed the transcript textareas in both `SpeechRecorder.jsx` and `BattleRecorder.jsx` to be strictly read-only (`readOnly={true}`). Users can no longer copy-paste essays or manually type responses, enforcing speaking inputs.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
