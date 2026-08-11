@@ -50,6 +50,7 @@ const SCREENS = {
 export function App() {
   const [screen, setScreen] = useState(SCREENS.LANDING);
   const [selectedDuration, setSelectedDuration] = useState(60); // default 60s
+  const [selectedCategory, setSelectedCategory] = useState('General'); // default General category
   const [currentTopic, setCurrentTopic] = useState(null);
   const [actualDuration, setActualDuration] = useState(0);
   const [analysisResults, setAnalysisResults] = useState(null);
@@ -364,6 +365,8 @@ export function App() {
                 setCurrentTopic(topic);
                 navigateTo(SCREENS.RECORDER);
               }}
+              selectedCategory={selectedCategory}
+              onChangeCategory={setSelectedCategory}
             />
           </motion.div>
         )}
@@ -379,6 +382,7 @@ export function App() {
           >
             <SpinWheel
               selectedDuration={selectedDuration}
+              selectedCategory={selectedCategory}
               onTopicSelected={handleTopicSelected}
             />
           </motion.div>

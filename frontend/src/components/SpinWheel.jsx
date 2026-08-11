@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { TOPIC_BANK } from '../data/topics';
 
-export function SpinWheel({ selectedDuration, onTopicSelected }) {
+export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory }) {
   const canvasRef = useRef(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -16,17 +16,13 @@ export function SpinWheel({ selectedDuration, onTopicSelected }) {
   ];
 
   useEffect(() => {
-    const allTopics = [];
-    Object.keys(TOPIC_BANK).forEach((category) => {
-      TOPIC_BANK[category].forEach((topic) => {
-        allTopics.push({ category, topic });
-      });
-    });
-
-    const shuffled = [...allTopics].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, segments);
+    const categoryName = selectedCategory || "General";
+    const subtopics = TOPIC_BANK[categoryName] || TOPIC_BANK["General"] || [];
+    
+    // Convert 10 subtopics into segments array structure
+    const selected = subtopics.map(topic => ({ category: categoryName, topic }));
     setWheelTopics(selected);
-  }, []);
+  }, [selectedCategory]);
 
   useEffect(() => {
     if (wheelTopics.length === 0) return;
