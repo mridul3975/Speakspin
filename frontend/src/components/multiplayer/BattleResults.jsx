@@ -5,11 +5,11 @@ import { playWinnerFanfare, playLoserSound, playReactionPop, playRatingUp, playR
 
 const REACTIONS = ['🔥', '😂', '👏', '😤', '🤝', '💀', '😎', '🫡'];
 
-export function BattleResults({ user, results, onSendReaction, onRematch, onNewOpponent, onLeave }) {
+export function BattleResults({ user, results, myPosition, onSendReaction, onRematch, onNewOpponent, onLeave }) {
   const { winner, player1, player2 } = results;
 
   // Identify who is who
-  const localIsP1 = player1.name === (localStorage.getItem('speakspin-player-name') || user.name);
+  const localIsP1 = myPosition === 'player1';
   const me = localIsP1 ? player1 : player2;
   const opponent = localIsP1 ? player2 : player1;
 

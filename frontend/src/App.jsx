@@ -586,6 +586,7 @@ export function App() {
                 avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
                 rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
               }}
+              myPosition={myPosition}
               results={battleResults}
               onSendReaction={(reaction) => {
                 socket.emit('send_reaction', { roomId: battleRoomId, reaction });
