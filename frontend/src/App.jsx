@@ -27,6 +27,7 @@ import TopicReveal from './components/multiplayer/TopicReveal';
 import BattleRecorder from './components/multiplayer/BattleRecorder';
 import BattleAnalyzing from './components/multiplayer/BattleAnalyzing';
 import BattleResults from './components/multiplayer/BattleResults';
+import BattleProfile from './components/multiplayer/BattleProfile';
 
 const SCREENS = {
   LANDING: 'LANDING',
@@ -42,7 +43,8 @@ const SCREENS = {
   BATTLE_TOPIC_REVEAL: 'BATTLE_TOPIC_REVEAL',
   BATTLE_RECORDING: 'BATTLE_RECORDING',
   BATTLE_ANALYZING: 'BATTLE_ANALYZING',
-  BATTLE_RESULTS: 'BATTLE_RESULTS'
+  BATTLE_RESULTS: 'BATTLE_RESULTS',
+  BATTLE_PROFILE: 'BATTLE_PROFILE'
 };
 
 export function App() {
@@ -460,6 +462,7 @@ export function App() {
                 navigateTo(SCREENS.BATTLE_MATCHMAKING);
               }}
               onBack={handleLeaveBattleMode}
+              onViewProfile={() => navigateTo(SCREENS.BATTLE_PROFILE)}
             />
           </motion.div>
         )}
@@ -607,6 +610,25 @@ export function App() {
                 socket.emit('leave_room', { roomId: battleRoomId });
                 handleLeaveBattleMode();
               }}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_PROFILE && (
+          <motion.div
+            key="battle_profile"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <BattleProfile
+              user={{
+                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                avatar: localStorage.getItem('speakspin-player-avatar') || '🦁'
+              }}
+              onBack={() => navigateTo(SCREENS.BATTLE_LOBBY)}
             />
           </motion.div>
         )}

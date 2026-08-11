@@ -50,6 +50,36 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
       localStorage.setItem('speakspin-losses', savedLosses + 1);
       localStorage.setItem('speakspin-win-streak', 0);
     }
+
+    // Save detailed Battle History Log
+    const historyItem = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      mode: 'battle',
+      opponent: {
+        name: opponent.name,
+        avatar: opponent.avatar,
+        rating: opponent.rating
+      },
+      topic: results.topic || '',
+      category: results.category || 'Speech Battle',
+      myScore: me.overallScore,
+      opponentScore: opponent.overallScore,
+      winner: isDraw ? 'draw' : (isWinner ? 'me' : 'opponent'),
+      myRatingBefore: me.rating,
+      myRatingAfter: me.newRating,
+      ratingChange: me.ratingChange
+    };
+
+    const pastHistory = JSON.parse(localStorage.getItem('speakspin-battle-history') || '[]');
+    pastHistory.unshift(historyItem);
+    localStorage.setItem('speakspin-battle-history', JSON.stringify(pastHistory.slice(0, 50)));
+
+    // Track best ELO rating achieved
+    const bestRating = Number(localStorage.getItem('speakspin-best-rating')) || 1000;
+    if (me.newRating > bestRating) {
+      localStorage.setItem('speakspin-best-rating', me.newRating);
+    }
   }, []);
 
   const handleSendReaction = (emoji) => {

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import RatingBadge, { getTier } from './RatingBadge';
 import AvatarSelector from './AvatarSelector';
 
-export function BattleLobby({ user, onFindMatch, onBack }) {
+export function BattleLobby({ user, onFindMatch, onBack, onViewProfile }) {
   // Load stats from localStorage
   const [playerName, setPlayerName] = useState(() => {
     return localStorage.getItem('speakspin-player-name') || user.name || `Speaker${Math.floor(1000 + Math.random() * 9000)}`;
@@ -228,12 +228,36 @@ export function BattleLobby({ user, onFindMatch, onBack }) {
             fontFamily: 'var(--font-heading)',
             fontWeight: 900,
             letterSpacing: '0.05em',
-            marginBottom: '2rem'
+            marginBottom: '1rem'
           }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
           ⚔️ FIND BATTLE
+        </motion.button>
+
+        {/* View Profile Button */}
+        <motion.button
+          onClick={onViewProfile}
+          className="btn btn-secondary"
+          style={{
+            width: '100%',
+            fontSize: '1.1rem',
+            padding: '0.85rem',
+            backgroundColor: '#000000',
+            borderColor: '#ffffff',
+            borderWidth: '2px',
+            color: '#ffffff',
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+            marginBottom: '2rem',
+            textTransform: 'uppercase'
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          📊 VIEW GAMER PROFILE & HISTORY
         </motion.button>
 
         {/* Collapsible How it works */}

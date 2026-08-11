@@ -434,6 +434,8 @@ async function analyzeAndRevealResults(room, io) {
 
     io.to(room.roomId).emit('battle_results', {
       winner,
+      topic: room.topic,
+      category: room.category,
       player1: {
         name: p1.playerName,
         avatar: p1.avatar,
