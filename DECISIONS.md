@@ -134,3 +134,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Refactored LLM speech evaluation prompts to reward short pauses (0.5s - 1s), penalize long silences, calibrate WPM around a 130-150 range (penalizing rushed speed), and print verbatim 100/100 exemplar speech transcripts.
 * **The 'Why'**: Confident public speakers leverage deliberate pacing and brief pauses for emphasis, whereas rushed speed or excessive dead silence signals anxiety or poor structure. Verbatim exemplars provide concrete models instead of generic pointers.
 * **Impact**: Updates prompts and mock fallbacks inside `analyze.js` and `socket.js`.
+
+---
+
+### Date/Time: 2026-08-11T21:04:00Z
+* **The Decision**: Configured speech recording textareas to be read-only in both offline and online formats.
+* **The 'Why'**: Allowing manual text edits invites copy-pasting of large essays, bypassing speaking practice while inflating API token usage.
+* **Impact**: Enforces strictly vocal inputs in `SpeechRecorder.jsx` and `BattleRecorder.jsx`.
