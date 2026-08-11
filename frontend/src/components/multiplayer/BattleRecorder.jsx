@@ -12,6 +12,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
   const [actualDuration, setActualDuration] = useState(0);
   const [editableTranscript, setEditableTranscript] = useState('');
   const hasSubmittedRef = useRef(false);
+  const actualDurationRef = useRef(0);
 
   const {
     transcript,
@@ -93,16 +94,15 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     // Set duration countdown timer
     setTimeLeft(duration);
     setActualDuration(0);
+    actualDurationRef.current = 0;
 
     timerRef.current = setInterval(() => {
-      setActualDuration(prev => {
-        const nextDur = prev + 1;
-        if (nextDur >= duration) {
-          clearInterval(timerRef.current);
-          stopRecordingSession();
-        }
-        return nextDur;
-      });
+      actualDurationRef.current += 1;
+      setActualDuration(actualDurationRef.current);
+      if (actualDurationRef.current >= duration) {
+        clearInterval(timerRef.current);
+        stopRecordingSession();
+      }
       setTimeLeft(prev => Math.max(0, prev - 1));
     }, 1000);
   };
@@ -150,7 +150,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     setIsTranscribing(true);
 
     try {
-      if (blob && blob.size > 8000 && actualDuration >= 2) {
+      if (blob && blob.size > 8000 && actualDurationRef.current >= 2) {
         const response = await transcribeAudio(blob);
         if (response && response.text) {
           finalTranscript = response.text;
@@ -168,7 +168,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     onFinishSpeech({
       blob,
       transcript: finalCleanText,
-      actualDuration: actualDuration || 1,
+      actualDuration: actualDurationRef.current || 1,
       wordCount
     });
   };
