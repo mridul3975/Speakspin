@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Rigorous Speech Coach Rubric Update**: Refactored evaluation prompts in `analyze.js` and `socket.js`. Rewarded short pauses (0.5 to 1.0 seconds) that show control and confidence while penalizing long, silent pauses (2.0+ seconds). Calibrated WPM scoring around the confident sweet spot (130 to 150 WPM), penalizing rushed speeches (>160 WPM) and slow deliveries (<110 WPM). Updated the exemplar speech output to print a flawless, complete 100/100 verbatim speech transcript.
 * **Mandatory Category Spin Wheel (No Direct Selection)**: Simplified `TimerSelector.jsx` by removing custom dropdown selectors and tabs for specific subtopics. Users select their desired category (General, Tech / AI, Fitness, Philosophy, etc.) and then spin the wheel, which chooses a random prompt from that category's 10 subtopics.
-* **Category-Scoped Spin Wheel & Expanded Banks**: Configured `SpinWheel.jsx` and `TimerSelector.jsx` to restrict the random wheel segments to the selected category only. Added custom lists with exactly 10 subtopics each for all requested domains: Personal Finance, Entrepreneurship, Startups, Tech / AI, Fitness, Nutrition, Productivity, History, Literature, General, and Philosophy.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.

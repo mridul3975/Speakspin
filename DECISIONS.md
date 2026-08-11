@@ -127,3 +127,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Removed direct subtopic selectors and tabs, keeping only category selection coupled with mandatory wheel spins to preserve speech randomness.
 * **The 'Why'**: Direct selection defeats the spontaneous public speaking aspect of Toastmasters practice, which is best trained through random topics under a chosen thematic category.
 * **Impact**: Simplifies `TimerSelector.jsx` layout and cleans up unused routing parameters in `App.jsx`.
+
+---
+
+### Date/Time: 2026-08-11T20:57:00Z
+* **The Decision**: Refactored LLM speech evaluation prompts to reward short pauses (0.5s - 1s), penalize long silences, calibrate WPM around a 130-150 range (penalizing rushed speed), and print verbatim 100/100 exemplar speech transcripts.
+* **The 'Why'**: Confident public speakers leverage deliberate pacing and brief pauses for emphasis, whereas rushed speed or excessive dead silence signals anxiety or poor structure. Verbatim exemplars provide concrete models instead of generic pointers.
+* **Impact**: Updates prompts and mock fallbacks inside `analyze.js` and `socket.js`.
