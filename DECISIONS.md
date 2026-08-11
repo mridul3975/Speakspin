@@ -106,3 +106,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Injected class-based CSS media query blocks in `BattleResults.jsx` and `BattleRecorder.jsx`.
 * **The 'Why'**: Grid-based scoreboards, horizontal visualizers, split transcript columns, and action buttons look cluttered and overflow on phone screen sizes.
 * **Impact**: Enforces responsive vertical column stacking for screen viewports smaller than `600px`.
+
+---
+
+### Date/Time: 2026-08-11T20:27:00Z
+* **The Decision**: Added a custom topic selection mode with a drop-down list of 20 categorized prompt topics (General, Tech, Philosophy) inside `TimerSelector.jsx`.
+* **The 'Why'**: Providing direct topic options enables structured practice for users preparing specific presentation contents, bypassing the random wheel spinner.
+* **Impact**: Updates `TimerSelector.jsx` component layout and `App.jsx` single-player view transition routes.
