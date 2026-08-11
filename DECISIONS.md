@@ -85,3 +85,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Built a dedicated `BattleProfile.jsx` dashboard linked from a new action portal inside the matchmaking lobby.
 * **The 'Why'**: Competitive gamers need a dedicated summary of their matchmaking ratings, ELO peaks, consecutive wins, average/high scores, and outcome records (Wins/Losses/Draws) mapped against chronological opponents and topics.
 * **Impact**: Saves formatted JSON history items in localStorage (`speakspin-battle-history`) upon completion of each duel and renders them in a styled dashboard.
+
+---
+
+### Date/Time: 2026-08-11T09:25:00Z
+* **The Decision**: Changed ELO rating calculations from logarithmic expected values to flat ±30 ELO point increments.
+* **The 'Why'**: Simple flat point alterations provide arcade game predictability and match the competitive pacing expectations of players.
+* **Impact**: Updates the ELO results calculation values inside `backend/socket.js`.
