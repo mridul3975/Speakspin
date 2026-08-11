@@ -5,7 +5,7 @@ import { useAudioLevel } from '../../hooks/useAudioLevel';
 import { playTick, playHorn } from '../../utils/battleAudio';
 import { transcribeAudio } from '../../utils/api';
 
-export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaking, onFinishSpeech }) {
+export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaking, onFinishSpeech, selectedLanguage }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(duration);
@@ -58,7 +58,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     hasSubmittedRef.current = false;
 
     try {
-      startListening();
+      startListening(selectedLanguage);
     } catch (e) {
       console.warn('Speech recognition warning:', e);
     }
@@ -151,7 +151,8 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
 
     try {
       if (blob && blob.size > 8000 && actualDurationRef.current >= 2) {
-        const response = await transcribeAudio(blob);
+        const whisperHint = selectedLanguage ? selectedLanguage.split('-')[0] : '';
+        const response = await transcribeAudio(blob, whisperHint);
         if (response && response.text) {
           finalTranscript = response.text;
         }

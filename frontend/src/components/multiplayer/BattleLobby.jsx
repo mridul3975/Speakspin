@@ -3,7 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import RatingBadge, { getTier } from './RatingBadge';
 import AvatarSelector from './AvatarSelector';
 
-export function BattleLobby({ user, onFindMatch, onBack, onViewProfile }) {
+const SUPPORTED_LANGUAGES = [
+  { code: 'en-US', name: 'English (US)' },
+  { code: 'en-GB', name: 'English (UK)' },
+  { code: 'es-ES', name: 'Español (Spain)' },
+  { code: 'es-MX', name: 'Español (Mexico)' },
+  { code: 'fr-FR', name: 'Français (France)' },
+  { code: 'de-DE', name: 'Deutsch (Germany)' },
+  { code: 'hi-IN', name: 'हिन्दी (Hindi)' },
+  { code: 'it-IT', name: 'Italiano (Italy)' },
+  { code: 'ja-JP', name: '日本語 (Japanese)' },
+  { code: 'pt-BR', name: 'Português (Brazil)' },
+  { code: 'zh-CN', name: '中文 (Simplified Chinese)' },
+  { code: 'ar-SA', name: 'العربية (Arabic)' }
+];
+
+export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selectedLanguage, onChangeLanguage }) {
   // Load stats from localStorage
   const [playerName, setPlayerName] = useState(() => {
     return localStorage.getItem('speakspin-player-name') || user.name || `Speaker${Math.floor(1000 + Math.random() * 9000)}`;
@@ -214,9 +229,40 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile }) {
           </div>
         </div>
 
+        {/* Speaking Language Selector */}
+        <div style={{ marginBottom: '1.25rem', textAlign: 'left' }}>
+          <label style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.4rem' }}>
+            Speaking Language
+          </label>
+          <select
+            value={selectedLanguage || 'en-US'}
+            onChange={(e) => {
+              if (onChangeLanguage) onChangeLanguage(e.target.value);
+              localStorage.setItem('speakspin-battle-language', e.target.value);
+            }}
+            style={{
+              width: '100%',
+              padding: '0.85rem',
+              backgroundColor: '#000000',
+              border: '2px solid #ffffff',
+              color: '#ffffff',
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 800,
+              fontSize: '0.9rem',
+              borderRadius: '0px',
+              outline: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            {SUPPORTED_LANGUAGES.map(lang => (
+              <option key={lang.code} value={lang.code}>{lang.name}</option>
+            ))}
+          </select>
+        </div>
+
         {/* Find Match Pulsing Button */}
         <motion.button
-          onClick={() => onFindMatch({ playerName, avatar, rating })}
+          onClick={() => onFindMatch({ playerName, avatar, rating, language: selectedLanguage })}
           className="btn btn-primary"
           style={{
             width: '100%',

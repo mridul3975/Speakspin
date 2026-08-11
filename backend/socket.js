@@ -74,6 +74,7 @@ export function initSocket(httpServer) {
         playerName: playerData.playerName || 'Guest Speaker',
         avatar: playerData.avatar || '🦁',
         rating: Number(playerData.rating) || 1000,
+        language: playerData.language || 'en-US',
         joinedAt: Date.now()
       };
 
@@ -243,6 +244,10 @@ function tryMatchmaking(io) {
     for (let j = 0; j < waitingQueue.length; j++) {
       if (i === j) continue;
       const opponent = waitingQueue[j];
+      
+      // Match only players with the SAME selected language
+      if (player.language !== opponent.language) continue;
+
       const ratingDiff = Math.abs(player.rating - opponent.rating);
 
       if (ratingDiff <= ratingRange && ratingDiff < bestRatingDiff) {
@@ -279,6 +284,7 @@ function createRoom(p1, p2, io) {
     topic: topic.topic,
     category: topic.category,
     duration: 60,
+    language: p1.language || 'en-US',
     status: 'waiting_ready',
     createdAt: Date.now()
   };
@@ -323,6 +329,7 @@ function createBotRoom(player, botProfile, io) {
     topic: topic.topic,
     category: topic.category,
     duration: 60,
+    language: player.language || 'en-US',
     status: 'waiting_ready',
     createdAt: Date.now()
   };
@@ -373,6 +380,7 @@ async function simulateBotCompletion(room, botPlayer, io) {
     if (client) {
       try {
         const prompt = `Generate a realistic spoken speech transcript for the topic: '${room.topic}'.
+The speech should be written in language: ${room.language || 'en-US'}.
 The speaker's skill level is: ${botPlayer.botProfile.skillLevel}.
 Duration was 60 seconds.
 The speaker should sound like: ${botPlayer.botProfile.personality}.
@@ -417,8 +425,8 @@ async function analyzeAndRevealResults(room, io) {
 
   try {
     const [analysis1, analysis2] = await Promise.all([
-      runParallelSpeechAnalysis(p1.transcript, room.topic, room.duration, p1.actualDuration),
-      runParallelSpeechAnalysis(p2.transcript, room.topic, room.duration, p2.actualDuration)
+      runParallelSpeechAnalysis(p1.transcript, room.topic, room.duration, p1.actualDuration, room.language),
+      runParallelSpeechAnalysis(p2.transcript, room.topic, room.duration, p2.actualDuration, room.language)
     ]);
 
     const score1 = analysis1.overallScore;

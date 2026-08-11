@@ -472,6 +472,8 @@ export function App() {
               }}
               onBack={handleLeaveBattleMode}
               onViewProfile={() => navigateTo(SCREENS.BATTLE_PROFILE)}
+              selectedLanguage={selectedLanguage}
+              onChangeLanguage={setSelectedLanguage}
             />
           </motion.div>
         )}
@@ -492,7 +494,11 @@ export function App() {
                 navigateTo(SCREENS.BATTLE_LOBBY);
               }}
               onFightBot={(botId) => {
-                socket.emit('fight_bot', { botId, playerRating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000 });
+                socket.emit('fight_bot', { 
+                  botId, 
+                  playerRating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000,
+                  language: selectedLanguage
+                });
               }}
             />
           </motion.div>
@@ -557,6 +563,7 @@ export function App() {
               topic={battleTopic}
               duration={battleDuration}
               opponentSpeaking={opponentSpeaking}
+              selectedLanguage={selectedLanguage}
               onFinishSpeech={({ transcript, actualDuration, wordCount }) => {
                 socket.emit('submit_transcript', {
                   roomId: battleRoomId,
