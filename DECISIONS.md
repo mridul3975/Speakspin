@@ -155,3 +155,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Mounted a details modal inside `ProgressHistory.jsx` linked to a new `DETAILS` button on each item card.
 * **The 'Why'**: Practice history is much more useful if users can recall exactly what score breakdown, feedback paragraphs, and exemplar speech they received during past attempts.
 * **Impact**: Reuses `FeedbackDashboard.jsx` to display stored Postgres JSONB session results.
+
+---
+
+### Date/Time: 2026-08-11T23:20:00Z
+* **The Decision**: Implemented speaking language selectors in `BattleLobby.jsx` and added matching language filters to the socket server queue inside `socket.js`.
+* **The 'Why'**: Competitive multiplayer duels are only fair when both competitors speak and are evaluated in the same native language.
+* **Impact**: Restricts `tryMatchmaking` to identical language property matches, configures simulated bots to speak in player's language, and ensures evaluation runs on the chosen language.
