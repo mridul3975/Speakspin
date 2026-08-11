@@ -50,3 +50,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Integrated the server-side Whisper API transcription service as the primary speech parser in Battle Mode, rather than relying exclusively on the browser's Web Speech API.
 * **The 'Why'**: Browser-native Web Speech engines can be highly inaccurate, drop syllables, or fail entirely depending on device hardware or connection pings. Incorporating the backend Whisper pipeline guarantees that actual voice uploads are accurately transcribed.
 * **Impact**: Added transcription load screen overlays and Whisper calls directly into `BattleRecorder.jsx`.
+
+---
+
+### Date/Time: 2026-08-11T08:46:00Z
+* **The Decision**: Downgraded client-side browser Web Speech API exceptions and timeout connection drops from `console.error` to `console.warn` inside `useSpeechRecognition.js`.
+* **The 'Why'**: If the browser's internal speech connection drops (e.g. throws a network error), the client will automatically trigger the backend Whisper audio upload. Printing console errors for handled fallbacks creates false bug reports.
+* **Impact**: Keeps the browser logs clean and silent.

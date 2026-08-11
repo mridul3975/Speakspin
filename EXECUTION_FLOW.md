@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Console Logging Level Tuning**: Downgraded browser Web Speech API connection drops and recognition timeouts from `console.error` to `console.warn` inside `useSpeechRecognition.js`. Since the backend Whisper API processes all raw audio uploads, client-side browser speech engines failures do not disrupt the duel and should not print error stack traces.
 * **Server-side Whisper Transcription (Battle Mode)**: Integrated `transcribeAudio(blob)` into `BattleRecorder.jsx`. When a recording ends, the client uploads the raw voice stream to the backend Whisper pipeline for processing, falling back to Web Speech transcripts if empty. This guarantees accurate, context-aware speech scoring across all devices.
-* **Explicit User Gesture Mic Initialization**: Added a "START SPEAKING!" tap gesture splash overlay in `BattleRecorder.jsx` when the battle begins. This guarantees that microphone captures and Web Speech API `SpeechRecognition.start()` are triggered directly from an explicit user tap, resolving iOS Safari and mobile Chrome permissions sandbox blocks.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
 * **Web Audio API Sound Engine**: Integrated synthesizers for Horn sounds, ticking clocks, and winning arpeggios.
