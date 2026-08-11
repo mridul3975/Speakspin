@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export function LandingScreen({ onStart, onViewProgress }) {
+export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
