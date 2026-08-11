@@ -33,6 +33,7 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
   const mediaRecorderRef = useRef(null);
   const localStreamRef = useRef(null);
   const audioChunksRef = useRef([]);
+  const hasSubmittedRef = useRef(false);
 
   // Sync transcript real-time
   useEffect(() => {
@@ -169,25 +170,46 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
     socket.emit('playerStateUpdate', { roomId, state: 'completed' });
 
     stopListening();
+    let hasMediaRecorder = false;
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
       try {
         mediaRecorderRef.current.stop();
+        hasMediaRecorder = true;
       } catch (e) {
         console.error(e);
       }
     }
     if (timerRef.current) clearInterval(timerRef.current);
+
+    // Fallback trigger if MediaRecorder isn't running or takes too long to stop
+    if (!hasMediaRecorder) {
+      autoTranscribeAndSubmit(null);
+    } else {
+      setTimeout(() => {
+        if (!hasSubmittedRef.current) {
+          console.warn('Timeout fallback triggered: submitting battle score via transcript.');
+          autoTranscribeAndSubmit(null);
+        }
+      }, 1500);
+    }
   };
 
   const autoTranscribeAndSubmit = async (blob) => {
+    if (hasSubmittedRef.current) return;
+    hasSubmittedRef.current = true;
+
     setIsTranscribing(true);
     setBattleState('waiting');
     let finalTranscript = '';
 
     try {
-      const response = await transcribeAudio(blob);
-      if (response && response.text) {
-        finalTranscript = response.text;
+      if (blob) {
+        const response = await transcribeAudio(blob);
+        if (response && response.text) {
+          finalTranscript = response.text;
+        }
+      } else {
+        finalTranscript = transcript || editableTranscript;
       }
     } catch (err) {
       console.error('Multiplayer Whisper failed, falling back to Web Speech:', err);
