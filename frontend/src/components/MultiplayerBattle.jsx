@@ -203,7 +203,7 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
     let finalTranscript = '';
 
     try {
-      if (blob && blob.size > 1000) {
+      if (blob && blob.size > 8000 && actualDurationRef.current >= 2) {
         const response = await transcribeAudio(blob);
         if (response && response.text) {
           finalTranscript = response.text;

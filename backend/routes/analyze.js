@@ -366,12 +366,14 @@ router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('aud
     });
   }
 
-  const tempFilePath = `${req.file.path}.webm`;
+  const mimeType = req.file.mimetype || 'audio/webm';
+  const extension = mimeType.includes('mp4') ? 'mp4' : (mimeType.includes('ogg') ? 'ogg' : 'webm');
+  const tempFilePath = `${req.file.path}.${extension}`;
   
   try {
     fs.renameSync(req.file.path, tempFilePath);
 
-    const audioFile = await toFile(fs.createReadStream(tempFilePath), 'speech.webm', { type: 'audio/webm' });
+    const audioFile = await toFile(fs.createReadStream(tempFilePath), `speech.${extension}`, { type: mimeType });
 
     const transcription = await client.audio.transcriptions.create({
       file: audioFile,
