@@ -22,3 +22,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Integrated parallel GPT-4o Toastmasters speech graders on the backend.
 * **The 'Why'**: To evaluate both contestants concurrently without blocking and calculate ELO changes using expected probability ratios.
 * **Impact**: Submits concurrent promises using `Promise.all` inside `socket.js`.
+
+---
+
+### Date/Time: 2026-08-11T08:26:00Z
+* **The Decision**: Replaced the hardcoded static `localhost:5173` CORS origin setting with a dynamic regex/list evaluator in Express and Socket.io.
+* **The 'Why'**: The live app deployed on Vercel (`vercel.app`) was blocked by Render's CORS preflight rules when attempting to verification-verify Google OAuth and trigger websocket handshakes.
+* **Impact**: Restores cross-domain requests, cookies, and websocket handshakes for production environments.
