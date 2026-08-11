@@ -4,7 +4,7 @@ import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
 import { transcribeAudio } from '../utils/api';
 
-export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
+export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selectedLanguage }) {
   const [recorderState, setRecorderState] = useState('idle'); // idle | countdown | recording | completed
   const [countdown, setCountdown] = useState(3);
   const [timeLeft, setTimeLeft] = useState(targetDuration);
@@ -104,7 +104,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     setEditableTranscript('');
     setAudioBlob(null);
     audioChunksRef.current = [];
-    startListening();
+    startListening(selectedLanguage);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -156,7 +156,8 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     let finalTranscript = '';
     
     try {
-      const response = await transcribeAudio(blob);
+      const whisperHint = selectedLanguage ? selectedLanguage.split('-')[0] : '';
+      const response = await transcribeAudio(blob, whisperHint);
       if (response && response.text) {
         finalTranscript = response.text;
         setEditableTranscript(response.text);

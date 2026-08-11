@@ -15,13 +15,30 @@ const CATEGORIES = [
   "Philosophy"
 ];
 
+const SUPPORTED_LANGUAGES = [
+  { code: 'en-US', name: 'English (US)' },
+  { code: 'en-GB', name: 'English (UK)' },
+  { code: 'es-ES', name: 'Español (Spain)' },
+  { code: 'es-MX', name: 'Español (Mexico)' },
+  { code: 'fr-FR', name: 'Français (France)' },
+  { code: 'de-DE', name: 'Deutsch (Germany)' },
+  { code: 'hi-IN', name: 'हिन्दी (Hindi)' },
+  { code: 'it-IT', name: 'Italiano (Italy)' },
+  { code: 'ja-JP', name: '日本語 (Japanese)' },
+  { code: 'pt-BR', name: 'Português (Brazil)' },
+  { code: 'zh-CN', name: '中文 (Simplified Chinese)' },
+  { code: 'ar-SA', name: 'العربية (Arabic)' }
+];
+
 export function TimerSelector({ 
   selectedDuration, 
   onChangeDuration, 
   onNext, 
   onBack, 
   selectedCategory,
-  onChangeCategory
+  onChangeCategory,
+  selectedLanguage,
+  onChangeLanguage
 }) {
   const options = [
     { value: 30, icon: 'bolt', label: '30s', desc: 'Quick' },
@@ -86,7 +103,7 @@ export function TimerSelector({
           fontFamily: 'var(--font-heading)',
           fontWeight: 800,
           fontSize: '0.9rem',
-          marginBottom: '2rem',
+          marginBottom: '1.5rem',
           borderRadius: '0px',
           outline: 'none',
           cursor: 'pointer'
@@ -94,6 +111,32 @@ export function TimerSelector({
       >
         {CATEGORIES.map(cat => (
           <option key={cat} value={cat}>{cat.toUpperCase()}</option>
+        ))}
+      </select>
+
+      <div className="setup-instruction">Select Speaking Language</div>
+
+      {/* Language Dropdown Selector */}
+      <select
+        value={selectedLanguage}
+        onChange={(e) => onChangeLanguage(e.target.value)}
+        style={{
+          width: '100%',
+          padding: '0.85rem',
+          backgroundColor: '#000000',
+          border: '2px solid #ffffff',
+          color: '#ffffff',
+          fontFamily: 'var(--font-heading)',
+          fontWeight: 800,
+          fontSize: '0.9rem',
+          marginBottom: '2rem',
+          borderRadius: '0px',
+          outline: 'none',
+          cursor: 'pointer'
+        }}
+      >
+        {SUPPORTED_LANGUAGES.map(lang => (
+          <option key={lang.code} value={lang.code}>{lang.name}</option>
         ))}
       </select>
 

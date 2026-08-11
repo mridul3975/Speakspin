@@ -188,7 +188,7 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
 
 // POST /api/analyze-text (JWT Protected)
 router.post('/analyze-text', authMiddleware, analyzeLimiter, async (req, res) => {
-  const { transcript, topic, category, targetDuration, actualDuration } = req.body;
+  const { transcript, topic, category, targetDuration, actualDuration, language } = req.body;
 
   if (!transcript || transcript.trim() === "") {
     return res.status(400).json({ error: "Transcript is required" });
@@ -221,11 +221,14 @@ CRITICAL GRADING CRITERIA:
    - For targetDuration > 60 seconds (up to 300 seconds): Requires a formal opening, structured discussion body containing exactly 2 to 3 distinct examples or points, and a powerful conclusion (optionally ending with a question).
 4. Exemplar Speech:
    - The exemplarSpeech must be a complete, flawless 100/100 speech transcript matching the target duration and topic (NOT tips). It must use strong vocabulary, professional tone, proper opening, discussion/examples, and conclusion.
-5. Respond ONLY with a valid JSON object matching the requested schema. No markdown outside.`;
+5. Multi-Language Support:
+   - The transcript is delivered in a specific spoken language. You must evaluate fluency, relevance, structures, and vocabulary properties according to the native linguistic rules of that language. Write all feedback fields in English, but generate the exemplarSpeech transcript itself in the native spoken language.
+6. Respond ONLY with a valid JSON object matching the requested schema. No markdown outside.`;
 
       const userPrompt = `You are an expert, strict speech evaluator. Analyze this performance:
 
 Topic Given: ${topic}
+Spoken Language: ${language || 'en-US'}
 Target Duration: ${targetDuration} seconds
 Actual Duration: ${actualDuration} seconds  
 Word Count: ${wordCount}
@@ -394,9 +397,12 @@ router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('aud
 
     const audioFile = await toFile(fs.createReadStream(tempFilePath), 'speech.webm', { type: 'audio/webm' });
 
+    const { language } = req.body;
+
     const transcription = await client.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-large-v3",
+      ...(language ? { language } : {})
     });
 
     try { fs.unlinkSync(tempFilePath); } catch (e) {}

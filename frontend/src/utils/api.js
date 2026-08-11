@@ -77,7 +77,7 @@ export async function fetchCurrentUser() {
 
 /* --- SPEECH ANALYSIS API --- */
 
-export async function analyzeText({ transcript, topic, category, targetDuration, actualDuration }) {
+export async function analyzeText({ transcript, topic, category, targetDuration, actualDuration, language = 'en-US' }) {
   try {
     const response = await fetch(`${API_BASE}/api/analyze-text`, {
       method: 'POST',
@@ -90,6 +90,7 @@ export async function analyzeText({ transcript, topic, category, targetDuration,
         category,
         targetDuration,
         actualDuration,
+        language,
       }),
     });
 
@@ -107,12 +108,15 @@ export async function analyzeText({ transcript, topic, category, targetDuration,
 
 /* --- AUDIO TRANSCRIPTION API --- */
 
-export async function transcribeAudio(audioBlob) {
+export async function transcribeAudio(audioBlob, language = '') {
   try {
     const formData = new FormData();
     const mimeType = audioBlob.type || 'audio/webm';
     const extension = mimeType.includes('mp4') ? 'mp4' : (mimeType.includes('ogg') ? 'ogg' : 'webm');
     formData.append('audio', audioBlob, `speech.${extension}`);
+    if (language) {
+      formData.append('language', language);
+    }
 
     const response = await fetch(`${API_BASE}/api/transcribe`, {
       method: 'POST',

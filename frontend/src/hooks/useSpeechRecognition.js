@@ -77,8 +77,9 @@ export function useSpeechRecognition() {
     recognitionRef.current = recognition;
   }, []);
 
-  const startListening = () => {
+  const startListening = (language = 'en-US') => {
     if (!recognitionRef.current) return;
+    recognitionRef.current.lang = language;
     shouldListenRef.current = true;
     transcriptRef.current = '';
     setTranscript('');

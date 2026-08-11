@@ -51,6 +51,7 @@ export function App() {
   const [screen, setScreen] = useState(SCREENS.LANDING);
   const [selectedDuration, setSelectedDuration] = useState(60); // default 60s
   const [selectedCategory, setSelectedCategory] = useState('General'); // default General category
+  const [selectedLanguage, setSelectedLanguage] = useState('en-US'); // default English language
   const [currentTopic, setCurrentTopic] = useState(null);
   const [actualDuration, setActualDuration] = useState(0);
   const [analysisResults, setAnalysisResults] = useState(null);
@@ -257,6 +258,7 @@ export function App() {
         category: currentTopic.category,
         targetDuration: selectedDuration,
         actualDuration,
+        language: selectedLanguage,
       });
 
       setAnalysisResults(result);
@@ -363,6 +365,8 @@ export function App() {
               onBack={() => navigateTo(SCREENS.LANDING)}
               selectedCategory={selectedCategory}
               onChangeCategory={setSelectedCategory}
+              selectedLanguage={selectedLanguage}
+              onChangeLanguage={setSelectedLanguage}
             />
           </motion.div>
         )}
@@ -398,6 +402,7 @@ export function App() {
               targetDuration={selectedDuration}
               onBack={() => navigateTo(SCREENS.SETUP)}
               onAnalyze={handleStartAnalysis}
+              selectedLanguage={selectedLanguage}
             />
           </motion.div>
         )}
