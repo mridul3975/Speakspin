@@ -94,10 +94,18 @@ export function useSpeechRecognition() {
     setInterimTranscript('');
     setError(null);
     try {
-      recognitionRef.current.start();
-    } catch (err) {
-      console.error('Failed to start recognition:', err);
-    }
+      recognitionRef.current.abort();
+    } catch (e) {}
+
+    setTimeout(() => {
+      try {
+        if (shouldListenRef.current) {
+          recognitionRef.current.start();
+        }
+      } catch (err) {
+        console.error('Failed to start recognition:', err);
+      }
+    }, 50);
   };
 
   const stopListening = () => {
