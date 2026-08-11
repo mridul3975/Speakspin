@@ -57,3 +57,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Downgraded client-side browser Web Speech API exceptions and timeout connection drops from `console.error` to `console.warn` inside `useSpeechRecognition.js`.
 * **The 'Why'**: If the browser's internal speech connection drops (e.g. throws a network error), the client will automatically trigger the backend Whisper audio upload. Printing console errors for handled fallbacks creates false bug reports.
 * **Impact**: Keeps the browser logs clean and silent.
+
+---
+
+### Date/Time: 2026-08-11T08:51:00Z
+* **The Decision**: Enabled dynamic filename extensions (`.mp4` / `.webm`) matching the exact `audioBlob.type` before uploading to `api.js`.
+* **The 'Why'**: Because Safari on iOS records raw streams in `.mp4` format, sending them with a hardcoded `.webm` name header caused the Groq decoder to throw format verification exceptions, dropping transcripts for iPhone competitors.
+* **Impact**: Restores cross-browser speech transcription and scoring.
