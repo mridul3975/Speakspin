@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Competitive Gamer Profile & Duel History**: Created `BattleProfile.jsx` and added a "VIEW GAMER PROFILE" portal inside `BattleLobby.jsx`. Displays ELO tier progress, win rates, streaks, and a detailed feed of past 50 matches (opponents, topics, and scores) saved in localStorage (`speakspin-battle-history`).
 * **Server-Authoritative Scoreboard Alignment**: Configured `BattleResults.jsx` to map stats using the socket-assigned `myPosition` prop rather than running string matches on usernames. This resolves index mismatches, displaying the correct win/loss banners and ELO gains to each competitor.
-* **React Stale Closure Fix (Battle Mode)**: Introduced `actualDurationRef` (a React ref) to track elapsed recording seconds in `BattleRecorder.jsx`. Previously, using the stale state closure variable `actualDuration` caused the duration check to evaluate to `0 >= 2`, skipping Whisper API uploads and defaulting to blank Web Speech logs.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
 * **Web Audio API Sound Engine**: Integrated synthesizers for Horn sounds, ticking clocks, and winning arpeggios.
@@ -57,7 +57,8 @@ This map outlines the active entry points, execution flows, and dependency chain
    ├──> [LandingScreen] (⚔️ Battle Mode Button)
    │
    ├──> [BattleLobby]
-   │       └──> [AvatarSelector] & [RatingBadge]
+   │       ├──> [AvatarSelector] & [RatingBadge]
+   │       └──> [BattleProfile] (Detailed stats & scrollable duel history cards)
    │
    ├──> [Matchmaking] (Stopwatch & Radar)
    │

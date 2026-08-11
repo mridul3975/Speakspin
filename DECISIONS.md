@@ -78,3 +78,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Configured position mapping using the server-authoritative socket value `myPosition` instead of comparing string names.
 * **The 'Why'**: Comparing string values against user name configs caused mismatch exceptions (as customized names or Google user profile setups varied), displaying identical scores or incorrect win/loss states to contestants.
 * **Impact**: Displays correct personalized feedback and ELO change records.
+
+---
+
+### Date/Time: 2026-08-11T09:20:00Z
+* **The Decision**: Built a dedicated `BattleProfile.jsx` dashboard linked from a new action portal inside the matchmaking lobby.
+* **The 'Why'**: Competitive gamers need a dedicated summary of their matchmaking ratings, ELO peaks, consecutive wins, average/high scores, and outcome records (Wins/Losses/Draws) mapped against chronological opponents and topics.
+* **Impact**: Saves formatted JSON history items in localStorage (`speakspin-battle-history`) upon completion of each duel and renders them in a styled dashboard.
