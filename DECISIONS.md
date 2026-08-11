@@ -71,3 +71,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Utilized a React mutable Ref `actualDurationRef` to store the active elapsed speaking duration instead of checking state hooks directly during submission callbacks.
 * **The 'Why'**: Stale closures in React capture initial state values (like `actualDuration = 0`), which causes duration validation checks (`actualDuration >= 2`) to fail and skip backend transcription uploads, resulting in empty transcripts.
 * **Impact**: Resolves transcription skips and enables accurate audio file uploads.
+
+---
+
+### Date/Time: 2026-08-11T09:16:00Z
+* **The Decision**: Configured position mapping using the server-authoritative socket value `myPosition` instead of comparing string names.
+* **The 'Why'**: Comparing string values against user name configs caused mismatch exceptions (as customized names or Google user profile setups varied), displaying identical scores or incorrect win/loss states to contestants.
+* **Impact**: Displays correct personalized feedback and ELO change records.
