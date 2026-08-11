@@ -541,18 +541,24 @@ Return JSON with "overallScore" (1-100), "categories" (confidence, fluency, rele
 }
 
 function calculateELO(rating1, rating2, winner) {
-  const K = 32;
-  const expected1 = 1 / (1 + Math.pow(10, (rating2 - rating1) / 400));
-  const expected2 = 1 - expected1;
+  let change1 = 0;
+  let change2 = 0;
 
-  let actual1, actual2;
-  if (winner === 'player1') { actual1 = 1; actual2 = 0; }
-  else if (winner === 'player2') { actual1 = 0; actual2 = 1; }
-  else { actual1 = 0.5; actual2 = 0.5; }
+  if (winner === 'player1') {
+    change1 = 30;
+    change2 = -30;
+  } else if (winner === 'player2') {
+    change1 = -30;
+    change2 = 30;
+  }
+
+  // Ensure ratings do not drop below a floor of 100 ELO
+  if (rating1 + change1 < 100) change1 = 100 - rating1;
+  if (rating2 + change2 < 100) change2 = 100 - rating2;
 
   return {
-    change1: Math.round(K * (actual1 - expected1)),
-    change2: Math.round(K * (actual2 - expected2))
+    change1,
+    change2
   };
 }
 
