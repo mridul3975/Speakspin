@@ -1,7 +1,9 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import FeedbackDashboard from './FeedbackDashboard';
 
 export function ProgressHistory({ history = [], onBack, onClearHistory }) {
+  const [selectedSession, setSelectedSession] = useState(null);
   const totalSessions = history.length;
   
   const avgScore = totalSessions > 0 
@@ -36,6 +38,34 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
     }
   };
 
+  const parseJson = (val) => {
+    if (!val) return {};
+    if (typeof val === 'string') {
+      try {
+        return JSON.parse(val);
+      } catch (e) {
+        return {};
+      }
+    }
+    return val;
+  };
+
+  // Build structured analysis object for FeedbackDashboard
+  const getFormattedAnalysis = (session) => {
+    if (!session) return null;
+    return {
+      overallScore: session.overallScore,
+      categories: parseJson(session.categories),
+      fillerWords: parseJson(session.fillerWords),
+      anxietyIndicators: parseJson(session.anxietyIndicators),
+      strengths: parseJson(session.strengths),
+      improvements: parseJson(session.improvements),
+      overallFeedback: session.overallFeedback || '',
+      challengeForNext: session.challengeForNext || '',
+      exemplarSpeech: session.exemplarSpeech || ''
+    };
+  };
+
   return (
     <motion.div
       className="history-container"
@@ -43,6 +73,7 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -15 }}
       transition={{ duration: 0.3 }}
+      style={{ position: 'relative' }}
     >
       {/* Header */}
       <div className="history-header">
@@ -137,10 +168,17 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
                     </div>
                   </div>
 
-                  <div className="history-item-score-block">
+                  <div className="history-item-score-block" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
                     <div className="history-item-score-box">
                       {session.overallScore}
                     </div>
+                    <button
+                      className="btn btn-secondary"
+                      style={{ padding: '0.25rem 0.6rem', fontSize: '0.65rem', fontWeight: 900, minWidth: '85px', border: '1px solid currentColor' }}
+                      onClick={() => setSelectedSession(session)}
+                    >
+                      DETAILS
+                    </button>
                   </div>
                 </div>
               ))}
@@ -148,6 +186,47 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
           </div>
         </>
       )}
+
+      {/* DETAILED FEEDBACK DIALOG OVERLAY */}
+      <AnimatePresence>
+        {selectedSession && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(0,0,0,0.92)',
+              zIndex: 9999,
+              overflowY: 'auto',
+              padding: '2rem 1rem',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center'
+            }}
+          >
+            <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setSelectedSession(null)}
+                style={{ borderColor: 'var(--accent-coral)', color: 'var(--accent-coral)', fontWeight: 900, fontSize: '0.8rem', padding: '0.5rem 1.25rem' }}
+              >
+                ❌ CLOSE LOG
+              </button>
+            </div>
+            
+            <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#000000', border: '4px solid #ffffff', padding: '1.5rem', boxShadow: '8px 8px 0px 0px #ffffff' }}>
+              <FeedbackDashboard
+                topic={{ topic: selectedSession.topic, category: selectedSession.category }}
+                analysis={getFormattedAnalysis(selectedSession)}
+                onPracticeAgain={() => setSelectedSession(null)}
+                onGoHome={() => setSelectedSession(null)}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
