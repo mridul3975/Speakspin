@@ -43,8 +43,19 @@ function getOpenAIClient() {
 export function initSocket(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: "http://localhost:5173",
-      methods: ["GET", "POST"]
+      origin: (origin, callback) => {
+        const allowed = [
+          'http://localhost:5173',
+          'https://speakspin-nine.vercel.app'
+        ];
+        if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
+      },
+      methods: ["GET", "POST"],
+      credentials: true
     }
   });
 
