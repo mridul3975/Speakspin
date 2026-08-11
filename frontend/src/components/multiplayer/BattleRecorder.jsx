@@ -5,6 +5,7 @@ import { useAudioLevel } from '../../hooks/useAudioLevel';
 import { playTick, playHorn } from '../../utils/battleAudio';
 
 export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaking, onFinishSpeech }) {
+  const [hasStarted, setHasStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(duration);
   const [actualDuration, setActualDuration] = useState(0);
   const [editableTranscript, setEditableTranscript] = useState('');
@@ -43,7 +44,6 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
 
   // Start recording on mount
   useEffect(() => {
-    startRecordingSession();
     return () => {
       stopRecordingSession();
     };
@@ -165,6 +165,40 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
   const circumference = radius * 2 * Math.PI;
   const progressRatio = timeLeft / duration;
   const strokeDashoffset = circumference - progressRatio * circumference;
+
+  if (!hasStarted) {
+    return (
+      <div className="setup-container" style={{ margin: '3rem auto', maxWidth: '500px', textAlign: 'center' }}>
+        <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
+          <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem', animation: 'pulse 1s infinite' }}>🎤</span>
+          <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.25rem', margin: '0 0 1.5rem 0' }}>
+            READY TO RECORD?
+          </h3>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '2rem' }}>
+            Tap the button below to initialize your microphone stream and start speaking on your topic!
+          </p>
+          <button
+            onClick={() => {
+              setHasStarted(true);
+              startRecordingSession();
+            }}
+            className="btn btn-primary"
+            style={{
+              width: '100%',
+              padding: '1.1rem',
+              fontSize: '1.2rem',
+              backgroundColor: 'var(--accent-teal)',
+              borderColor: 'var(--accent-teal)',
+              fontFamily: 'var(--font-heading)',
+              fontWeight: 900
+            }}
+          >
+            🔥 START SPEAKING!
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="recorder-card" style={{ maxWidth: '700px', margin: '1rem auto 2rem', padding: '1.5rem' }}>
