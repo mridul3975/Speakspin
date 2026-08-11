@@ -336,7 +336,8 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
             cy={size / 2}
             r={radius}
             strokeDasharray={circumference}
-            animate={{ strokeDashoffset }}
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: isNaN(strokeDashoffset) ? 0 : strokeDashoffset }}
             transition={{ duration: 0.5, ease: 'linear' }}
           />
         </svg>
