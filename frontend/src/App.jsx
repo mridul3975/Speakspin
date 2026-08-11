@@ -18,6 +18,16 @@ import {
 } from './utils/api';
 import './App.css';
 
+// Multiplayer Imports
+import { useSocket } from './hooks/useSocket';
+import BattleLobby from './components/multiplayer/BattleLobby';
+import Matchmaking from './components/multiplayer/Matchmaking';
+import OpponentFound from './components/multiplayer/OpponentFound';
+import TopicReveal from './components/multiplayer/TopicReveal';
+import BattleRecorder from './components/multiplayer/BattleRecorder';
+import BattleAnalyzing from './components/multiplayer/BattleAnalyzing';
+import BattleResults from './components/multiplayer/BattleResults';
+
 const SCREENS = {
   LANDING: 'LANDING',
   SETUP: 'SETUP',
@@ -26,6 +36,13 @@ const SCREENS = {
   ANALYZING: 'ANALYZING',
   FEEDBACK: 'FEEDBACK',
   HISTORY: 'HISTORY',
+  BATTLE_LOBBY: 'BATTLE_LOBBY',
+  BATTLE_MATCHMAKING: 'BATTLE_MATCHMAKING',
+  BATTLE_OPPONENT_FOUND: 'BATTLE_OPPONENT_FOUND',
+  BATTLE_TOPIC_REVEAL: 'BATTLE_TOPIC_REVEAL',
+  BATTLE_RECORDING: 'BATTLE_RECORDING',
+  BATTLE_ANALYZING: 'BATTLE_ANALYZING',
+  BATTLE_RESULTS: 'BATTLE_RESULTS'
 };
 
 export function App() {
@@ -39,6 +56,124 @@ export function App() {
   // Auth States
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
+
+  // Multiplayer States
+  const { socket, isConnected, connect, disconnect } = useSocket();
+  const [battleOpponent, setBattleOpponent] = useState(null);
+  const [battleRoomId, setBattleRoomId] = useState(null);
+  const [battleTopic, setBattleTopic] = useState(null);
+  const [battleCategory, setBattleCategory] = useState(null);
+  const [battleDuration, setBattleDuration] = useState(60);
+  const [startCountdown, setStartCountdown] = useState(5);
+  const [opponentSpeaking, setOpponentSpeaking] = useState(false);
+  const [opponentSubmitted, setOpponentSubmitted] = useState(false);
+  const [battleResults, setBattleResults] = useState(null);
+  const [myPosition, setMyPosition] = useState('player1');
+
+  // Handle battle sockets
+  useEffect(() => {
+    if (!socket) return;
+
+    socket.on('queue_joined', ({ position }) => {
+      console.log('Matchmaking queue joined. Queue position:', position);
+    });
+
+    socket.on('match_found', ({ roomId, opponent, yourPosition }) => {
+      setBattleRoomId(roomId);
+      setBattleOpponent(opponent);
+      setMyPosition(yourPosition);
+      setOpponentSpeaking(false);
+      setOpponentSubmitted(false);
+      navigateTo(SCREENS.BATTLE_OPPONENT_FOUND);
+    });
+
+    socket.on('opponent_ready', () => {
+      window.dispatchEvent(new CustomEvent('socket_opponent_ready'));
+    });
+
+    socket.on('battle_starting', ({ topic, category, duration }) => {
+      setBattleTopic(topic);
+      setBattleCategory(category);
+      setBattleDuration(duration);
+      navigateTo(SCREENS.BATTLE_TOPIC_REVEAL);
+    });
+
+    socket.on('speaking_countdown', ({ count }) => {
+      setStartCountdown(count);
+    });
+
+    socket.on('start_recording', () => {
+      setOpponentSpeaking(true);
+      navigateTo(SCREENS.BATTLE_RECORDING);
+    });
+
+    socket.on('opponent_submitted', () => {
+      setOpponentSpeaking(false);
+      setOpponentSubmitted(true);
+    });
+
+    socket.on('analyzing_speeches', () => {
+      navigateTo(SCREENS.BATTLE_ANALYZING);
+    });
+
+    socket.on('battle_results', (results) => {
+      setBattleResults(results);
+      navigateTo(SCREENS.BATTLE_RESULTS);
+    });
+
+    socket.on('opponent_wants_rematch', () => {
+      window.dispatchEvent(new CustomEvent('socket_opponent_wants_rematch'));
+    });
+
+    socket.on('receive_reaction', ({ reaction }) => {
+      window.dispatchEvent(new CustomEvent('socket_reaction', { detail: { reaction } }));
+    });
+
+    socket.on('opponent_disconnected', () => {
+      alert('⚡ Opponent disconnected - You Win! ELO adjusted.');
+      navigateTo(SCREENS.BATTLE_LOBBY);
+    });
+
+    socket.on('opponent_left', () => {
+      alert('Opponent left before the battle started.');
+      navigateTo(SCREENS.BATTLE_LOBBY);
+    });
+
+    socket.on('error', ({ message }) => {
+      alert(`❌ Match error: ${message}`);
+      navigateTo(SCREENS.BATTLE_LOBBY);
+    });
+
+    return () => {
+      socket.off('queue_joined');
+      socket.off('match_found');
+      socket.off('opponent_ready');
+      socket.off('battle_starting');
+      socket.off('speaking_countdown');
+      socket.off('start_recording');
+      socket.off('opponent_submitted');
+      socket.off('analyzing_speeches');
+      socket.off('battle_results');
+      socket.off('opponent_wants_rematch');
+      socket.off('receive_reaction');
+      socket.off('opponent_disconnected');
+      socket.off('opponent_left');
+      socket.off('error');
+    };
+  }, [socket]);
+
+  const handleStartBattleMode = () => {
+    const API_URL = window.location.hostname === 'localhost'
+      ? 'http://localhost:3001'
+      : window.location.origin.replace('5173', '3001');
+    connect(API_URL);
+    navigateTo(SCREENS.BATTLE_LOBBY);
+  };
+
+  const handleLeaveBattleMode = () => {
+    disconnect();
+    navigateTo(SCREENS.LANDING);
+  };
 
   // Validate active auth tokens on mount
   useEffect(() => {
@@ -201,6 +336,7 @@ export function App() {
             <LandingScreen
               onStart={() => navigateTo(SCREENS.SETUP)}
               onViewProgress={() => navigateTo(SCREENS.HISTORY)}
+              onStartBattle={handleStartBattleMode}
             />
           </motion.div>
         )}
@@ -298,9 +434,175 @@ export function App() {
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
             <ProgressHistory
-              history={history}
-              onBack={() => navigateTo(SCREENS.LANDING)}
-              onClearHistory={clearHistory}
+               history={history}
+               onBack={() => navigateTo(SCREENS.LANDING)}
+               onClearHistory={clearHistory}
+             />
+           </motion.div>
+         )}
+
+        {screen === SCREENS.BATTLE_LOBBY && (
+          <motion.div
+            key="battle_lobby"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <BattleLobby
+              user={user}
+              onFindMatch={(pData) => {
+                socket.emit('find_match', pData);
+                navigateTo(SCREENS.BATTLE_MATCHMAKING);
+              }}
+              onBack={handleLeaveBattleMode}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_MATCHMAKING && (
+          <motion.div
+            key="battle_matchmaking"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <Matchmaking
+              rating={localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000}
+              onCancel={() => {
+                socket.emit('cancel_search');
+                navigateTo(SCREENS.BATTLE_LOBBY);
+              }}
+              onFightBot={(botId) => {
+                socket.emit('fight_bot', { botId, playerRating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000 });
+              }}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_OPPONENT_FOUND && (
+          <motion.div
+            key="battle_opponent_found"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <OpponentFound
+              user={{
+                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
+                rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
+              }}
+              opponent={battleOpponent}
+              onReady={() => {
+                socket.emit('player_ready', { roomId: battleRoomId });
+              }}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_TOPIC_REVEAL && (
+          <motion.div
+            key="battle_topic_reveal"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <TopicReveal
+              topic={battleTopic}
+              category={battleCategory}
+              duration={battleDuration}
+              startCountdown={startCountdown}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_RECORDING && (
+          <motion.div
+            key="battle_recording"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <BattleRecorder
+              user={{
+                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
+              }}
+              opponent={battleOpponent}
+              topic={battleTopic}
+              duration={battleDuration}
+              opponentSpeaking={opponentSpeaking}
+              onFinishSpeech={({ transcript, actualDuration, wordCount }) => {
+                socket.emit('submit_transcript', {
+                  roomId: battleRoomId,
+                  transcript,
+                  actualDuration,
+                  wordCount
+                });
+                navigateTo(SCREENS.BATTLE_ANALYZING);
+              }}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_ANALYZING && (
+          <motion.div
+            key="battle_analyzing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <BattleAnalyzing opponentSubmitted={opponentSubmitted} />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.BATTLE_RESULTS && (
+          <motion.div
+            key="battle_results"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <BattleResults
+              user={{
+                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
+                rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
+              }}
+              results={battleResults}
+              onSendReaction={(reaction) => {
+                socket.emit('send_reaction', { roomId: battleRoomId, reaction });
+              }}
+              onRematch={() => {
+                socket.emit('request_rematch', { roomId: battleRoomId });
+              }}
+              onNewOpponent={() => {
+                socket.emit('leave_room', { roomId: battleRoomId });
+                socket.emit('find_match', {
+                  playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                  avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
+                  rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
+                });
+                navigateTo(SCREENS.BATTLE_MATCHMAKING);
+              }}
+              onLeave={() => {
+                socket.emit('leave_room', { roomId: battleRoomId });
+                handleLeaveBattleMode();
+              }}
             />
           </motion.div>
         )}

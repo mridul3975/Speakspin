@@ -76,23 +76,47 @@ export function LandingScreen({ onStart, onViewProgress }) {
       </motion.div>
 
       {/* Action buttons */}
-      <motion.div className="landing-actions" variants={itemVariants}>
+      <motion.div className="landing-actions" variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '380px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
+          <motion.button
+            className="btn btn-primary"
+            style={{ flex: 1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onStart}
+          >
+            <span className="material-symbols-outlined text-sm">rocket_launch</span>
+            Start Speaking
+          </motion.button>
+          
+          <motion.button
+            className="btn btn-secondary"
+            style={{ flex: 1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={onViewProgress}
+          >
+            <span className="material-symbols-outlined text-sm">bar_chart</span>
+            View Progress
+          </motion.button>
+        </div>
+
         <motion.button
           className="btn btn-primary"
           whileTap={{ scale: 0.98 }}
-          onClick={onStart}
+          onClick={onStartBattle}
+          style={{
+            width: '100%',
+            backgroundColor: '#FF416C',
+            borderColor: '#FF4B2B',
+            boxShadow: '0 0 10px rgba(255,65,108,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 800
+          }}
         >
-          <span className="material-symbols-outlined text-sm">rocket_launch</span>
-          Start Speaking
-        </motion.button>
-        
-        <motion.button
-          className="btn btn-secondary"
-          whileTap={{ scale: 0.98 }}
-          onClick={onViewProgress}
-        >
-          <span className="material-symbols-outlined text-sm">bar_chart</span>
-          View Progress
+          ⚔️ BATTLE MODE
         </motion.button>
       </motion.div>
     </motion.div>

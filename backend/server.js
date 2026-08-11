@@ -3,9 +3,11 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
 import connectDB from './config/db.js';
 import authRouter from './routes/auth.js';
 import analyzeRouter from './routes/analyze.js';
+import { initSocket } from './socket.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,9 +18,6 @@ console.log(`[DEBUG] Attempting to load .env from: ${envPath}`);
 dotenv.config({ path: envPath, override: true });
 console.log('[DEBUG] GOOGLE_CLIENT_ID loaded in server.js:', process.env.GOOGLE_CLIENT_ID);
 console.log(`[DEBUG] GROQ_API_KEY exists: ${!!process.env.GROQ_API_KEY}`);
-if (process.env.GROQ_API_KEY) {
-  console.log(`[DEBUG] GROQ_API_KEY prefix: ${process.env.GROQ_API_KEY.substring(0, 7)}...`);
-}
 
 // Connect to Database
 connectDB();
@@ -27,7 +26,10 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -39,7 +41,11 @@ app.get('/health', (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
+// Setup WebSockets and HTTP server wrapper
+const httpServer = createServer(app);
+initSocket(httpServer);
+
 // Start Server
-app.listen(PORT, () => {
-  console.log(`SpeakSpin Backend server running on port ${PORT}`);
+httpServer.listen(PORT, () => {
+  console.log(`SpeakSpin Backend server running on port ${PORT} with Battle Mode sockets enabled`);
 });
