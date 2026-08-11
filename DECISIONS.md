@@ -113,3 +113,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Added a custom topic selection mode with a drop-down list of 20 categorized prompt topics (General, Tech, Philosophy) inside `TimerSelector.jsx`.
 * **The 'Why'**: Providing direct topic options enables structured practice for users preparing specific presentation contents, bypassing the random wheel spinner.
 * **Impact**: Updates `TimerSelector.jsx` component layout and `App.jsx` single-player view transition routes.
+
+---
+
+### Date/Time: 2026-08-11T20:43:00Z
+* **The Decision**: Restructured `SpinWheel.jsx` and `topics.js` to scope the random wheel segments strictly to the selected category (e.g. spinning General only selects from General subtopics). Created 11 full categories including Fitness, Nutrition, Personal Finance, Startups, Entrepreneurship, Literature, History, Tech / AI, and Productivity with 10 subtopics each.
+* **The 'Why'**: Aligning the wheel to category selections gives players gamified agency while maintaining a surprise element within their preferred domain.
+* **Impact**: Rewrites `topics.js` structure and hooks `selectedCategory` state down from `App.jsx`.
