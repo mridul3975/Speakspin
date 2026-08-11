@@ -163,9 +163,12 @@ export function App() {
   }, [socket]);
 
   const handleStartBattleMode = () => {
-    const API_URL = window.location.hostname === 'localhost'
-      ? 'http://localhost:3001'
-      : window.location.origin.replace('5173', '3001');
+    let API_URL = import.meta.env.VITE_API_BASE_URL;
+    if (!API_URL) {
+      API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:3001'
+        : window.location.origin.replace('5173', '3001');
+    }
     connect(API_URL);
     navigateTo(SCREENS.BATTLE_LOBBY);
   };
