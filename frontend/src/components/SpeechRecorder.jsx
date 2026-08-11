@@ -199,11 +199,11 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
     const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
     
     if (wordCount === 0) {
-      alert('⚠️ No speech detected. Please record and speak, or write manually.');
+      alert('⚠️ No speech detected. Please record and speak to generate a transcript.');
       return;
     }
     if (wordCount < 10) {
-      alert('⚠️ Speech too short! Please provide at least 10 words.');
+      alert('⚠️ Speech too short! Please record and speak a longer response (at least 10 words).');
       return;
     }
     
@@ -331,7 +331,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
         <div className="transcript-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>TRANSCRIPT BOX</span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-            <span className="material-symbols-outlined text-xs">edit</span> EDITABLE
+            <span className="material-symbols-outlined text-xs">lock</span> READ ONLY
           </span>
         </div>
         <textarea
@@ -345,9 +345,8 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze }) {
             resize: 'none',
             fontFamily: 'var(--font-body)'
           }}
-          disabled={isTranscribing}
+          readOnly={true}
           value={isTranscribing ? 'Transcribing audio via Groq Whisper... Please wait.' : editableTranscript}
-          onChange={(e) => setEditableTranscript(e.target.value)}
           placeholder={
             recorderState === 'recording'
               ? 'Listening... Start speaking into your mic now!'

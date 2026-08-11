@@ -277,12 +277,12 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
           </div>
         </div>
 
-        {/* Input Textarea Fallback */}
+        {/* Input Textarea Log */}
         <textarea
           className="transcript-body"
           value={editableTranscript}
-          onChange={(e) => setEditableTranscript(e.target.value)}
-          placeholder="Speak into your mic, or type your speech here if the microphone is locked..."
+          readOnly={true}
+          placeholder="Transcribed speech will appear here dynamically as you speak..."
           style={{
             width: '100%',
             minHeight: '90px',
