@@ -36,3 +36,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Updated client-side socket initialization to dynamically target the `VITE_API_BASE_URL` env variable in production.
 * **The 'Why'**: The client was fallback-replacing ports inside the Vercel static asset domain and requesting websockets on Vercel (which fails), rather than targeting the live backend on Render.
 * **Impact**: Correctly points socket links to the Render backend at `https://speakspin.onrender.com`.
+
+---
+
+### Date/Time: 2026-08-11T08:36:00Z
+* **The Decision**: Deferred microphone and SpeechRecognition starts behind an explicit **"START SPEAKING!"** user gesture tap.
+* **The 'Why'**: Apple iOS Safari and mobile Chrome security sandboxes block access to microphone tracks and SpeechRecognition engines when triggered programmatically (e.g. automatically upon entering a route or receiving a socket event). They require a direct user tap event.
+* **Impact**: Resolves silent transcription errors and mic lockout blocks for mobile device contestants.
