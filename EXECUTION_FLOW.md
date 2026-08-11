@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Mobile Responsive Styling Optimizations**: Integrated custom CSS classes and inline media queries in `BattleResults.jsx` and `BattleRecorder.jsx`. This stacks grids (score card columns, action buttons, speech logs, visualizers) vertically on mobile viewports under `600px`, preventing squishing, overlaps, or layout breaks.
 * **Battle Results UI Redesign & Highlighting**: Redesigned `BattleResults.jsx` to focus on your stats. Hidden the opponent feedback tab and detailed breakdown bars. Your score is rendered larger (`4.5rem`) and highlighted in green, while the opponent's score is smaller and grayed out.
-* **Score-Driven Match Outcomes**: Updated win/loss outcomes on both the client and server to be determined by any point difference.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.

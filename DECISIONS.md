@@ -99,3 +99,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Refactored the results screen to highlight your score, hide detailed opponent evaluation breakdown tabs, and determine win/loss outcomes based on absolute score margins. Enabled ELO updates inside socket memory to carry ratings over correctly in rematches.
 * **The 'Why'**: Aligning results with player expectations increases clarity (victory/defeat match any point margin), and removing opponent detail lists focuses the review tab on user-specific speaking pointers.
 * **Impact**: Updates `BattleResults.jsx` styling and `backend/socket.js` rematch routing mechanisms.
+
+---
+
+### Date/Time: 2026-08-11T20:19:00Z
+* **The Decision**: Injected class-based CSS media query blocks in `BattleResults.jsx` and `BattleRecorder.jsx`.
+* **The 'Why'**: Grid-based scoreboards, horizontal visualizers, split transcript columns, and action buttons look cluttered and overflow on phone screen sizes.
+* **Impact**: Enforces responsive vertical column stacking for screen viewports smaller than `600px`.
