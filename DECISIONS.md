@@ -120,3 +120,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Restructured `SpinWheel.jsx` and `topics.js` to scope the random wheel segments strictly to the selected category (e.g. spinning General only selects from General subtopics). Created 11 full categories including Fitness, Nutrition, Personal Finance, Startups, Entrepreneurship, Literature, History, Tech / AI, and Productivity with 10 subtopics each.
 * **The 'Why'**: Aligning the wheel to category selections gives players gamified agency while maintaining a surprise element within their preferred domain.
 * **Impact**: Rewrites `topics.js` structure and hooks `selectedCategory` state down from `App.jsx`.
+
+---
+
+### Date/Time: 2026-08-11T20:48:00Z
+* **The Decision**: Removed direct subtopic selectors and tabs, keeping only category selection coupled with mandatory wheel spins to preserve speech randomness.
+* **The 'Why'**: Direct selection defeats the spontaneous public speaking aspect of Toastmasters practice, which is best trained through random topics under a chosen thematic category.
+* **Impact**: Simplifies `TimerSelector.jsx` layout and cleans up unused routing parameters in `App.jsx`.

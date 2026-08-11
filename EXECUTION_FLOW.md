@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Mandatory Category Spin Wheel (No Direct Selection)**: Simplified `TimerSelector.jsx` by removing custom dropdown selectors and tabs for specific subtopics. Users select their desired category (General, Tech / AI, Fitness, Philosophy, etc.) and then spin the wheel, which chooses a random prompt from that category's 10 subtopics.
 * **Category-Scoped Spin Wheel & Expanded Banks**: Configured `SpinWheel.jsx` and `TimerSelector.jsx` to restrict the random wheel segments to the selected category only. Added custom lists with exactly 10 subtopics each for all requested domains: Personal Finance, Entrepreneurship, Startups, Tech / AI, Fitness, Nutrition, Productivity, History, Literature, General, and Philosophy.
-* **Single-Player Custom Topic Dropdown**: Redesigned `TimerSelector.jsx` to introduce a mode switcher between "Random Wheel" (default) and "Select Topic" (dropdown). Contains 20 premium speaking topics categorized under **General**, **Technology**, and **Philosophy**, bypassing the spin wheel to take users straight to recording.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
