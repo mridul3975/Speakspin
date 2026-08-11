@@ -110,7 +110,9 @@ export async function analyzeText({ transcript, topic, category, targetDuration,
 export async function transcribeAudio(audioBlob) {
   try {
     const formData = new FormData();
-    formData.append('audio', audioBlob, 'speech.webm');
+    const mimeType = audioBlob.type || 'audio/webm';
+    const extension = mimeType.includes('mp4') ? 'mp4' : (mimeType.includes('ogg') ? 'ogg' : 'webm');
+    formData.append('audio', audioBlob, `speech.${extension}`);
 
     const response = await fetch(`${API_BASE}/api/transcribe`, {
       method: 'POST',
