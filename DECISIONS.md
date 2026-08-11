@@ -92,3 +92,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Changed ELO rating calculations from logarithmic expected values to flat ±30 ELO point increments.
 * **The 'Why'**: Simple flat point alterations provide arcade game predictability and match the competitive pacing expectations of players.
 * **Impact**: Updates the ELO results calculation values inside `backend/socket.js`.
+
+---
+
+### Date/Time: 2026-08-11T19:57:00Z
+* **The Decision**: Refactored the results screen to highlight your score, hide detailed opponent evaluation breakdown tabs, and determine win/loss outcomes based on absolute score margins. Enabled ELO updates inside socket memory to carry ratings over correctly in rematches.
+* **The 'Why'**: Aligning results with player expectations increases clarity (victory/defeat match any point margin), and removing opponent detail lists focuses the review tab on user-specific speaking pointers.
+* **Impact**: Updates `BattleResults.jsx` styling and `backend/socket.js` rematch routing mechanisms.

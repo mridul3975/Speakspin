@@ -6,8 +6,9 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
-* **Fixed ELO Scoring Rules (+30 / -30)**: Replaced expected probability matchmaking curves in `calculateELO` inside `backend/socket.js` with direct, predictable point adjustments. The battle winner is now awarded a flat +30 ELO points, while the loser is deducted a flat -30 ELO points. ELO changes remain at 0 in case of a draw.
-* **Competitive Gamer Profile & Duel History**: Created `BattleProfile.jsx` and added a "VIEW GAMER PROFILE" portal inside `BattleLobby.jsx`. Displays ELO tier progress, win rates, streaks, and a detailed feed of past 50 matches (opponents, topics, and scores) saved in localStorage (`speakspin-battle-history`).
+* **Battle Results UI Redesign & Highlighting**: Redesigned `BattleResults.jsx` to focus on your stats. Hidden the opponent feedback tab and detailed breakdown bars. Your score is rendered larger (`4.5rem`) and highlighted in green, while the opponent's score is smaller and grayed out.
+* **Score-Driven Match Outcomes**: Updated win/loss outcomes on both the client and server to be determined by any point difference.
+* **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
 * **Web Audio API Sound Engine**: Integrated synthesizers for Horn sounds, ticking clocks, and winning arpeggios.
