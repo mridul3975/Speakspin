@@ -8,9 +8,9 @@ export function useSpeechRecognition() {
   const [isSupported, setIsSupported] = useState(true);
 
   const recognitionRef = useRef(null);
-  // Using a ref for transcript to prevent stale closures in recognition event handlers
   const transcriptRef = useRef('');
   const shouldListenRef = useRef(false);
+  const isStartedRef = useRef(false);
 
   useEffect(() => {
     const SpeechRecognition =
@@ -29,6 +29,7 @@ export function useSpeechRecognition() {
 
     recognition.onstart = () => {
       setIsListening(true);
+      isStartedRef.current = true;
       setError(null);
     };
 
@@ -56,20 +57,20 @@ export function useSpeechRecognition() {
       } else {
         setError(`Speech recognition issue: ${event.error}`);
       }
-      // Halt auto-restart loop on errors to avoid infinite loops and InvalidStateErrors
       shouldListenRef.current = false;
+      isStartedRef.current = false;
       setIsListening(false);
     };
 
     recognition.onend = () => {
-      // Auto-restart if we are still supposed to be listening
       if (shouldListenRef.current) {
         try {
           recognition.start();
         } catch (err) {
-          console.error('Failed to restart recognition:', err);
+          console.warn('Failed to restart recognition:', err);
         }
       } else {
+        isStartedRef.current = false;
         setIsListening(false);
       }
     };
@@ -78,6 +79,7 @@ export function useSpeechRecognition() {
 
     return () => {
       shouldListenRef.current = false;
+      isStartedRef.current = false;
       try {
         recognition.abort();
       } catch (e) {
@@ -88,11 +90,20 @@ export function useSpeechRecognition() {
 
   const startListening = () => {
     if (!recognitionRef.current) return;
+    
+    // Guard against duplicate start calls to prevent race conditions in double-mounting
+    if (isStartedRef.current) {
+      console.log('Speech recognition is already running. Skipping duplicate start.');
+      return;
+    }
+
     shouldListenRef.current = true;
+    isStartedRef.current = true;
     transcriptRef.current = '';
     setTranscript('');
     setInterimTranscript('');
     setError(null);
+
     try {
       recognitionRef.current.abort();
     } catch (e) {}
@@ -103,7 +114,8 @@ export function useSpeechRecognition() {
           recognitionRef.current.start();
         }
       } catch (err) {
-        console.error('Failed to start recognition:', err);
+        console.warn('Failed to start recognition (caught):', err);
+        isStartedRef.current = false;
       }
     }, 50);
   };
@@ -111,10 +123,11 @@ export function useSpeechRecognition() {
   const stopListening = () => {
     if (!recognitionRef.current) return;
     shouldListenRef.current = false;
+    isStartedRef.current = false;
     try {
       recognitionRef.current.stop();
     } catch (err) {
-      console.error('Failed to stop recognition:', err);
+      console.warn('Failed to stop recognition:', err);
     }
     setIsListening(false);
   };
