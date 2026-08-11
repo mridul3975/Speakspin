@@ -141,3 +141,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Configured speech recording textareas to be read-only in both offline and online formats.
 * **The 'Why'**: Allowing manual text edits invites copy-pasting of large essays, bypassing speaking practice while inflating API token usage.
 * **Impact**: Enforces strictly vocal inputs in `SpeechRecorder.jsx` and `BattleRecorder.jsx`.
+
+---
+
+### Date/Time: 2026-08-11T21:08:00Z
+* **The Decision**: Integrated a multi-language speaking configuration panel supporting 12 major world language locales in `TimerSelector.jsx`.
+* **The 'Why'**: Diverse global speakers need to practice in their native languages. Whispers multilingual decoder operates best when supplied with appropriate language hints, and browser-side speech fallbacks require strict locale matching.
+* **Impact**: Routes `selectedLanguage` from `App.jsx` to the transcribers in `api.js`, Web Speech APIs in `SpeechRecorder.jsx`, and instructions inside `analyze.js`.
