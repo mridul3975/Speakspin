@@ -306,7 +306,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
       </div>
 
       {/* MIDDLE DIVIDER: VS BADGE & AUDIO VISUALIZERS */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', alignItems: 'center', margin: '1rem 0' }}>
+      <div className="recorder-vs-row" style={{ display: 'grid', gridTemplateColumns: '1fr 60px 1fr', alignItems: 'center', margin: '1rem 0' }}>
         
         {/* Your visualizer */}
         <div style={{ display: 'flex', gap: '2px', height: '24px', alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' }}>
@@ -364,6 +364,19 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
         </button>
       </div>
 
+      {/* Responsive mobile media queries */}
+      <style>{`
+        @media (max-width: 600px) {
+          .recorder-vs-row {
+            grid-template-columns: 1fr !important;
+            gap: 0.5rem !important;
+            justify-items: center !important;
+          }
+          .recorder-vs-row div {
+            justify-content: center !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

@@ -212,7 +212,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
 
         {/* SCORE COMPARISON - YOURS HIGHLIGHTED & LARGER */}
         <div style={{ border: '4px solid #ffffff', padding: '1.5rem', backgroundColor: '#000000', marginBottom: '2rem', boxShadow: '5px 5px 0px 0px #ffffff' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.6fr 1.2fr', alignItems: 'center', textAlign: 'center', marginBottom: '1.5rem' }}>
+          <div className="score-comparison-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.6fr 1.2fr', alignItems: 'center', textAlign: 'center', marginBottom: '1.5rem' }}>
             {/* Your Score */}
             <div style={{ padding: '1rem', border: '2px solid var(--accent-teal)', backgroundColor: 'rgba(0, 255, 200, 0.05)' }}>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>YOUR SCORE</span>
@@ -223,7 +223,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
             </div>
 
             {/* VS Divider */}
-            <div style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-coral)', fontFamily: 'var(--font-heading)' }}>
+            <div className="score-comparison-vs" style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-coral)', fontFamily: 'var(--font-heading)' }}>
               VS
             </div>
 
@@ -317,7 +317,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
           {/* Opponent feedback removed */}
 
           {activeTab === 'transcripts' && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', fontSize: '0.85rem' }}>
+            <div className="battle-transcript-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', fontSize: '0.85rem' }}>
               <div>
                 <span style={{ fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>YOUR TRANSCRIPT</span>
                 <p style={{ margin: 0, fontStyle: 'italic', lineHeight: '1.5', color: 'var(--text-secondary)' }}>"{me.transcript}"</p>
@@ -331,7 +331,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
         </div>
 
         {/* Action Panel: Rematch / Find New Opponent / Leave */}
-        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div className="action-buttons-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
           {opponentWantsRematch && !rematchRequested && (
             <div style={{ width: '100%', border: '1px dashed #ffffff', padding: '0.75rem', textTransform: 'uppercase', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-teal)', marginBottom: '0.5rem', textAlign: 'center' }}>
               ⚔️ Opponent requested a rematch! Accept below.
@@ -369,11 +369,39 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
 
       </div>
 
-      {/* Confetti falling keyframes */}
+      {/* Responsive mobile media queries and keyframes */}
       <style>{`
         @keyframes fall {
           0% { top: -10px; transform: rotate(0deg); }
           100% { top: 600px; transform: rotate(360deg); opacity: 0; }
+        }
+        @media (max-width: 600px) {
+          .score-comparison-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+          }
+          .score-comparison-vs {
+            display: none !important;
+          }
+          .action-buttons-panel {
+            flex-direction: column !important;
+            align-items: stretch !important;
+            width: 100% !important;
+          }
+          .action-buttons-panel button, .action-buttons-panel div {
+            flex: none !important;
+            width: 100% !important;
+          }
+          .battle-transcript-split {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+          .battle-transcript-split div {
+            border-left: none !important;
+            padding-left: 0 !important;
+            border-top: 1.5px dashed rgba(255,255,255,0.1) !important;
+            padding-top: 1rem !important;
+          }
         }
       `}</style>
     </div>
