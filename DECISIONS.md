@@ -29,3 +29,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Replaced the hardcoded static `localhost:5173` CORS origin setting with a dynamic regex/list evaluator in Express and Socket.io.
 * **The 'Why'**: The live app deployed on Vercel (`vercel.app`) was blocked by Render's CORS preflight rules when attempting to verification-verify Google OAuth and trigger websocket handshakes.
 * **Impact**: Restores cross-domain requests, cookies, and websocket handshakes for production environments.
+
+---
+
+### Date/Time: 2026-08-11T08:29:00Z
+* **The Decision**: Updated client-side socket initialization to dynamically target the `VITE_API_BASE_URL` env variable in production.
+* **The 'Why'**: The client was fallback-replacing ports inside the Vercel static asset domain and requesting websockets on Vercel (which fails), rather than targeting the live backend on Render.
+* **Impact**: Correctly points socket links to the Render backend at `https://speakspin.onrender.com`.
