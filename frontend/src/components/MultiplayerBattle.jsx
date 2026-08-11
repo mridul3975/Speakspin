@@ -354,11 +354,30 @@ export function MultiplayerBattle({ socket, user, matchDetails, onBattleFinished
         <div className="transcript-header">
           <span>BATTLE TRANSCRIPT</span>
         </div>
-        <div className="transcript-body" style={{ minHeight: '80px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-          {battleState === 'recording' && (editableTranscript || 'Start speaking into your mic...')}
-          {battleState === 'waiting' && 'Recording finished. Waiting for Whisper analysis to match results...'}
-          {battleState === 'completed' && 'Processing audio chunks...'}
-        </div>
+        <textarea
+          className="transcript-body"
+          style={{
+            width: '100%',
+            minHeight: '80px',
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: 'var(--text-primary)',
+            resize: 'none',
+            fontFamily: 'var(--font-body)',
+            fontSize: '0.9rem'
+          }}
+          disabled={battleState !== 'recording'}
+          value={
+            battleState === 'recording'
+              ? editableTranscript
+              : (battleState === 'waiting'
+                ? 'Recording finished. Waiting for Whisper analysis to match results...'
+                : 'Processing audio chunks...')
+          }
+          onChange={(e) => setEditableTranscript(e.target.value)}
+          placeholder="Start speaking into your mic, or type your speech here if the microphone is locked..."
+        />
         <div className="transcript-meta" style={{ justifyContent: 'center', gap: '2.5rem' }}>
           <span>WORDS: <strong>{wordCount}</strong></span>
           <span>WPM: <strong>{wpm}</strong></span>
