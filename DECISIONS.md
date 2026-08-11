@@ -43,3 +43,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Deferred microphone and SpeechRecognition starts behind an explicit **"START SPEAKING!"** user gesture tap.
 * **The 'Why'**: Apple iOS Safari and mobile Chrome security sandboxes block access to microphone tracks and SpeechRecognition engines when triggered programmatically (e.g. automatically upon entering a route or receiving a socket event). They require a direct user tap event.
 * **Impact**: Resolves silent transcription errors and mic lockout blocks for mobile device contestants.
+
+---
+
+### Date/Time: 2026-08-11T08:40:00Z
+* **The Decision**: Integrated the server-side Whisper API transcription service as the primary speech parser in Battle Mode, rather than relying exclusively on the browser's Web Speech API.
+* **The 'Why'**: Browser-native Web Speech engines can be highly inaccurate, drop syllables, or fail entirely depending on device hardware or connection pings. Incorporating the backend Whisper pipeline guarantees that actual voice uploads are accurately transcribed.
+* **Impact**: Added transcription load screen overlays and Whisper calls directly into `BattleRecorder.jsx`.

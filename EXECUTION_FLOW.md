@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Server-side Whisper Transcription (Battle Mode)**: Integrated `transcribeAudio(blob)` into `BattleRecorder.jsx`. When a recording ends, the client uploads the raw voice stream to the backend Whisper pipeline for processing, falling back to Web Speech transcripts if empty. This guarantees accurate, context-aware speech scoring across all devices.
 * **Explicit User Gesture Mic Initialization**: Added a "START SPEAKING!" tap gesture splash overlay in `BattleRecorder.jsx` when the battle begins. This guarantees that microphone captures and Web Speech API `SpeechRecognition.start()` are triggered directly from an explicit user tap, resolving iOS Safari and mobile Chrome permissions sandbox blocks.
-* **Production Socket Target Resolution**: Modified `handleStartBattleMode()` in `App.jsx` to dynamically target `VITE_API_BASE_URL` env variable in production. This stops the client from attempting socket connections to the Vercel static file server and routes them straight to the Render socket server instead.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
 * **Web Audio API Sound Engine**: Integrated synthesizers for Horn sounds, ticking clocks, and winning arpeggios.
