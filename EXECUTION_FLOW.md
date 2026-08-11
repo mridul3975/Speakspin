@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **React Stale Closure Fix (Battle Mode)**: Introduced `actualDurationRef` (a React ref) to track elapsed recording seconds in `BattleRecorder.jsx`. Previously, using the stale state closure variable `actualDuration` caused the duration check to evaluate to `0 >= 2`, skipping Whisper API uploads and defaulting to blank Web Speech logs.
 * **Dynamic Upload Container Extensions**: Updated `transcribeAudio` inside `frontend/src/utils/api.js` to assign file extensions dynamically based on `audioBlob.type` (`.mp4` for iOS/Safari, `.webm` for Android/Chrome) instead of hardcoding `.webm`. This ensures Groq Whisper decodes the binaries correctly without throwing invalid media 500 errors.
-* **Console Logging Level Tuning**: Downgraded browser Web Speech API connection drops and recognition timeouts from `console.error` to `console.warn` inside `useSpeechRecognition.js`. Since the backend Whisper API processes all raw audio uploads, client-side browser speech engines failures do not disrupt the duel and should not print error stack traces.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
 * **Competitive ELO Matchmaking Arena**: Implemented Socket.io client/server matching rooms. Supports real-time ratings, ELO math formulas ($K$-factor 32), and dynamic bot matches driven by AI script generators.
 * **Web Audio API Sound Engine**: Integrated synthesizers for Horn sounds, ticking clocks, and winning arpeggios.

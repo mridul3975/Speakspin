@@ -64,3 +64,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Enabled dynamic filename extensions (`.mp4` / `.webm`) matching the exact `audioBlob.type` before uploading to `api.js`.
 * **The 'Why'**: Because Safari on iOS records raw streams in `.mp4` format, sending them with a hardcoded `.webm` name header caused the Groq decoder to throw format verification exceptions, dropping transcripts for iPhone competitors.
 * **Impact**: Restores cross-browser speech transcription and scoring.
+
+---
+
+### Date/Time: 2026-08-11T08:55:00Z
+* **The Decision**: Utilized a React mutable Ref `actualDurationRef` to store the active elapsed speaking duration instead of checking state hooks directly during submission callbacks.
+* **The 'Why'**: Stale closures in React capture initial state values (like `actualDuration = 0`), which causes duration validation checks (`actualDuration >= 2`) to fail and skip backend transcription uploads, resulting in empty transcripts.
+* **Impact**: Resolves transcription skips and enables accurate audio file uploads.
