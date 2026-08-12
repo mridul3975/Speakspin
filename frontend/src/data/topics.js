@@ -51,7 +51,6 @@ export const TOPIC_BANK = {
     "Common Mistakes New Entrepreneurs Make",
     "Is Entrepreneurship for Everyone?"
   ],
-
   "Startups": [
     "What Exactly Is a Startup?",
     "Startup vs. Traditional Business",
@@ -104,7 +103,6 @@ export const TOPIC_BANK = {
     "The Future of Startups",
     "Should Young People Build Startups?"
   ],
-
   "Tech / AI": [
     "How Artificial Intelligence Works",
     "AI vs. Human Intelligence",
@@ -157,7 +155,6 @@ export const TOPIC_BANK = {
     "Technology Dependence",
     "Can Technology Make Humanity Better?"
   ],
-
   "Fitness": [
     "Why Exercise Matters",
     "Strength Training for Beginners",
@@ -199,8 +196,8 @@ export const TOPIC_BANK = {
     "Martial Arts and Fitness",
     "Fitness for Older Adults",
     "Fitness for Children and Teenagers",
-    "Fitness for Women",
-    "Fitness for Men",
+    "Women's Fitness",
+    "Men's Fitness",
     "Fitness and Hormones",
     "Fitness Tracking Technology",
     "Wearables and Health Tracking",
@@ -210,7 +207,6 @@ export const TOPIC_BANK = {
     "Can Fitness Become an Addiction?",
     "The Long-Term Benefits of Staying Fit"
   ],
-
   "Nutrition": [
     "What Is a Balanced Diet?",
     "Macronutrients Explained",
@@ -263,7 +259,6 @@ export const TOPIC_BANK = {
     "Social Media and Nutrition Trends",
     "Can We Build the Perfect Diet?"
   ],
-
   "Productivity": [
     "What Is Productivity?",
     "Being Busy vs. Being Productive",
@@ -313,10 +308,9 @@ export const TOPIC_BANK = {
     "Perfectionism and Productivity",
     "Procrastination vs. Laziness",
     "How Successful People Manage Time",
-    "Can You Really Become 10x More Productive?",
+    "Can You Really Become 10× More Productive?",
     "Is Productivity Culture Healthy?"
   ],
-
   "History": [
     "Why Should We Study History?",
     "The Rise and Fall of the Roman Empire",
@@ -369,7 +363,6 @@ export const TOPIC_BANK = {
     "Historical Myths vs. Reality",
     "Could History Have Taken a Different Path?"
   ],
-
   "Literature": [
     "Why Do Humans Tell Stories?",
     "The Power of Literature",
@@ -422,7 +415,6 @@ export const TOPIC_BANK = {
     "Will AI Replace Writers?",
     "Why Books Still Matter in the Digital Age"
   ],
-
   "General": [
     "What Makes a Good Life?",
     "The Importance of Education",
@@ -475,7 +467,6 @@ export const TOPIC_BANK = {
     "Freedom vs. Security",
     "What Will the World Look Like in 2050?"
   ],
-
   "Philosophy": [
     "What Is Philosophy?",
     "Why Should We Study Philosophy?",
@@ -528,7 +519,6 @@ export const TOPIC_BANK = {
     "What Makes a Life Meaningful?",
     "If You Could Live Forever, Should You?"
   ],
-
   "Personal Finance": [
     "What Is Personal Finance?",
     "Why Financial Literacy Matters",
@@ -581,4 +571,4 @@ export const TOPIC_BANK = {
     "Financial Planning for Students",
     "How to Build Wealth From Zero"
   ]
-};
+}

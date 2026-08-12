@@ -1,17 +1,7 @@
 import { Server } from 'socket.io';
 import { nanoid } from 'nanoid';
 import { OpenAI } from 'openai';
-
-const TOPICS = [
-  { category: 'Technology', topic: 'Is AI a threat or a tool for human creativity?' },
-  { category: 'Education', topic: 'Should exams be completely replaced by projects?' },
-  { category: 'Environment', topic: 'How small changes in daily life impact global warming.' },
-  { category: 'Business & Career', topic: 'The importance of networking in the modern professional landscape.' },
-  { category: 'Self-Improvement', topic: 'Does success come from luck or hard work?' },
-  { category: 'Social Issues', topic: 'The influence of social media on teenage mental health.' },
-  { category: 'Arts & Culture', topic: 'Why historical preservation matters in the digital age.' },
-  { category: 'Philosophy', topic: 'What is the meaning of a happy life?' }
-];
+import { TOPICS } from './config/topics.js';
 
 const BOT_ROSTER = [
   { id: "bot_beginner", name: "Timid Tim", avatar: "🐢", rating: 700, tier: "Bronze", skillLevel: "beginner", personality: "nervous, hesitant, lots of 'um' and 'uh'" },
