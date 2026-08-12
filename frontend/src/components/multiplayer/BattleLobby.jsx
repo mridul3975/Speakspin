@@ -345,16 +345,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
               </div>
             </div>
 
-            {/* progression slider */}
-            <div style={{ border: '3px solid #ffffff', padding: '1rem', backgroundColor: '#000000' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.5rem', fontWeight: 900 }}>
-                <span>&gt; TIER_PROGRESSION</span>
-                <span style={{ color: '#ffffff', fontWeight: 900 }}>{Math.round(progressPercent)}.00%</span>
-              </div>
-              <div style={{ height: '16px', border: '2px solid #ffffff', padding: '2px', backgroundColor: '#000000' }}>
-                <div style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: '#ffffff' }} />
-              </div>
-            </div>
+
 
             {/* Matchmaking controls */}
             <div style={{
@@ -439,62 +430,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
               </button>
             </div>
 
-            {/* Leaderboard */}
-            <div style={{ border: '3px solid #ffffff', padding: '1rem', backgroundColor: '#000000' }}>
-              <div style={{ fontSize: '0.7rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.75rem', fontWeight: 900 }}>
-                &gt; LEADERBOARD_STATUS_LOG
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem', fontWeight: 800 }}>
-                {leaderboard.map((item, idx) => (
-                  <div key={idx} style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    padding: '0.4rem 0.6rem',
-                    backgroundColor: item.isYou ? '#ffffff' : 'transparent',
-                    border: '2px solid #ffffff',
-                    color: item.isYou ? '#000000' : '#ffffff'
-                  }}>
-                    <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <span style={{ opacity: item.isYou ? 1 : 0.7 }}>[{idx + 1}]</span>
-                      <span>{item.avatar} {item.name}</span>
-                    </span>
-                    <span>
-                      {String(item.rating).padStart(4, '0')} ELO
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Collapsible How It Works */}
-            <div style={{ border: '3px solid #ffffff', backgroundColor: '#000000' }}>
-              <div
-                onClick={() => setShowHowItWorks(!showHowItWorks)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '0.75rem', fontSize: '0.75rem', fontWeight: 900 }}
-              >
-                <span>&gt; PROTOCOL_RULES.TXT</span>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                  {showHowItWorks ? 'expand_less' : 'expand_more'}
-                </span>
-              </div>
-              <AnimatePresence>
-                {showHowItWorks && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    style={{ overflow: 'hidden', padding: '0.75rem', fontSize: '0.75rem', lineHeight: '1.6', borderTop: '3px solid #ffffff', color: '#ffffff', opacity: 0.8, fontWeight: 700 }}
-                  >
-                    <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>
-                      <li style={{ marginBottom: '0.4rem' }}><strong>SBM_MATCH:</strong> Connects with players within Rating threshold.</li>
-                      <li style={{ marginBottom: '0.4rem' }}><strong>SYNC_TOPIC:</strong> Simultaneous random category prompts.</li>
-                      <li style={{ marginBottom: '0.4rem' }}><strong>JUDGE_AI:</strong> Rubric evaluations via speech parameters.</li>
-                      <li><strong>ELO_GAIN:</strong> Gained ELO ratings persist to account.</li>
-                    </ol>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </div>
         </div>
 
