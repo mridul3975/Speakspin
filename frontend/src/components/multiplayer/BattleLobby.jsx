@@ -4,24 +4,24 @@ import RatingBadge, { getTier } from './RatingBadge';
 import AvatarSelector from './AvatarSelector';
 
 const SUPPORTED_LANGUAGES = [
-  { code: 'en-US', name: 'English (US)' },
-  { code: 'en-GB', name: 'English (UK)' },
-  { code: 'es-ES', name: 'Español (Spain)' },
-  { code: 'es-MX', name: 'Español (Mexico)' },
-  { code: 'fr-FR', name: 'Français (France)' },
-  { code: 'de-DE', name: 'Deutsch (Germany)' },
-  { code: 'hi-IN', name: 'हिन्दी (Hindi)' },
-  { code: 'it-IT', name: 'Italiano (Italy)' },
-  { code: 'ja-JP', name: '日本語 (Japanese)' },
-  { code: 'pt-BR', name: 'Português (Brazil)' },
-  { code: 'zh-CN', name: '中文 (Simplified Chinese)' },
-  { code: 'ar-SA', name: 'العربية (Arabic)' }
+  { code: 'en-US', name: 'EN-US (ENGLISH)' },
+  { code: 'en-GB', name: 'EN-GB (ENGLISH)' },
+  { code: 'es-ES', name: 'ES-ES (SPANISH)' },
+  { code: 'es-MX', name: 'ES-MX (SPANISH)' },
+  { code: 'fr-FR', name: 'FR-FR (FRENCH)' },
+  { code: 'de-DE', name: 'DE-DE (GERMAN)' },
+  { code: 'hi-IN', name: 'HI-IN (HINDI)' },
+  { code: 'it-IT', name: 'IT-IT (ITALIAN)' },
+  { code: 'ja-JP', name: 'JA-JP (JAPANESE)' },
+  { code: 'pt-BR', name: 'PT-BR (PORTUGUESE)' },
+  { code: 'zh-CN', name: 'ZH-CN (CHINESE)' },
+  { code: 'ar-SA', name: 'AR-SA (ARABIC)' }
 ];
 
 export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selectedLanguage, onChangeLanguage }) {
   // Load stats from localStorage
   const [playerName, setPlayerName] = useState(() => {
-    return localStorage.getItem('speakspin-player-name') || user.name || `Speaker${Math.floor(1000 + Math.random() * 9000)}`;
+    return localStorage.getItem('speakspin-player-name') || user.name || `SPEAKER_${Math.floor(1000 + Math.random() * 9000)}`;
   });
   const [avatar, setAvatar] = useState(() => {
     return localStorage.getItem('speakspin-player-avatar') || '🦁';
@@ -50,8 +50,19 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
     }
   }, []);
 
+  // Dynamically load Fira Code font
+  useEffect(() => {
+    if (!document.getElementById('fira-code-font')) {
+      const link = document.createElement('link');
+      link.id = 'fira-code-font';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap';
+      document.head.appendChild(link);
+    }
+  }, []);
+
   const handleSaveName = (newName) => {
-    const cleaned = newName.trim().substring(0, 15);
+    const cleaned = newName.trim().toUpperCase().substring(0, 15);
     if (cleaned) {
       setPlayerName(cleaned);
       localStorage.setItem('speakspin-player-name', cleaned);
@@ -73,7 +84,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
     if (currentRating < 1200) return 1200;
     if (currentRating < 1400) return 1400;
     if (currentRating < 1600) return 1600;
-    return 2000; // Legend ceiling for progress
+    return 2000; 
   };
   const getPrevTierThreshold = (currentRating) => {
     if (currentRating < 800) return 0;
@@ -90,81 +101,149 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
 
   // Leaderboard mock generator
   const leaderboard = [
-    { name: 'GrandOrator', rating: 1820, avatar: '👑', isYou: false },
-    { name: 'VoiceMaster', rating: 1650, avatar: '🔮', isYou: false },
-    { name: 'TalkChamp', rating: 1420, avatar: '💎', isYou: false },
+    { name: 'GRAND_ORATOR', rating: 1820, avatar: '👑', isYou: false },
+    { name: 'VOICE_MASTER', rating: 1650, avatar: '🔮', isYou: false },
+    { name: 'TALK_CHAMP', rating: 1420, avatar: '💎', isYou: false },
     { name: playerName, rating: rating, avatar: avatar, isYou: true },
-    { name: 'WordSmith', rating: 1180, avatar: '🥇', isYou: false }
+    { name: 'WORD_SMITH', rating: 1180, avatar: '🥇', isYou: false }
   ].sort((a, b) => b.rating - a.rating);
 
   return (
-    <div className="setup-container" style={{ margin: '1rem auto 3rem', maxWidth: '650px', position: 'relative', overflow: 'hidden' }}>
-      
-      {/* Background Floating Particles */}
-      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.15 }}>
-        {Array.from({ length: 15 }).map((_, idx) => (
-          <div
-            key={idx}
-            style={{
-              position: 'absolute',
-              width: '6px',
-              height: '6px',
-              backgroundColor: '#ffffff',
-              borderRadius: '50%',
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animation: `spin ${5 + Math.random() * 10}s linear infinite`
-            }}
-          />
-        ))}
-      </div>
+    <div className="crt-cyberpunk" style={{
+      fontFamily: "'Fira Code', monospace",
+      width: '100%',
+      minHeight: '90vh',
+      display: 'flex',
+      flexDirection: 'column',
+      color: '#ffffff',
+      padding: '1rem',
+      boxSizing: 'border-box'
+    }}>
+      {/* Dynamic CRT Scanline Styles */}
+      <style>{`
+        .crt-cyberpunk {
+          background-color: #050505;
+          background-image: linear-gradient(#111111 1px, transparent 1px),
+                            linear-gradient(90deg, #111111 1px, transparent 1px);
+          background-size: 20px 20px;
+        }
+        .crt-scanlines {
+          position: relative;
+        }
+        .crt-scanlines::before {
+          content: " ";
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0, 0, 0, 0.18) 50%);
+          background-size: 100% 4px;
+          z-index: 5;
+          pointer-events: none;
+        }
+        .retro-input:focus {
+          border-color: #ffffff !important;
+          outline: none;
+        }
+      `}</style>
 
-      <div style={{ position: 'relative', zIndex: 1 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <button className="btn-back-ghost" onClick={onBack}>
-            <span className="material-symbols-outlined text-sm">arrow_back</span> LEAVE
-          </button>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.4rem', margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            ⚔️ BATTLE MODE
-          </h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-teal)' }}>
-            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--accent-teal)', borderRadius: '50%', display: 'inline-block' }} />
-            ONLINE
+      {/* Main Terminal Frame */}
+      <div style={{
+        width: '100%',
+        maxWidth: '900px',
+        margin: '0 auto',
+        backgroundColor: '#0a0a0a',
+        border: '1px solid #404040',
+        boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+        {/* Terminal Header Bar */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '0.75rem 1rem',
+          borderBottom: '1px solid #404040',
+          backgroundColor: '#141414'
+        }}>
+          <div style={{ fontWeight: 'bold', fontSize: '0.85rem', letterSpacing: '0.15em', color: '#ffffff' }}>
+            SYS.SPKSPN_
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', color: '#00ff66', fontWeight: 600 }}>
+            <span style={{ width: '6px', height: '6px', backgroundColor: '#00ff66', borderRadius: '50%', display: 'inline-block', animate: 'pulse 1.5s infinite' }} />
+            SYS_ONLINE
           </div>
         </div>
 
-        {/* Profile Card */}
-        <div style={{ border: '4px solid #ffffff', padding: '2rem 1.5rem', backgroundColor: '#0a0a1a', textAlign: 'center', boxShadow: '8px 8px 0px 0px #ffffff', marginBottom: '2rem' }}>
-          {/* Avatar Slot */}
-          <div style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }} onClick={() => setIsEditingAvatar(true)}>
-            <div style={{ fontSize: '4.5rem', lineHeight: '1', filter: 'drop-shadow(0 0 10px rgba(255,255,255,0.2))' }}>
-              {avatar}
+        {/* Inner Content Grid */}
+        <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%' }}>
+          {/* Left Sidebar Profile Section */}
+          <div style={{
+            width: '100%',
+            maxWidth: '280px',
+            borderRight: '1px solid #404040',
+            padding: '1.5rem',
+            boxSizing: 'border-box',
+            backgroundColor: '#050505',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem'
+          }}>
+            <div style={{ fontSize: '0.65rem', color: '#a3a3a3', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>terminal</span>
+              USER_IDENTIFICATION
             </div>
-            <span className="material-symbols-outlined" style={{ position: 'absolute', bottom: 0, right: 0, background: '#ffffff', color: '#000000', fontSize: '1rem', padding: '0.2rem', border: '1.5px solid #000000' }}>
-              edit
-            </span>
-          </div>
 
-          {/* Avatar Selector Overlay */}
-          <AnimatePresence>
-            {isEditingAvatar && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                style={{ border: '2px dashed #ffffff', padding: '1rem', marginTop: '1rem', backgroundColor: 'rgba(0,0,0,0.5)' }}
-              >
-                <div style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.5rem' }}>Select Avatar Emoji</div>
-                <AvatarSelector selectedAvatar={avatar} onSelect={handleSaveAvatar} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+            {/* Square Avatar Box */}
+            <div className="crt-scanlines" style={{
+              width: '100%',
+              aspectRatio: '1',
+              border: '1px solid #404040',
+              padding: '0.75rem',
+              backgroundColor: '#0a0a0a',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              cursor: 'pointer'
+            }} onClick={() => setIsEditingAvatar(!isEditingAvatar)}>
+              <div style={{ fontSize: '5rem', userSelect: 'none' }}>
+                {avatar}
+              </div>
+              <div style={{
+                position: 'absolute',
+                bottom: '8px',
+                right: '8px',
+                backgroundColor: '#000000',
+                border: '1px solid #404040',
+                padding: '0.2rem',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '12px', color: '#ffffff' }}>edit</span>
+              </div>
+            </div>
 
-          {/* Name Editor */}
-          <div style={{ marginTop: '1rem', marginBottom: '0.5rem' }}>
-            {isEditingName ? (
-              <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem' }}>
+            {/* Avatar Picker Panel */}
+            <AnimatePresence>
+              {isEditingAvatar && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  style={{ border: '1px dashed #404040', padding: '0.5rem', backgroundColor: '#000000' }}
+                >
+                  <AvatarSelector selectedAvatar={avatar} onSelect={handleSaveAvatar} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Name Input / Output */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {isEditingName ? (
                 <input
                   type="text"
                   maxLength={15}
@@ -172,203 +251,276 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName(e.target.value); }}
                   onBlur={(e) => handleSaveName(e.target.value)}
                   autoFocus
+                  className="retro-input"
                   style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontWeight: 900,
-                    fontSize: '1.5rem',
+                    fontFamily: "'Fira Code', monospace",
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
                     textAlign: 'center',
-                    border: '2px solid #ffffff',
+                    border: '1px solid #404040',
                     backgroundColor: '#000000',
                     color: '#ffffff',
-                    padding: '0.2rem 0.5rem',
-                    width: '200px'
+                    padding: '0.4rem',
+                    width: '100%',
+                    boxSizing: 'border-box'
                   }}
                 />
+              ) : (
+                <div 
+                  onClick={() => setIsEditingName(true)}
+                  style={{ fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase', color: '#ffffff' }}
+                >
+                  {playerName}
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px', opacity: 0.6 }}>edit</span>
+                </div>
+              )}
+              <div style={{ fontSize: '0.65rem', color: '#a3a3a3' }}>ID: SPEAKER_#{Math.floor(1000 + (rating % 9000))}</div>
+            </div>
+
+            {/* ELO Rank Box */}
+            <div style={{
+              border: '1px solid #404040',
+              padding: '0.75rem',
+              backgroundColor: '#0a0a0a',
+              fontSize: '0.8rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.4rem'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#a3a3a3' }}>RANK:</span>
+                <span style={{ color: tier.color, fontWeight: 'bold' }}>{tier.name.toUpperCase()}</span>
               </div>
-            ) : (
-              <h3 
-                onClick={() => setIsEditingName(true)}
-                style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.75rem', cursor: 'pointer', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase' }}
-              >
-                {playerName}
-                <span className="material-symbols-outlined text-sm" style={{ opacity: 0.6 }}>edit</span>
-              </h3>
-            )}
-          </div>
-
-          {/* ELO Rating Badge */}
-          <div style={{ margin: '0.75rem 0' }}>
-            <RatingBadge rating={rating} />
-          </div>
-
-          {/* Progress Bar to next Tier */}
-          <div style={{ maxWidth: '300px', margin: '1rem auto 0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
-              <span>PROGESS TO NEXT TIER</span>
-              <span>{Math.round(progressPercent)}%</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#a3a3a3' }}>ELO:</span>
+                <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{String(rating).padStart(4, '0')}</span>
+              </div>
             </div>
-            <div style={{ height: '8px', border: '1px solid #ffffff', backgroundColor: '#000000', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: getTier(rating).color }} />
+
+            {/* Sidebar Action Buttons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: 'auto' }}>
+              <button onClick={onViewProfile} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: 'none', background: 'none', color: '#a3a3a3', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.25rem 0' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>analytics</span>
+                &gt; VIEW_PROFILE
+              </button>
+              <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: 'none', background: 'none', color: '#ff3333', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.25rem 0', fontWeight: 'bold' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_back</span>
+                &gt; ABORT_SESSION
+              </button>
             </div>
           </div>
 
-          {/* Battle Record Stats */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
-            <div>
-              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block' }}>RECORD</span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.1rem' }}>
-                {wins}W - {losses}L - {draws}D
-              </span>
+          {/* Right Area (Matchmaking Protocol Console) */}
+          <div style={{
+            flex: 1,
+            padding: '1.5rem',
+            boxSizing: 'border-box',
+            backgroundColor: '#0a0a0a',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1.5rem',
+            minWidth: '300px'
+          }}>
+            {/* Protocol Title */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottom: '1px solid #404040',
+              paddingBottom: '0.75rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#ffffff' }}>swords</span>
+                <h1 style={{ fontSize: '1rem', fontWeight: 800, letterSpacing: '0.15em', margin: 0 }}>BATTLE_PROTOCOL</h1>
+              </div>
             </div>
-            <div>
-              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block' }}>WIN STREAK</span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.1rem', color: streak >= 3 ? 'var(--accent-coral)' : '#ffffff' }}>
-                🔥 {streak} {streak >= 3 && 'ON FIRE'}
-              </span>
+
+            {/* Stats Row */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div style={{ border: '1px solid #404040', padding: '0.75rem', backgroundColor: '#050505' }}>
+                <div style={{ fontSize: '0.6rem', color: '#a3a3a3', marginBottom: '0.25rem' }}>&gt; SYS_STATUS_RECORD</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                  {String(wins).padStart(2, '0')}W / {String(losses).padStart(2, '0')}L / {String(draws).padStart(2, '0')}D
+                </div>
+              </div>
+              <div style={{ border: '1px solid #404040', padding: '0.75rem', backgroundColor: '#050505' }}>
+                <div style={{ fontSize: '0.6rem', color: '#a3a3a3', marginBottom: '0.25rem' }}>&gt; ACTIVE_STREAK</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: streak >= 3 ? '#ff3333' : '#ffffff' }}>local_fire_department</span>
+                  {String(streak).padStart(2, '0')}_STREAK
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Speaking Language Selector */}
-        <div style={{ marginBottom: '1.25rem', textAlign: 'left' }}>
-          <label style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.4rem' }}>
-            Speaking Language
-          </label>
-          <select
-            value={selectedLanguage || 'en-US'}
-            onChange={(e) => {
-              if (onChangeLanguage) onChangeLanguage(e.target.value);
-              localStorage.setItem('speakspin-battle-language', e.target.value);
-            }}
-            style={{
-              width: '100%',
-              padding: '0.85rem',
-              backgroundColor: '#000000',
-              border: '2px solid #ffffff',
-              color: '#ffffff',
-              fontFamily: 'var(--font-heading)',
-              fontWeight: 800,
-              fontSize: '0.9rem',
-              borderRadius: '0px',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {SUPPORTED_LANGUAGES.map(lang => (
-              <option key={lang.code} value={lang.code}>{lang.name}</option>
-            ))}
-          </select>
-        </div>
+            {/* progression slider */}
+            <div style={{ border: '1px solid #404040', padding: '1rem', backgroundColor: '#050505' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: '#a3a3a3', marginBottom: '0.5rem' }}>
+                <span>&gt; TIER_PROGRESSION_CALCULATING</span>
+                <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{Math.round(progressPercent)}.00%</span>
+              </div>
+              <div style={{ height: '14px', border: '1px solid #404040', padding: '1px', backgroundColor: '#000000' }}>
+                <div style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: '#ffffff', position: 'relative' }}>
+                  <div className="crt-scanlines" style={{ position: 'absolute', inset: 0, opacity: 0.3 }} />
+                </div>
+              </div>
+            </div>
 
-        {/* Find Match Pulsing Button */}
-        <motion.button
-          onClick={() => onFindMatch({ playerName, avatar, rating, language: selectedLanguage })}
-          className="btn btn-primary"
-          style={{
-            width: '100%',
-            fontSize: '1.5rem',
-            padding: '1.25rem',
-            backgroundColor: '#FF416C',
-            borderColor: '#FF4B2B',
-            boxShadow: '0 0 15px rgba(255, 65, 108, 0.4)',
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 900,
-            letterSpacing: '0.05em',
-            marginBottom: '1rem'
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          ⚔️ FIND BATTLE
-        </motion.button>
+            {/* Matchmaking controls */}
+            <div style={{
+              border: '1px solid #404040',
+              padding: '1.25rem',
+              backgroundColor: '#050505',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem'
+            }}>
+              {/* Speaking Language Selector */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', textAlign: 'left' }}>
+                <label style={{ fontSize: '0.6rem', color: '#a3a3a3' }}>
+                  &gt; SELECT_COMM_PROTOCOL
+                </label>
+                <div style={{ position: 'relative', width: '100%' }}>
+                  <select
+                    value={selectedLanguage || 'en-US'}
+                    onChange={(e) => {
+                      if (onChangeLanguage) onChangeLanguage(e.target.value);
+                      localStorage.setItem('speakspin-battle-language', e.target.value);
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '0.65rem',
+                      backgroundColor: '#000000',
+                      border: '1px solid #404040',
+                      color: '#ffffff',
+                      fontFamily: "'Fira Code', monospace",
+                      fontSize: '0.8rem',
+                      borderRadius: '0px',
+                      outline: 'none',
+                      cursor: 'pointer',
+                      appearance: 'none'
+                    }}
+                  >
+                    {SUPPORTED_LANGUAGES.map(lang => (
+                      <option key={lang.code} value={lang.code}>{lang.name}</option>
+                    ))}
+                  </select>
+                  <div style={{ pointerEvents: 'none', position: 'absolute', insetY: 0, right: 0, display: 'flex', alignItems: 'center', paddingRight: '8px', color: '#ffffff' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_drop_down</span>
+                  </div>
+                </div>
+              </div>
 
-        {/* View Profile Button */}
-        <motion.button
-          onClick={onViewProfile}
-          className="btn btn-secondary"
-          style={{
-            width: '100%',
-            fontSize: '1.1rem',
-            padding: '0.85rem',
-            backgroundColor: '#000000',
-            borderColor: '#ffffff',
-            borderWidth: '2px',
-            color: '#ffffff',
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 800,
-            letterSpacing: '0.05em',
-            marginBottom: '2rem',
-            textTransform: 'uppercase'
-          }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
-          📊 VIEW GAMER PROFILE & HISTORY
-        </motion.button>
-
-        {/* Collapsible How it works */}
-        <div style={{ border: '2px solid #ffffff', padding: '1rem', backgroundColor: '#0a0a1a', marginBottom: '2rem' }}>
-          <div
-            onClick={() => setShowHowItWorks(!showHowItWorks)}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', fontWeight: 800, fontSize: '0.85rem' }}
-          >
-            <span>📜 HOW IT WORKS</span>
-            <span className="material-symbols-outlined">
-              {showHowItWorks ? 'expand_less' : 'expand_more'}
-            </span>
-          </div>
-          <AnimatePresence>
-            {showHowItWorks && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                style={{ overflow: 'hidden', marginTop: '0.75rem', fontSize: '0.8rem', lineHeight: '1.5', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '0.75rem', color: 'var(--text-secondary)' }}
-              >
-                <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>
-                  <li style={{ marginBottom: '0.5rem' }}><strong>Skill-based Matchmaking</strong>: Matches you with competitors of similar ELO tier.</li>
-                  <li style={{ marginBottom: '0.5rem' }}><strong>Synchronized Speech</strong>: Both speakers are given the same random category topic.</li>
-                  <li style={{ marginBottom: '0.5rem' }}><strong>Toastmasters AI Judging</strong>: The AI evaluates and grades both speeches.</li>
-                  <li><strong>Win rating points</strong>: Winners gain ELO points to climb the competitive leagues.</li>
-                </ol>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Leaderboard Snippet */}
-        <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#000000' }}>
-          <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.9rem', margin: '0 0 1rem 0', borderBottom: '1px solid #ffffff', paddingBottom: '0.5rem' }}>
-            📊 TOP WEEKLY SPEAKERS
-          </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {leaderboard.map((item, idx) => (
-              <div
-                key={idx}
+              {/* Initiate matchmaking button */}
+              <button
+                onClick={() => onFindMatch({ playerName, avatar, rating, language: selectedLanguage })}
                 style={{
+                  width: '100%',
+                  backgroundColor: '#ffffff',
+                  color: '#000000',
+                  border: '1px solid #ffffff',
+                  padding: '0.85rem',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  fontFamily: "'Fira Code', monospace",
+                  letterSpacing: '0.15em',
+                  cursor: 'pointer',
                   display: 'flex',
-                  justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '0.5rem',
-                  border: item.isYou ? '1px dashed #ffffff' : 'none',
-                  backgroundColor: item.isYou ? 'rgba(255,255,255,0.05)' : 'transparent'
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  transition: 'background-color 0.2s, color 0.2s'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.backgroundColor = '#000000';
+                  e.currentTarget.style.color = '#ffffff';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = '#ffffff';
+                  e.currentTarget.style.color = '#000000';
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontWeight: 800, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{idx + 1}.</span>
-                  <span style={{ fontSize: '1.25rem' }}>{item.avatar}</span>
-                  <span style={{ fontWeight: 800, textTransform: 'uppercase', fontSize: '0.85rem', color: item.isYou ? 'var(--accent-teal)' : '#ffffff' }}>
-                    {item.name} {item.isYou && '(YOU)'}
-                  </span>
-                </div>
-                <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '0.85rem' }}>
-                  {item.rating} ELO
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>radar</span>
+                INITIATE_MATCHMAKING
+              </button>
+            </div>
+
+            {/* Custom Terminal Table Leaderboard */}
+            <div style={{ border: '1px solid #404040', padding: '1rem', backgroundColor: '#050505' }}>
+              <div style={{ fontSize: '0.65rem', color: '#a3a3a3', marginBottom: '0.75rem' }}>
+                &gt; LEADERBOARD_STATUS_LOG
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.75rem' }}>
+                {leaderboard.map((item, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    padding: '0.25rem 0.5rem',
+                    backgroundColor: item.isYou ? '#141414' : 'transparent',
+                    border: item.isYou ? '1px solid #404040' : 'none',
+                    fontWeight: item.isYou ? 'bold' : 'normal'
+                  }}>
+                    <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                      <span style={{ color: '#a3a3a3' }}>[{idx + 1}]</span>
+                      <span>{item.avatar} {item.name}</span>
+                    </span>
+                    <span style={{ color: item.isYou ? '#00ff66' : '#ffffff' }}>
+                      {String(item.rating).padStart(4, '0')} ELO
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Collapsible How It Works */}
+            <div style={{ border: '1px solid #404040', backgroundColor: '#050505' }}>
+              <div
+                onClick={() => setShowHowItWorks(!showHowItWorks)}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '0.65rem 0.75rem', fontSize: '0.7rem', fontWeight: 'bold' }}
+              >
+                <span>&gt; PROTOCOL_RULES_LOG.TXT</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                  {showHowItWorks ? 'expand_less' : 'expand_more'}
                 </span>
               </div>
-            ))}
+              <AnimatePresence>
+                {showHowItWorks && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    style={{ overflow: 'hidden', padding: '0.75rem', fontSize: '0.7rem', lineHeight: '1.5', borderTop: '1px solid #404040', color: '#a3a3a3' }}
+                  >
+                    <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>
+                      <li style={{ marginBottom: '0.4rem' }}><strong>SBM_MATCH:</strong> Connects with players within Rating threshold.</li>
+                      <li style={{ marginBottom: '0.4rem' }}><strong>SYNC_TOPIC:</strong> Simultaneous random category prompts.</li>
+                      <li style={{ marginBottom: '0.4rem' }}><strong>JUDGE_AI:</strong> Rubric evaluations via speech parameters.</li>
+                      <li><strong>ELO_GAIN:</strong> Gained ELO ratings persist to account.</li>
+                    </ol>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
+        {/* Footer */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '0.5rem 1rem',
+          borderTop: '1px solid #404040',
+          backgroundColor: '#141414',
+          fontSize: '0.6rem',
+          color: '#a3a3a3'
+        }}>
+          <div>SYS.V.2026 (c) SPKSPN</div>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <span>[TERMS]</span>
+            <span>[PRIVACY]</span>
+            <span>[SUPPORT]</span>
+          </div>
+        </div>
       </div>
     </div>
   );
