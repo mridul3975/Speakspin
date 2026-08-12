@@ -183,3 +183,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Configured `Montserrat` sans-serif as the typography font for the Cyberpunk Terminal Battle Lobby.
 * **The 'Why'**: While monospace fits the technical terminal mockup, `Montserrat` improves general readability and alignment of user records and logs, aligning with the primary design styles.
 * **Impact**: Updates CSS class loaders and font-family declarations inside `BattleLobby.jsx`.
+
+---
+
+### Date/Time: 2026-08-12T12:33:00Z
+* **The Decision**: Transformed the styling of the Battle Mode screen to mirror the "High-Contrast Brutalist" aesthetic of the project, while keeping the split layout alignment unchanged.
+* **The 'Why'**: Aligning the interface to the high-contrast look creates a bold, uncompromising, black-and-white visual identity that fits the brutalist design theme perfectly.
+* **Impact**: Updates borders to thick solid `#ffffff` lines, sets backgrounds to solid black, changes shadows to flat-offset offsets (`8px 8px 0px 0px #ffffff`), and adds color inversions on hover.
