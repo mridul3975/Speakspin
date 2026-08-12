@@ -176,3 +176,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Mounted a fallback welcome status endpoint on the Express root path `GET /`.
 * **The 'Why'**: When developers or hosts navigate to the main server URL on Render, Express returns a raw default `Cannot GET /` error page unless a route is explicit.
 * **Impact**: Returns an online status JSON greeting in `server.js`.
+
+---
+
+### Date/Time: 2026-08-12T12:28:00Z
+* **The Decision**: Configured `Montserrat` sans-serif as the typography font for the Cyberpunk Terminal Battle Lobby.
+* **The 'Why'**: While monospace fits the technical terminal mockup, `Montserrat` improves general readability and alignment of user records and logs, aligning with the primary design styles.
+* **Impact**: Updates CSS class loaders and font-family declarations inside `BattleLobby.jsx`.

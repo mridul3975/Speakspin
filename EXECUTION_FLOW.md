@@ -6,8 +6,8 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Montserrat Font for Cyberpunk Battle Lobby**: Swapped out monospace `Fira Code` with sans-serif `Montserrat` inside `BattleLobby.jsx`. Integrated dynamic Google Fonts loader scripts to render Montserrat styling for all console elements, headers, tables, and buttons.
 * **Server Status Entrypoint fallback**: Added a JSON status welcome handler on `GET /` inside `server.js` to resolve the default Express `Cannot GET /` message on deployment instances like Render.
-* **Gamer Profile: Cyberpunk Terminal Battle Lobby**: Fully redesigned the multiplayer matchmaking lobby in `BattleLobby.jsx` based on Stitch's "Gamer Profile: Cyberpunk Terminal" design mockups. Loaded and implemented Fira Code monospace font styles, scanline CRT effects, grid layouts, terminal leaderboard tables, silver ranking tags, and raw outline borders.
 * **Multilingual Speech Support & Grading**: Added a "Select Speaking Language" dropdown in `TimerSelector.jsx` supporting 12 major locales (English US/UK, Spanish Spain/Mexico, French, German, Hindi, Italian, Japanese, Portuguese, Chinese, Arabic). Wired parameters dynamically down to browser Web Speech API, Groq Whisper transcription hints, and LLM prompts. The coach evaluates the speech native structure and generates exemplars in the chosen language, keeping critique commentary in English.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
