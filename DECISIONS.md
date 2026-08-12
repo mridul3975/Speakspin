@@ -218,3 +218,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Cleaned up the Battle Mode matchmaking screen by removing the ELO progress bar, mock leaderboard widget, and protocol instruction text cards.
 * **The 'Why'**: A cleaner, less cluttered interface focuses the speaker's attention purely on initiating matches and configuring communication protocol languages.
 * **Impact**: Eliminates extra UI blocks inside `BattleLobby.jsx`.
+
+---
+
+### Date/Time: 2026-08-12T20:11:00Z
+* **The Decision**: Integrated translation hooks and bilingual topic representations for multilingual public speaking rounds.
+* **The 'Why'**: Speakers targeting non-English communication protocols perform significantly better when they can read their speaking topics in their active language while keeping the standard English original visible for comparison.
+* **Impact**: Adds `/api/translate-topic` endpoint to the backend routes, and modifies `SpeechRecorder.jsx`, `TopicReveal.jsx`, `BattleRecorder.jsx`, and `FeedbackDashboard.jsx` to fetch and render bilingual titles.

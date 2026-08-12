@@ -6,8 +6,10 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Bilingual Topic Display Support**: Added dynamic LLM translation support for public speaking topics. If a user selects a communication language other than English (e.g. Spanish, German, Japanese):
+  - The topic title is automatically translated to the chosen language via a new `/api/translate-topic` endpoint.
+  - The target pages (`<SpeechRecorder>`, `<TopicReveal>`, `<BattleRecorder>`, and `<FeedbackDashboard>`) render both the translated language topic and the original English reference.
 * **Minimal Battle Lobby UI cleanup**: Cleaned up the Battle Mode lobby in `BattleLobby.jsx` by removing the redundant ELO progression bar, mock leaderboard lists, and general rules layout blocks to focus purely on core matchmaking actions.
-* **Anxiety details panel crash fix**: Resolved a React crash (`TypeError: g.map is not a function`) occurring when users click the "Anxiety" tab inside the progress history Details popup. Added robust type validation checks in `FeedbackDashboard.jsx` to verify that `signs` and `tips` are arrays before calling `.map()`, and wrapped strings dynamically in array blocks when needed.
 * **Multilingual Speech Support & Grading**: Added a "Select Speaking Language" dropdown in `TimerSelector.jsx` supporting 12 major locales (English US/UK, Spanish Spain/Mexico, French, German, Hindi, Italian, Japanese, Portuguese, Chinese, Arabic). Wired parameters dynamically down to browser Web Speech API, Groq Whisper transcription hints, and LLM prompts. The coach evaluates the speech native structure and generates exemplars in the chosen language, keeping critique commentary in English.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.
