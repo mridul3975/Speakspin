@@ -6,8 +6,10 @@ This map outlines the active entry points, execution flows, and dependency chain
 
 ## Recent Logic Changes
 
+* **Universal Back Button Navigation**: Added back buttons to previously locked pages:
+  - Mounted an absolute back button in `<SpinWheel>` before spinning starts, allowing users to return to setup configuration.
+  - Placed a header back button in `<FeedbackDashboard>`, enabling quick navigation back to home.
 * **High-Contrast Brutalist Battle Lobby**: Refactored the cyberpunk terminal layout in `BattleLobby.jsx` to inherit properties from Stitch's "High-Contrast Brutalist" design theme. Kept the split alignment as is while updating all outline borders to solid `#ffffff` (3px to 4px thickness), setting background colors to solid black, making shadows flat-offset offsets (`8px 8px 0px 0px #ffffff`), and implementing dynamic card color inversions on hover.
-* **Montserrat Font for Cyberpunk Battle Lobby**: Swapped out monospace `Fira Code` with sans-serif `Montserrat` inside `BattleLobby.jsx`. Integrated dynamic Google Fonts loader scripts to render Montserrat styling for all console elements, headers, tables, and buttons.
 * **Multilingual Speech Support & Grading**: Added a "Select Speaking Language" dropdown in `TimerSelector.jsx` supporting 12 major locales (English US/UK, Spanish Spain/Mexico, French, German, Hindi, Italian, Japanese, Portuguese, Chinese, Arabic). Wired parameters dynamically down to browser Web Speech API, Groq Whisper transcription hints, and LLM prompts. The coach evaluates the speech native structure and generates exemplars in the chosen language, keeping critique commentary in English.
 * **ELO Rematch Persistence Fix**: Updated the socket server to save ELO updates in memory when duels end, and configured `resetRoomForRematch` in `backend/socket.js` to emit `match_found` events to players individually. This preserves positions and new ELO ratings in consecutive rematch rounds.
 * **Reference Fix**: Added `onStartBattle` to destructuring list inside `LandingScreen.jsx` to resolve runtime crash.

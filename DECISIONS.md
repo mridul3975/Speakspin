@@ -190,3 +190,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Transformed the styling of the Battle Mode screen to mirror the "High-Contrast Brutalist" aesthetic of the project, while keeping the split layout alignment unchanged.
 * **The 'Why'**: Aligning the interface to the high-contrast look creates a bold, uncompromising, black-and-white visual identity that fits the brutalist design theme perfectly.
 * **Impact**: Updates borders to thick solid `#ffffff` lines, sets backgrounds to solid black, changes shadows to flat-offset offsets (`8px 8px 0px 0px #ffffff`), and adds color inversions on hover.
+
+---
+
+### Date/Time: 2026-08-12T12:39:00Z
+* **The Decision**: Mounted back buttons to `<SpinWheel>` and `<FeedbackDashboard>` screens to allow users to navigate back cleanly without feeling locked.
+* **The 'Why'**: Having pages without back paths causes navigation dead-ends. Placing return triggers makes the flow smoother and keeps single-player paths intuitive.
+* **Impact**: Updates state routing properties in `App.jsx`, `SpinWheel.jsx`, and `FeedbackDashboard.jsx`.
