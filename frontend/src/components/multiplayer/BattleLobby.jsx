@@ -50,13 +50,13 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
     }
   }, []);
 
-  // Dynamically load Fira Code font
+  // Dynamically load Montserrat font
   useEffect(() => {
-    if (!document.getElementById('fira-code-font')) {
+    if (!document.getElementById('montserrat-font')) {
       const link = document.createElement('link');
-      link.id = 'fira-code-font';
+      link.id = 'montserrat-font';
       link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap';
+      link.href = 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap';
       document.head.appendChild(link);
     }
   }, []);
@@ -110,7 +110,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
 
   return (
     <div className="crt-cyberpunk" style={{
-      fontFamily: "'Fira Code', monospace",
+      fontFamily: "'Montserrat', sans-serif",
       width: '100%',
       minHeight: '90vh',
       display: 'flex',
@@ -123,6 +123,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
       <style>{`
         .crt-cyberpunk {
           background-color: #050505;
+          font-family: 'Montserrat', sans-serif;
           background-image: linear-gradient(#111111 1px, transparent 1px),
                             linear-gradient(90deg, #111111 1px, transparent 1px);
           background-size: 20px 20px;
@@ -253,7 +254,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   autoFocus
                   className="retro-input"
                   style={{
-                    fontFamily: "'Fira Code', monospace",
+                    fontFamily: "'Montserrat', sans-serif",
                     fontWeight: 'bold',
                     fontSize: '1rem',
                     textAlign: 'center',
@@ -392,7 +393,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                       backgroundColor: '#000000',
                       border: '1px solid #404040',
                       color: '#ffffff',
-                      fontFamily: "'Fira Code', monospace",
+                      fontFamily: "'Montserrat', sans-serif",
                       fontSize: '0.8rem',
                       borderRadius: '0px',
                       outline: 'none',
@@ -421,7 +422,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   padding: '0.85rem',
                   fontSize: '0.85rem',
                   fontWeight: 'bold',
-                  fontFamily: "'Fira Code', monospace",
+                  fontFamily: "'Montserrat', sans-serif",
                   letterSpacing: '0.15em',
                   cursor: 'pointer',
                   display: 'flex',
