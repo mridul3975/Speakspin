@@ -197,3 +197,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Mounted back buttons to `<SpinWheel>` and `<FeedbackDashboard>` screens to allow users to navigate back cleanly without feeling locked.
 * **The 'Why'**: Having pages without back paths causes navigation dead-ends. Placing return triggers makes the flow smoother and keeps single-player paths intuitive.
 * **Impact**: Updates state routing properties in `App.jsx`, `SpinWheel.jsx`, and `FeedbackDashboard.jsx`.
+
+---
+
+### Date/Time: 2026-08-12T12:49:00Z
+* **The Decision**: Synchronized the single-player category subtopics with Battle Mode matchmaking prompts.
+* **The 'Why'**: Competitive multiplayer speech duels should feature the same rich set of 550 subtopics across Entrepreneurship, Startups, Tech, Nutrition, and more, rather than being restricted to 8 hardcoded defaults.
+* **Impact**: Compiles categories dynamically into `backend/config/topics.js` and imports them directly within the socket matcher initialization in `backend/socket.js`.
