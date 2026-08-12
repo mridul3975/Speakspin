@@ -116,66 +116,56 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
       display: 'flex',
       flexDirection: 'column',
       color: '#ffffff',
-      padding: '1rem',
+      padding: '1.5rem 1rem',
       boxSizing: 'border-box'
     }}>
-      {/* Dynamic CRT Scanline Styles */}
+      {/* Dynamic Brutalist Styles */}
       <style>{`
         .crt-cyberpunk {
-          background-color: #050505;
-          font-family: 'Montserrat', sans-serif;
-          background-image: linear-gradient(#111111 1px, transparent 1px),
-                            linear-gradient(90deg, #111111 1px, transparent 1px);
-          background-size: 20px 20px;
-        }
-        .crt-scanlines {
-          position: relative;
-        }
-        .crt-scanlines::before {
-          content: " ";
-          display: block;
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(0, 0, 0, 0.18) 50%);
-          background-size: 100% 4px;
-          z-index: 5;
-          pointer-events: none;
+          background-color: #000000;
         }
         .retro-input:focus {
           border-color: #ffffff !important;
           outline: none;
         }
+        .brutalist-card-hover {
+          transition: background-color 0.25s, color 0.25s;
+        }
+        .brutalist-card-hover:hover {
+          background-color: #ffffff !important;
+          color: #000000 !important;
+        }
+        .brutalist-card-hover:hover * {
+          color: #000000 !important;
+        }
       `}</style>
 
-      {/* Main Terminal Frame */}
+      {/* Main Brutalist Frame */}
       <div style={{
         width: '100%',
         maxWidth: '900px',
         margin: '0 auto',
-        backgroundColor: '#0a0a0a',
-        border: '1px solid #404040',
-        boxShadow: '0 20px 50px rgba(0,0,0,0.8)',
+        backgroundColor: '#000000',
+        border: '4px solid #ffffff',
+        boxShadow: '8px 8px 0px 0px #ffffff',
         display: 'flex',
         flexDirection: 'column'
       }}>
-        {/* Terminal Header Bar */}
+        {/* Header Bar */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '0.75rem 1rem',
-          borderBottom: '1px solid #404040',
-          backgroundColor: '#141414'
+          padding: '1rem',
+          borderBottom: '4px solid #ffffff',
+          backgroundColor: '#000000'
         }}>
-          <div style={{ fontWeight: 'bold', fontSize: '0.85rem', letterSpacing: '0.15em', color: '#ffffff' }}>
-            SYS.SPKSPN_
+          <div style={{ fontWeight: 900, fontSize: '1rem', letterSpacing: '0.15em', color: '#ffffff' }}>
+            SPEAKSPIN
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.7rem', color: '#00ff66', fontWeight: 600 }}>
-            <span style={{ width: '6px', height: '6px', backgroundColor: '#00ff66', borderRadius: '50%', display: 'inline-block', animate: 'pulse 1.5s infinite' }} />
-            SYS_ONLINE
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#ffffff', fontWeight: 900, textTransform: 'uppercase' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#ffffff', borderRadius: '50%', display: 'inline-block' }} />
+            BATTLE_PORTAL
           </div>
         </div>
 
@@ -185,46 +175,46 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
           <div style={{
             width: '100%',
             maxWidth: '280px',
-            borderRight: '1px solid #404040',
+            borderRight: '4px solid #ffffff',
             padding: '1.5rem',
             boxSizing: 'border-box',
-            backgroundColor: '#050505',
+            backgroundColor: '#000000',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.5rem'
           }}>
-            <div style={{ fontSize: '0.65rem', color: '#a3a3a3', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>terminal</span>
-              USER_IDENTIFICATION
+            <div style={{ fontSize: '0.7rem', color: '#ffffff', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase' }}>
+              <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>terminal</span>
+              IDENT_INFO
             </div>
 
             {/* Square Avatar Box */}
-            <div className="crt-scanlines" style={{
+            <div style={{
               width: '100%',
               aspectRatio: '1',
-              border: '1px solid #404040',
+              border: '3px solid #ffffff',
               padding: '0.75rem',
-              backgroundColor: '#0a0a0a',
+              backgroundColor: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
               cursor: 'pointer'
             }} onClick={() => setIsEditingAvatar(!isEditingAvatar)}>
-              <div style={{ fontSize: '5rem', userSelect: 'none' }}>
+              <div style={{ fontSize: '5.5rem', userSelect: 'none' }}>
                 {avatar}
               </div>
               <div style={{
                 position: 'absolute',
-                bottom: '8px',
-                right: '8px',
-                backgroundColor: '#000000',
-                border: '1px solid #404040',
+                bottom: '10px',
+                right: '10px',
+                backgroundColor: '#ffffff',
+                border: '2px solid #000000',
                 padding: '0.2rem',
                 display: 'flex',
                 alignItems: 'center'
               }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '12px', color: '#ffffff' }}>edit</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#000000' }}>edit</span>
               </div>
             </div>
 
@@ -235,7 +225,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  style={{ border: '1px dashed #404040', padding: '0.5rem', backgroundColor: '#000000' }}
+                  style={{ border: '2px dashed #ffffff', padding: '0.5rem', backgroundColor: '#000000' }}
                 >
                   <AvatarSelector selectedAvatar={avatar} onSelect={handleSaveAvatar} />
                 </motion.div>
@@ -255,68 +245,70 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   className="retro-input"
                   style={{
                     fontFamily: "'Montserrat', sans-serif",
-                    fontWeight: 'bold',
+                    fontWeight: 900,
                     fontSize: '1rem',
                     textAlign: 'center',
-                    border: '1px solid #404040',
+                    border: '3px solid #ffffff',
                     backgroundColor: '#000000',
                     color: '#ffffff',
                     padding: '0.4rem',
                     width: '100%',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    borderRadius: '0px'
                   }}
                 />
               ) : (
                 <div 
                   onClick={() => setIsEditingName(true)}
-                  style={{ fontWeight: 800, fontSize: '1.1rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase', color: '#ffffff' }}
+                  style={{ fontWeight: 900, fontSize: '1.25rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase', color: '#ffffff' }}
                 >
                   {playerName}
-                  <span className="material-symbols-outlined" style={{ fontSize: '14px', opacity: 0.6 }}>edit</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', opacity: 0.8 }}>edit</span>
                 </div>
               )}
-              <div style={{ fontSize: '0.65rem', color: '#a3a3a3' }}>ID: SPEAKER_#{Math.floor(1000 + (rating % 9000))}</div>
+              <div style={{ fontSize: '0.7rem', color: '#ffffff', opacity: 0.7, fontWeight: 700 }}>USR-#{Math.floor(1000 + (rating % 9000))}</div>
             </div>
 
             {/* ELO Rank Box */}
             <div style={{
-              border: '1px solid #404040',
+              border: '3px solid #ffffff',
               padding: '0.75rem',
-              backgroundColor: '#0a0a0a',
+              backgroundColor: '#000000',
               fontSize: '0.8rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.4rem'
+              gap: '0.4rem',
+              fontWeight: 800
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#a3a3a3' }}>RANK:</span>
-                <span style={{ color: tier.color, fontWeight: 'bold' }}>{tier.name.toUpperCase()}</span>
+              <div style={{ display: 'flex', justifyBetween: 'space-between', justifyContent: 'space-between' }}>
+                <span style={{ color: '#ffffff', opacity: 0.7 }}>RANK:</span>
+                <span style={{ color: '#ffffff' }}>{tier.name.toUpperCase()}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#a3a3a3' }}>ELO:</span>
-                <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{String(rating).padStart(4, '0')}</span>
+              <div style={{ display: 'flex', justifyBetween: 'space-between', justifyContent: 'space-between' }}>
+                <span style={{ color: '#ffffff', opacity: 0.7 }}>ELO:</span>
+                <span style={{ color: '#ffffff' }}>{String(rating).padStart(4, '0')}</span>
               </div>
             </div>
 
             {/* Sidebar Action Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: 'auto' }}>
-              <button onClick={onViewProfile} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: 'none', background: 'none', color: '#a3a3a3', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.25rem 0' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>analytics</span>
+              <button onClick={onViewProfile} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: '2px solid #ffffff', background: 'none', color: '#ffffff', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.5rem', fontWeight: 900, textTransform: 'uppercase' }} className="brutalist-card-hover">
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>analytics</span>
                 &gt; VIEW_PROFILE
               </button>
-              <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: 'none', background: 'none', color: '#ff3333', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.25rem 0', fontWeight: 'bold' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_back</span>
+              <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: '2px solid #ff3333', background: 'none', color: '#ff3333', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.5rem', fontWeight: 900, textTransform: 'uppercase' }} className="brutalist-card-hover">
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
                 &gt; ABORT_SESSION
               </button>
             </div>
           </div>
 
-          {/* Right Area (Matchmaking Protocol Console) */}
+          {/* Right Area (Matchmaking Console) */}
           <div style={{
             flex: 1,
             padding: '1.5rem',
             boxSizing: 'border-box',
-            backgroundColor: '#0a0a0a',
+            backgroundColor: '#000000',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.5rem',
@@ -327,57 +319,55 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: '1px solid #404040',
+              borderBottom: '3px solid #ffffff',
               paddingBottom: '0.75rem'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#ffffff' }}>swords</span>
-                <h1 style={{ fontSize: '1rem', fontWeight: 800, letterSpacing: '0.15em', margin: 0 }}>BATTLE_PROTOCOL</h1>
+                <h1 style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '0.15em', margin: 0 }}>BATTLE_PROTOCOL</h1>
               </div>
             </div>
 
             {/* Stats Row */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div style={{ border: '1px solid #404040', padding: '0.75rem', backgroundColor: '#050505' }}>
-                <div style={{ fontSize: '0.6rem', color: '#a3a3a3', marginBottom: '0.25rem' }}>&gt; SYS_STATUS_RECORD</div>
-                <div style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+              <div style={{ border: '3px solid #ffffff', padding: '0.75rem', backgroundColor: '#000000' }} className="brutalist-card-hover">
+                <div style={{ fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.25rem', fontWeight: 900 }}>&gt; RECORD</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>
                   {String(wins).padStart(2, '0')}W / {String(losses).padStart(2, '0')}L / {String(draws).padStart(2, '0')}D
                 </div>
               </div>
-              <div style={{ border: '1px solid #404040', padding: '0.75rem', backgroundColor: '#050505' }}>
-                <div style={{ fontSize: '0.6rem', color: '#a3a3a3', marginBottom: '0.25rem' }}>&gt; ACTIVE_STREAK</div>
-                <div style={{ fontSize: '1rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: streak >= 3 ? '#ff3333' : '#ffffff' }}>local_fire_department</span>
+              <div style={{ border: '3px solid #ffffff', padding: '0.75rem', backgroundColor: '#000000' }} className="brutalist-card-hover">
+                <div style={{ fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.25rem', fontWeight: 900 }}>&gt; STREAK</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>local_fire_department</span>
                   {String(streak).padStart(2, '0')}_STREAK
                 </div>
               </div>
             </div>
 
             {/* progression slider */}
-            <div style={{ border: '1px solid #404040', padding: '1rem', backgroundColor: '#050505' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6rem', color: '#a3a3a3', marginBottom: '0.5rem' }}>
-                <span>&gt; TIER_PROGRESSION_CALCULATING</span>
-                <span style={{ color: '#ffffff', fontWeight: 'bold' }}>{Math.round(progressPercent)}.00%</span>
+            <div style={{ border: '3px solid #ffffff', padding: '1rem', backgroundColor: '#000000' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.5rem', fontWeight: 900 }}>
+                <span>&gt; TIER_PROGRESSION</span>
+                <span style={{ color: '#ffffff', fontWeight: 900 }}>{Math.round(progressPercent)}.00%</span>
               </div>
-              <div style={{ height: '14px', border: '1px solid #404040', padding: '1px', backgroundColor: '#000000' }}>
-                <div style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: '#ffffff', position: 'relative' }}>
-                  <div className="crt-scanlines" style={{ position: 'absolute', inset: 0, opacity: 0.3 }} />
-                </div>
+              <div style={{ height: '16px', border: '2px solid #ffffff', padding: '2px', backgroundColor: '#000000' }}>
+                <div style={{ height: '100%', width: `${progressPercent}%`, backgroundColor: '#ffffff' }} />
               </div>
             </div>
 
             {/* Matchmaking controls */}
             <div style={{
-              border: '1px solid #404040',
+              border: '3px solid #ffffff',
               padding: '1.25rem',
-              backgroundColor: '#050505',
+              backgroundColor: '#000000',
               display: 'flex',
               flexDirection: 'column',
               gap: '1rem'
             }}>
               {/* Speaking Language Selector */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', textAlign: 'left' }}>
-                <label style={{ fontSize: '0.6rem', color: '#a3a3a3' }}>
+                <label style={{ fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, fontWeight: 900 }}>
                   &gt; SELECT_COMM_PROTOCOL
                 </label>
                 <div style={{ position: 'relative', width: '100%' }}>
@@ -389,12 +379,13 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                     }}
                     style={{
                       width: '100%',
-                      padding: '0.65rem',
+                      padding: '0.75rem',
                       backgroundColor: '#000000',
-                      border: '1px solid #404040',
+                      border: '3px solid #ffffff',
                       color: '#ffffff',
                       fontFamily: "'Montserrat', sans-serif",
-                      fontSize: '0.8rem',
+                      fontWeight: 800,
+                      fontSize: '0.85rem',
                       borderRadius: '0px',
                       outline: 'none',
                       cursor: 'pointer',
@@ -405,8 +396,8 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                       <option key={lang.code} value={lang.code}>{lang.name}</option>
                     ))}
                   </select>
-                  <div style={{ pointerEvents: 'none', position: 'absolute', insetY: 0, right: 0, display: 'flex', alignItems: 'center', paddingRight: '8px', color: '#ffffff' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_drop_down</span>
+                  <div style={{ pointerEvents: 'none', position: 'absolute', insetY: 0, right: 0, display: 'flex', alignItems: 'center', paddingRight: '10px', color: '#ffffff' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_drop_down</span>
                   </div>
                 </div>
               </div>
@@ -418,10 +409,10 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   width: '100%',
                   backgroundColor: '#ffffff',
                   color: '#000000',
-                  border: '1px solid #ffffff',
-                  padding: '0.85rem',
-                  fontSize: '0.85rem',
-                  fontWeight: 'bold',
+                  border: '3px solid #ffffff',
+                  padding: '1rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 900,
                   fontFamily: "'Montserrat', sans-serif",
                   letterSpacing: '0.15em',
                   cursor: 'pointer',
@@ -429,42 +420,45 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
-                  transition: 'background-color 0.2s, color 0.2s'
+                  transition: 'background-color 0.25s, color 0.25s',
+                  boxShadow: '4px 4px 0px 0px #ffffff'
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = '#000000';
                   e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
                 onMouseOut={(e) => {
                   e.currentTarget.style.backgroundColor = '#ffffff';
                   e.currentTarget.style.color = '#000000';
+                  e.currentTarget.style.boxShadow = '4px 4px 0px 0px #ffffff';
                 }}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>radar</span>
+                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>radar</span>
                 INITIATE_MATCHMAKING
               </button>
             </div>
 
-            {/* Custom Terminal Table Leaderboard */}
-            <div style={{ border: '1px solid #404040', padding: '1rem', backgroundColor: '#050505' }}>
-              <div style={{ fontSize: '0.65rem', color: '#a3a3a3', marginBottom: '0.75rem' }}>
+            {/* Leaderboard */}
+            <div style={{ border: '3px solid #ffffff', padding: '1rem', backgroundColor: '#000000' }}>
+              <div style={{ fontSize: '0.7rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.75rem', fontWeight: 900 }}>
                 &gt; LEADERBOARD_STATUS_LOG
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.8rem', fontWeight: 800 }}>
                 {leaderboard.map((item, idx) => (
                   <div key={idx} style={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    padding: '0.25rem 0.5rem',
-                    backgroundColor: item.isYou ? '#141414' : 'transparent',
-                    border: item.isYou ? '1px solid #404040' : 'none',
-                    fontWeight: item.isYou ? 'bold' : 'normal'
+                    padding: '0.4rem 0.6rem',
+                    backgroundColor: item.isYou ? '#ffffff' : 'transparent',
+                    border: '2px solid #ffffff',
+                    color: item.isYou ? '#000000' : '#ffffff'
                   }}>
                     <span style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                      <span style={{ color: '#a3a3a3' }}>[{idx + 1}]</span>
+                      <span style={{ opacity: item.isYou ? 1 : 0.7 }}>[{idx + 1}]</span>
                       <span>{item.avatar} {item.name}</span>
                     </span>
-                    <span style={{ color: item.isYou ? '#00ff66' : '#ffffff' }}>
+                    <span>
                       {String(item.rating).padStart(4, '0')} ELO
                     </span>
                   </div>
@@ -473,12 +467,12 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
             </div>
 
             {/* Collapsible How It Works */}
-            <div style={{ border: '1px solid #404040', backgroundColor: '#050505' }}>
+            <div style={{ border: '3px solid #ffffff', backgroundColor: '#000000' }}>
               <div
                 onClick={() => setShowHowItWorks(!showHowItWorks)}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '0.65rem 0.75rem', fontSize: '0.7rem', fontWeight: 'bold' }}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', padding: '0.75rem', fontSize: '0.75rem', fontWeight: 900 }}
               >
-                <span>&gt; PROTOCOL_RULES_LOG.TXT</span>
+                <span>&gt; PROTOCOL_RULES.TXT</span>
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
                   {showHowItWorks ? 'expand_less' : 'expand_more'}
                 </span>
@@ -489,7 +483,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    style={{ overflow: 'hidden', padding: '0.75rem', fontSize: '0.7rem', lineHeight: '1.5', borderTop: '1px solid #404040', color: '#a3a3a3' }}
+                    style={{ overflow: 'hidden', padding: '0.75rem', fontSize: '0.75rem', lineHeight: '1.6', borderTop: '3px solid #ffffff', color: '#ffffff', opacity: 0.8, fontWeight: 700 }}
                   >
                     <ol style={{ paddingLeft: '1.25rem', margin: 0 }}>
                       <li style={{ marginBottom: '0.4rem' }}><strong>SBM_MATCH:</strong> Connects with players within Rating threshold.</li>
@@ -509,11 +503,12 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '0.5rem 1rem',
-          borderTop: '1px solid #404040',
-          backgroundColor: '#141414',
-          fontSize: '0.6rem',
-          color: '#a3a3a3'
+          padding: '0.75rem 1rem',
+          borderTop: '4px solid #ffffff',
+          backgroundColor: '#000000',
+          fontSize: '0.7rem',
+          color: '#ffffff',
+          fontWeight: 900
         }}>
           <div>SYS.V.2026 (c) SPKSPN</div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
