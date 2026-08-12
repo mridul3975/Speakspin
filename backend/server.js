@@ -47,6 +47,16 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api', analyzeRouter);
 
+// Root entrypoint message
+app.get('/', (req, res) => {
+  res.json({
+    status: "online",
+    message: "SpeakSpin API Gateway - Socket & AI services operating successfully.",
+    uptime: process.uptime(),
+    health: "/health"
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
