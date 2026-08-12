@@ -8,7 +8,7 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
   const [copied, setCopied] = useState(false);
 
   const {
-    overallScore,
+    overallScore = 0,
     categories = {},
     fillerWords = { count: 0, words: [], feedback: '' },
     anxietyIndicators = { level: 'low', signs: [], tips: [] },
@@ -17,7 +17,12 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
     overallFeedback = '',
     challengeForNext = '',
     exemplarSpeech = '',
-  } = analysis;
+  } = analysis || {};
+
+  const safeAnxiety = anxietyIndicators || { level: 'low', signs: [], tips: [] };
+  const safeSigns = safeAnxiety.signs || [];
+  const safeTips = safeAnxiety.tips || [];
+  const safeLevel = safeAnxiety.level || 'low';
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: 'summarize' },
@@ -180,7 +185,7 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                   <span className="material-symbols-outlined text-3xl">heart_broken</span>
                   <div>
                     <h4 className="anxiety-badge-title">Anxiety Level</h4>
-                    <span className="anxiety-badge-text">{String(anxietyIndicators.level).toUpperCase()}</span>
+                    <span className="anxiety-badge-text">{String(safeLevel).toUpperCase()}</span>
                   </div>
                 </div>
               </div>
@@ -190,9 +195,9 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                   <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="material-symbols-outlined">warning</span> Signs Detected
                   </h3>
-                  {anxietyIndicators.signs.length > 0 ? (
+                  {safeSigns.length > 0 ? (
                     <ul>
-                      {anxietyIndicators.signs.map((sign, idx) => (
+                      {safeSigns.map((sign, idx) => (
                         <li key={idx}>{sign}</li>
                       ))}
                     </ul>
@@ -206,7 +211,7 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
                     <span className="material-symbols-outlined">check_circle</span> Calm Down Tips
                   </h3>
                   <ul>
-                    {anxietyIndicators.tips.map((tip, idx) => (
+                    {safeTips.map((tip, idx) => (
                       <li key={idx}>{tip}</li>
                     ))}
                   </ul>
