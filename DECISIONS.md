@@ -211,3 +211,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Applied safe destructuring defaults and strict type checks using `Array.isArray()` for `signs` and `tips` array mapping within `FeedbackDashboard.jsx`.
 * **The 'Why'**: Stored historical database records might have `null` fields or string representation fields depending on the database driver type parsing, causing `.map()` to throw `TypeError: map is not a function`.
 * **Impact**: Validates datatypes dynamically, wrapping strings into array shells if needed, to prevent React application crashes.
+
+---
+
+### Date/Time: 2026-08-12T16:32:00Z
+* **The Decision**: Cleaned up the Battle Mode matchmaking screen by removing the ELO progress bar, mock leaderboard widget, and protocol instruction text cards.
+* **The 'Why'**: A cleaner, less cluttered interface focuses the speaker's attention purely on initiating matches and configuring communication protocol languages.
+* **Impact**: Eliminates extra UI blocks inside `BattleLobby.jsx`.
