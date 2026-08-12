@@ -19,9 +19,22 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
     exemplarSpeech = '',
   } = analysis || {};
 
-  const safeAnxiety = anxietyIndicators || { level: 'low', signs: [], tips: [] };
-  const safeSigns = safeAnxiety.signs || [];
-  const safeTips = safeAnxiety.tips || [];
+  const safeAnxiety = (anxietyIndicators && typeof anxietyIndicators === 'object') ? anxietyIndicators : { level: 'low', signs: [], tips: [] };
+  
+  let safeSigns = [];
+  if (Array.isArray(safeAnxiety.signs)) {
+    safeSigns = safeAnxiety.signs;
+  } else if (typeof safeAnxiety.signs === 'string') {
+    safeSigns = [safeAnxiety.signs];
+  }
+  
+  let safeTips = [];
+  if (Array.isArray(safeAnxiety.tips)) {
+    safeTips = safeAnxiety.tips;
+  } else if (typeof safeAnxiety.tips === 'string') {
+    safeTips = [safeAnxiety.tips];
+  }
+  
   const safeLevel = safeAnxiety.level || 'low';
 
   const tabs = [
