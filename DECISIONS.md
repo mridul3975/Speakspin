@@ -162,3 +162,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Implemented speaking language selectors in `BattleLobby.jsx` and added matching language filters to the socket server queue inside `socket.js`.
 * **The 'Why'**: Competitive multiplayer duels are only fair when both competitors speak and are evaluated in the same native language.
 * **Impact**: Restricts `tryMatchmaking` to identical language property matches, configures simulated bots to speak in player's language, and ensures evaluation runs on the chosen language.
+
+---
+
+### Date/Time: 2026-08-12T12:08:00Z
+* **The Decision**: Redesigned the `BattleLobby.jsx` component using the "Gamer Profile: Cyberpunk Terminal" design layout from Stitch.
+* **The 'Why'**: A cyberpunk console command-center interface matches the intense, competitive 1v1 battle nature of SpeakSpin's duels much better than a generic gradient layout.
+* **Impact**: Incorporates scanline visual elements, Fira Code monospace fonts, and a split layout for player stats, leaderboard status logs, and matchmaking controls.
