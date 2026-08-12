@@ -169,3 +169,10 @@ This log tracks key architectural choices, logic changes, and workflow designs i
 * **The Decision**: Redesigned the `BattleLobby.jsx` component using the "Gamer Profile: Cyberpunk Terminal" design layout from Stitch.
 * **The 'Why'**: A cyberpunk console command-center interface matches the intense, competitive 1v1 battle nature of SpeakSpin's duels much better than a generic gradient layout.
 * **Impact**: Incorporates scanline visual elements, Fira Code monospace fonts, and a split layout for player stats, leaderboard status logs, and matchmaking controls.
+
+---
+
+### Date/Time: 2026-08-12T12:25:00Z
+* **The Decision**: Mounted a fallback welcome status endpoint on the Express root path `GET /`.
+* **The 'Why'**: When developers or hosts navigate to the main server URL on Render, Express returns a raw default `Cannot GET /` error page unless a route is explicit.
+* **Impact**: Returns an online status JSON greeting in `server.js`.
