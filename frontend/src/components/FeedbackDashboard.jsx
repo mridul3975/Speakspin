@@ -51,7 +51,16 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
   return (
     <div className="dashboard-container">
       {/* Header */}
-      <div className="dashboard-header">
+      <div className="dashboard-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        {onGoHome && (
+          <button 
+            className="btn-back-ghost" 
+            onClick={onGoHome}
+            style={{ marginBottom: '0.75rem', paddingLeft: 0 }}
+          >
+            <span className="material-symbols-outlined text-sm">arrow_back</span> BACK
+          </button>
+        )}
         <span className="dashboard-label">YOUR SPEECH ANALYSIS</span>
         <h2 className="dashboard-topic">TOPIC: <span style={{ fontStyle: 'italic' }}>"{topic.topic}"</span></h2>
       </div>

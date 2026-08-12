@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { TOPIC_BANK } from '../data/topics';
 
-export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory }) {
+export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory, onBack }) {
   const canvasRef = useRef(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState(null);
@@ -131,8 +131,17 @@ export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory 
   };
 
   return (
-    <div className="spinning-container">
-      <h2 className="spin-title">🎰 Spin to Decide Your Topic</h2>
+    <div className="spinning-container" style={{ position: 'relative' }}>
+      {!isSpinning && !selectedTopic && onBack && (
+        <button 
+          className="btn-back-ghost" 
+          onClick={onBack}
+          style={{ position: 'absolute', top: '0px', left: '0px' }}
+        >
+          <span className="material-symbols-outlined text-sm">arrow_back</span> BACK
+        </button>
+      )}
+      <h2 className="spin-title" style={{ marginTop: (!isSpinning && !selectedTopic && onBack) ? '2.5rem' : '0' }}>🎰 Spin to Decide Your Topic</h2>
       
       <div className="wheel-wrapper">
         <div className="wheel-pointer"></div>

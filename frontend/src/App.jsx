@@ -384,6 +384,7 @@ export function App() {
               selectedDuration={selectedDuration}
               selectedCategory={selectedCategory}
               onTopicSelected={handleTopicSelected}
+              onBack={() => navigateTo(SCREENS.SETUP)}
             />
           </motion.div>
         )}
