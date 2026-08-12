@@ -1,11 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScoreCircle from './ScoreCircle';
 import CategoryCard from './CategoryCard';
+import { translateTopic } from '../utils/api';
 
-export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }) {
+export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome, selectedLanguage }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [copied, setCopied] = useState(false);
+  const [translatedTopic, setTranslatedTopic] = useState(topic?.topic || '');
+
+  useEffect(() => {
+    let active = true;
+    if (topic?.topic) {
+      if (selectedLanguage && !selectedLanguage.startsWith('en')) {
+        translateTopic(topic.topic, selectedLanguage).then((res) => {
+          if (active && res && res.translated) {
+            setTranslatedTopic(res.translated);
+          }
+        });
+      } else {
+        setTranslatedTopic(topic.topic);
+      }
+    }
+    return () => {
+      active = false;
+    };
+  }, [topic, selectedLanguage]);
 
   const {
     overallScore = 0,
@@ -80,7 +100,14 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome }
           </button>
         )}
         <span className="dashboard-label">YOUR SPEECH ANALYSIS</span>
-        <h2 className="dashboard-topic">TOPIC: <span style={{ fontStyle: 'italic' }}>"{topic.topic}"</span></h2>
+        <h2 className="dashboard-topic" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
+          <span>TOPIC: <span style={{ fontStyle: 'italic' }}>{translatedTopic === topic.topic ? `"${topic.topic}"` : `"${translatedTopic}"`}</span></span>
+          {translatedTopic !== topic.topic && (
+            <span style={{ fontSize: '0.85rem', fontWeight: 'normal', opacity: 0.6, fontStyle: 'italic' }}>
+              (English: "{topic.topic}")
+            </span>
+          )}
+        </h2>
       </div>
 
       {/* Main Score Area */}

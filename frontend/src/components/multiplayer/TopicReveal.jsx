@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { translateTopic } from '../../utils/api';
 
-export function TopicReveal({ topic, category, duration, startCountdown }) {
+export function TopicReveal({ topic, category, duration, startCountdown, selectedLanguage }) {
+  const [translatedTopic, setTranslatedTopic] = useState(topic);
   const [words, setWords] = useState([]);
   const [visibleWordsCount, setVisibleWordsCount] = useState(0);
 
   useEffect(() => {
-    if (topic) {
-      setWords(topic.split(' '));
+    let active = true;
+    if (selectedLanguage && !selectedLanguage.startsWith('en')) {
+      translateTopic(topic, selectedLanguage).then((res) => {
+        if (active && res && res.translated) {
+          setTranslatedTopic(res.translated);
+        }
+      });
+    } else {
+      setTranslatedTopic(topic);
     }
-  }, [topic]);
+    return () => {
+      active = false;
+    };
+  }, [topic, selectedLanguage]);
+
+  useEffect(() => {
+    if (translatedTopic) {
+      setWords(translatedTopic.split(' '));
+      setVisibleWordsCount(0); // Reset progress on new word list
+    }
+  }, [translatedTopic]);
 
   // Word-by-word typewriter reveal animation
   useEffect(() => {
@@ -56,8 +75,17 @@ export function TopicReveal({ topic, category, duration, startCountdown }) {
         </motion.span>
 
         {/* Typewriter topic title */}
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.8rem', lineHeight: '1.4', margin: '0 0 1.5rem 0', minHeight: '100px' }}>
-          {words.slice(0, visibleWordsCount).join(' ')}
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.8rem', lineHeight: '1.4', margin: '0 0 1.5rem 0', minHeight: '120px', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <span>{words.slice(0, visibleWordsCount).join(' ')}</span>
+          {translatedTopic !== topic && visibleWordsCount >= words.length && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              style={{ fontSize: '1rem', fontWeight: 'normal' }}
+            >
+              (English: "{topic}")
+            </motion.span>
+          )}
         </h2>
 
         {/* Duration badge */}

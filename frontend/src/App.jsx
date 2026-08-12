@@ -433,6 +433,7 @@ export function App() {
             <FeedbackDashboard
               topic={currentTopic}
               analysis={analysisResults}
+              selectedLanguage={selectedLanguage}
               onPracticeAgain={() => navigateTo(SCREENS.SETUP)}
               onGoHome={() => navigateTo(SCREENS.LANDING)}
             />
@@ -542,6 +543,7 @@ export function App() {
               category={battleCategory}
               duration={battleDuration}
               startCountdown={startCountdown}
+              selectedLanguage={selectedLanguage}
             />
           </motion.div>
         )}

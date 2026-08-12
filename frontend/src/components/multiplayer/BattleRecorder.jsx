@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../../hooks/useAudioLevel';
 import { playTick, playHorn } from '../../utils/battleAudio';
-import { transcribeAudio } from '../../utils/api';
+import { transcribeAudio, translateTopic } from '../../utils/api';
 
 export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaking, onFinishSpeech, selectedLanguage }) {
   const [hasStarted, setHasStarted] = useState(false);
@@ -11,8 +11,25 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
   const [timeLeft, setTimeLeft] = useState(duration);
   const [actualDuration, setActualDuration] = useState(0);
   const [editableTranscript, setEditableTranscript] = useState('');
+  const [translatedTopic, setTranslatedTopic] = useState(topic);
   const hasSubmittedRef = useRef(false);
   const actualDurationRef = useRef(0);
+
+  useEffect(() => {
+    let active = true;
+    if (selectedLanguage && !selectedLanguage.startsWith('en')) {
+      translateTopic(topic, selectedLanguage).then((res) => {
+        if (active && res && res.translated) {
+          setTranslatedTopic(res.translated);
+        }
+      });
+    } else {
+      setTranslatedTopic(topic);
+    }
+    return () => {
+      active = false;
+    };
+  }, [topic, selectedLanguage]);
 
   const {
     transcript,
@@ -242,7 +259,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
       
       {/* Topic header banner */}
       <div style={{ textTransform: 'uppercase', fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1.25rem' }}>
-        ⚔️ TOPIC: "{topic}"
+        ⚔️ TOPIC: {translatedTopic === topic ? `"${topic}"` : `"${translatedTopic}" (English: "${topic}")`}
       </div>
 
       {/* TOP HALF: YOUR SIDE */}

@@ -175,3 +175,22 @@ export async function clearHistoryDB() {
     throw error;
   }
 }
+
+export async function translateTopic(topic, targetLanguage) {
+  try {
+    const response = await fetch(`${API_BASE}/api/translate-topic`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ topic, targetLanguage })
+    });
+    if (!response.ok) {
+      return { translated: topic };
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('API Error in translateTopic:', error);
+    return { translated: topic };
+  }
+}

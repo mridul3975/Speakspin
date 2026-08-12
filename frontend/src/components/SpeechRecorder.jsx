@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
-import { transcribeAudio } from '../utils/api';
+import { transcribeAudio, translateTopic } from '../utils/api';
 
 export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selectedLanguage }) {
   const [recorderState, setRecorderState] = useState('idle'); // idle | countdown | recording | completed
@@ -12,6 +12,23 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
   const [editableTranscript, setEditableTranscript] = useState('');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
+  const [translatedTopic, setTranslatedTopic] = useState(topic.topic);
+
+  useEffect(() => {
+    let active = true;
+    if (selectedLanguage && !selectedLanguage.startsWith('en')) {
+      translateTopic(topic.topic, selectedLanguage).then((res) => {
+        if (active && res && res.translated) {
+          setTranslatedTopic(res.translated);
+        }
+      });
+    } else {
+      setTranslatedTopic(topic.topic);
+    }
+    return () => {
+      active = false;
+    };
+  }, [topic, selectedLanguage]);
 
   const {
     isListening,
@@ -253,7 +270,14 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
           >
             <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', width: '100%', maxWidth: '600px', boxShadow: '8px 8px 0px 0px #ffffff' }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Get ready to speak about:</span>
-              <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0' }}>"{topic.topic}"</h2>
+              <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0' }}>
+                {translatedTopic === topic.topic ? `"${topic.topic}"` : `"${translatedTopic}"`}
+                {translatedTopic !== topic.topic && (
+                  <div style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                    (English: "{topic.topic}")
+                  </div>
+                )}
+              </h2>
               <motion.div
                 key={countdown}
                 style={{ fontSize: '6rem', fontWeight: 900, fontFamily: 'var(--font-heading)' }}
@@ -281,7 +305,14 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
         </div>
       </div>
 
-      <h1 className="recorder-topic-title">"{topic.topic}"</h1>
+      <h1 className="recorder-topic-title" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
+        <span>{translatedTopic === topic.topic ? `"${topic.topic}"` : `"${translatedTopic}"`}</span>
+        {translatedTopic !== topic.topic && (
+          <span style={{ fontSize: '0.9rem', fontWeight: 'normal', opacity: 0.6 }}>
+            (English: "{topic.topic}")
+          </span>
+        )}
+      </h1>
 
       {/* Dynamic visualizer */}
       {recorderState === 'recording' && (

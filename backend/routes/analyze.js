@@ -325,6 +325,39 @@ Return this exact JSON structure:
   }
 });
 
+// POST /api/translate-topic
+router.post('/translate-topic', async (req, res) => {
+  const { topic, targetLanguage } = req.body;
+  if (!topic) return res.status(400).json({ error: "Missing topic" });
+  if (!targetLanguage || targetLanguage.startsWith('en')) {
+    return res.json({ translated: topic });
+  }
+
+  const client = getOpenAIClient();
+  if (!client) {
+    return res.json({ translated: topic });
+  }
+
+  try {
+    const prompt = `Translate the following public speaking topic into the native language specified by the language code: "${targetLanguage}".
+Topic: "${topic}"
+Return ONLY the translated topic text without quotes, explanation, or additional context.`;
+
+    const chatCompletion = await client.chat.completions.create({
+      messages: [{ role: "user", content: prompt }],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.2
+    });
+
+    const translated = chatCompletion.choices[0].message.content.trim();
+    console.log(`[DEBUG] Translated topic "${topic}" to language "${targetLanguage}": "${translated}"`);
+    res.json({ translated });
+  } catch (err) {
+    console.error("Translation API error:", err);
+    res.json({ translated: topic });
+  }
+});
+
 // GET /api/sessions (Fetch history)
 router.get('/sessions', authMiddleware, async (req, res) => {
   try {
