@@ -316,7 +316,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
               </button>
               <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 'var(--radius-sm)', background: 'rgba(239, 68, 68, 0.05)', color: '#ef4444', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.65rem 0.75rem', fontWeight: 800, textTransform: 'uppercase' }} className="lobby-btn-exit-hover">
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
-                &gt; ABORT_SESSION
+                &gt; BACK TO HOME
               </button>
             </div>
           </div>
