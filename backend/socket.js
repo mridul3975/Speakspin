@@ -11,6 +11,15 @@ const BOT_ROSTER = [
   { id: "bot_legend", name: "OmegaSpeaker", avatar: "👑", rating: 1700, tier: "Legend", skillLevel: "legendary", personality: "masterful, compelling, inspiring" }
 ];
 
+const RANDOM_GUEST_NAMES = [
+  "Aaron", "Chloe", "Devin", "Elena", "Marcus", "Sienna", "Tristan", "Maya", "Julian", "Clara",
+  "Nolan", "Fiona", "Derrick", "Paige", "Gavin", "Giselle", "Justin", "Leah", "Victor", "Naomi",
+  "Rohan", "Priya", "Hiroshi", "Yuki", "Hans", "Ingrid", "Sven", "Freya", "Diego", "Sofia",
+  "Arthur", "Beatrice", "Connor", "Diana", "Ethan", "Flora", "Gabriel", "Helena", "Ian", "Julia"
+];
+
+const RANDOM_GUEST_AVATARS = ["🦁", "🐼", "🦊", "🐯", "🐨", "🦉", "🦄", "🦅", "🐝", "🐙", "🐢", "🦈", "🐬", "🦎", "🐒"];
+
 let waitingQueue = [];
 const activeRooms = new Map();
 const playerSockets = new Map();
@@ -78,6 +87,36 @@ export function initSocket(httpServer) {
 
       io.emit('queue_update', { waitingCount: waitingQueue.length });
       tryMatchmaking(io);
+
+      // Auto-bot matchmaking after 3 seconds if still in queue
+      setTimeout(() => {
+        const inQueue = waitingQueue.find(p => p.socketId === socket.id);
+        if (inQueue) {
+          console.log(`Auto-matching player ${socket.id} with a shadow bot after 3 seconds`);
+          removeFromQueue(socket.id);
+          const pObj = playerSockets.get(socket.id);
+          if (pObj) {
+            const targetRating = pObj.rating + 50;
+            const bestBot = BOT_ROSTER.reduce((closest, bot) => {
+              const closestDiff = Math.abs(closest.rating - targetRating);
+              const botDiff = Math.abs(bot.rating - targetRating);
+              return botDiff < closestDiff ? bot : closest;
+            });
+
+            // Deep copy and randomize visual identity of the bot
+            const botProfile = { ...bestBot };
+            const randName = RANDOM_GUEST_NAMES[Math.floor(Math.random() * RANDOM_GUEST_NAMES.length)];
+            const randAvatar = RANDOM_GUEST_AVATARS[Math.floor(Math.random() * RANDOM_GUEST_AVATARS.length)];
+            const ratingOffset = Math.floor(Math.random() * 100) - 50;
+
+            botProfile.name = randName;
+            botProfile.avatar = randAvatar;
+            botProfile.rating = Math.max(700, pObj.rating + ratingOffset);
+
+            createBotRoom(pObj, botProfile, io);
+          }
+        }
+      }, 3000);
     });
 
     // CLIENT -> SERVER: cancel_search

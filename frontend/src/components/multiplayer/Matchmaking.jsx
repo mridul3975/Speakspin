@@ -9,29 +9,16 @@ const TIPS = [
   "💡 Control your breathing to reduce perceived anxiety levels."
 ];
 
-const BOT_ROSTER = [
-  { id: "bot_beginner", name: "Timid Tim", avatar: "🐢", rating: 700, tier: "Bronze" },
-  { id: "bot_intermediate", name: "Average Andy", avatar: "🤖", rating: 950, tier: "Silver" },
-  { id: "bot_advanced", name: "SpeakBot 3000", avatar: "⚡", rating: 1150, tier: "Gold" },
-  { id: "bot_expert", name: "VoiceAI", avatar: "💎", rating: 1400, tier: "Diamond" },
-  { id: "bot_legend", name: "OmegaSpeaker", avatar: "👑", rating: 1700, tier: "Legend" }
-];
+
 
 export function Matchmaking({ rating, onCancel, onFightBot }) {
   const [seconds, setSeconds] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
-  const [showBotModal, setShowBotModal] = useState(false);
 
   // Queue stopwatch
   useEffect(() => {
     const interval = setInterval(() => {
-      setSeconds(prev => {
-        const nextSec = prev + 1;
-        if (nextSec === 30) {
-          setShowBotModal(true);
-        }
-        return nextSec;
-      });
+      setSeconds(prev => prev + 1);
     }, 1000);
     return () => clearInterval(interval);
   }, []);
@@ -50,17 +37,7 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleFightBot = () => {
-    // Select bot closest to user rating
-    const targetRating = rating + 50;
-    const bestBot = BOT_ROSTER.reduce((closest, bot) => {
-      const closestDiff = Math.abs(closest.rating - targetRating);
-      const botDiff = Math.abs(bot.rating - targetRating);
-      return botDiff < closestDiff ? bot : closest;
-    });
 
-    onFightBot(bestBot.id);
-  };
 
   return (
     <div className="setup-container" style={{ margin: '2rem auto 0', maxWidth: '500px', position: 'relative', textAlign: 'center', overflow: 'hidden' }}>
@@ -151,45 +128,7 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
         <span className="material-symbols-outlined text-sm">close</span> CANCEL SEARCH
       </button>
 
-      {/* BOT Match Fallback Modal */}
-      <AnimatePresence>
-        {showBotModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundColor: 'rgba(0,0,0,0.95)',
-              zIndex: 9,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              padding: '1.5rem'
-            }}
-          >
-            <div style={{ border: '4px solid #ffffff', padding: '2rem 1.5rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
-              <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>🤖</span>
-              <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>
-                No Opponents Found
-              </h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '1.5rem' }}>
-                We couldn't find any real players in queue right now. Would you like to duel a speech training Bot instead to test your ELO?
-              </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <button className="btn btn-primary" onClick={handleFightBot} style={{ backgroundColor: 'var(--accent-teal)', borderColor: 'var(--accent-teal)' }}>
-                  🤖 DUEL SPEECh BOT
-                </button>
-                <button className="btn btn-secondary" onClick={() => { setShowBotModal(false); setSeconds(0); }}>
-                  KEEP SEARCHING
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Inline Radar pulse keyframes inject */}
       <style>{`
