@@ -28,6 +28,7 @@ import BattleRecorder from './components/multiplayer/BattleRecorder';
 import BattleAnalyzing from './components/multiplayer/BattleAnalyzing';
 import BattleResults from './components/multiplayer/BattleResults';
 import BattleProfile from './components/multiplayer/BattleProfile';
+import SignupPrompt from './components/SignupPrompt';
 
 const SCREENS = {
   LANDING: 'LANDING',
@@ -44,7 +45,8 @@ const SCREENS = {
   BATTLE_RECORDING: 'BATTLE_RECORDING',
   BATTLE_ANALYZING: 'BATTLE_ANALYZING',
   BATTLE_RESULTS: 'BATTLE_RESULTS',
-  BATTLE_PROFILE: 'BATTLE_PROFILE'
+  BATTLE_PROFILE: 'BATTLE_PROFILE',
+  SIGNUP_PROMPT: 'SIGNUP_PROMPT'
 };
 
 export function App() {
@@ -658,7 +660,11 @@ export function App() {
               }}
               onLeave={() => {
                 socket.emit('leave_room', { roomId: battleRoomId });
-                handleLeaveBattleMode();
+                if (isGuestSession) {
+                  navigateTo(SCREENS.SIGNUP_PROMPT);
+                } else {
+                  handleLeaveBattleMode();
+                }
               }}
             />
           </motion.div>
@@ -679,6 +685,25 @@ export function App() {
                 avatar: localStorage.getItem('speakspin-player-avatar') || '🦁'
               }}
               onBack={() => navigateTo(SCREENS.BATTLE_LOBBY)}
+            />
+          </motion.div>
+        )}
+
+        {screen === SCREENS.SIGNUP_PROMPT && (
+          <motion.div
+            key="signup_prompt"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3 }}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          >
+            <SignupPrompt
+              onLoginSuccess={handleLoginSuccess}
+              onLoginError={handleLoginError}
+              onSkip={() => {
+                handleSignOut();
+              }}
             />
           </motion.div>
         )}
