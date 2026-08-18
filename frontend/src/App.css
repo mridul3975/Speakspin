@@ -1286,3 +1286,50 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* Responsive Landing Screen Battle Mode Elements */
+.landing-battle-card {
+  width: 100%;
+  max-width: 650px;
+  margin: 3rem auto;
+  padding: 3rem 2.5rem;
+  border: 3px solid #ffffff;
+  background-color: #0a0101;
+  text-align: center;
+  box-shadow: none;
+  border-radius: 0px;
+}
+
+.landing-battle-btn {
+  width: 100%;
+  background-color: #e60000;
+  color: #ffffff;
+  border: 3px solid #ffffff;
+  font-size: 2.5rem;
+  padding: 0.75rem 1rem;
+  font-weight: 900;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  display: block;
+  margin-bottom: 2rem;
+  border-radius: 0px;
+  transition: transform 0.1s ease;
+}
+
+.landing-battle-btn:active {
+  transform: scale(0.99);
+}
+
+@media (max-width: 600px) {
+  .landing-battle-card {
+    padding: 2rem 1.25rem;
+    margin: 2rem auto;
+  }
+  .landing-battle-btn {
+    font-size: 1.5rem;
+    padding: 0.6rem 0.8rem;
+    border-width: 2px;
+  }
+}

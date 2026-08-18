@@ -59,19 +59,8 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
 
       {/* Large Intimidating Battle Mode Featured Card matching the reference design */}
       <motion.div
-        className="landing-card"
+        className="landing-battle-card"
         variants={itemVariants}
-        style={{
-          width: '100%',
-          maxWidth: '650px',
-          margin: '3rem auto',
-          padding: '3rem 2.5rem',
-          border: '3px solid #ffffff',
-          backgroundColor: '#0a0101',
-          textAlign: 'center',
-          boxShadow: 'none',
-          borderRadius: '0px'
-        }}
       >
         {/* Crossed Swords with Red Glow */}
         <span 
@@ -90,26 +79,8 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
 
         {/* Start Battle Solid Red Banner Button */}
         <button
+          className="landing-battle-btn"
           onClick={onStartBattle}
-          style={{
-            width: '100%',
-            backgroundColor: '#e60000',
-            color: '#ffffff',
-            border: '3px solid #ffffff',
-            fontSize: '2.5rem',
-            padding: '0.75rem 1rem',
-            fontWeight: 900,
-            fontFamily: 'var(--font-heading)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em',
-            cursor: 'pointer',
-            display: 'block',
-            marginBottom: '2rem',
-            borderRadius: '0px',
-            transition: 'transform 0.1s ease'
-          }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.99)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
           START BATTLE
         </button>
