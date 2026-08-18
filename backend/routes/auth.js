@@ -55,7 +55,7 @@ router.post('/google', async (req, res) => {
 
   try {
     const isMockToken = credential === 'mock-google-token' || credential.trim().startsWith('{');
-    
+
     if (oauthClient && !isMockToken) {
       // Verify token via Google API using the lazily initialized client
       const ticket = await oauthClient.verifyIdToken({
@@ -138,11 +138,11 @@ router.get('/me', authMiddleware, async (req, res) => {
     const dbPool = getPool();
     const userRes = await dbPool.query('SELECT * FROM users WHERE id = $1', [req.userId]);
     const user = userRes.rows[0];
-    
+
     if (!user) {
       return res.status(404).json({ error: 'User profile not found' });
     }
-    
+
     res.json({
       id: user.id,
       email: user.email,

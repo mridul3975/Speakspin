@@ -37,7 +37,6 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
 
   const [isEditingAvatar, setIsEditingAvatar] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
-  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   // Initialize rating defaults if not set
   useEffect(() => {
@@ -99,14 +98,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
   const prevThreshold = getPrevTierThreshold(rating);
   const progressPercent = Math.min(100, Math.max(0, ((rating - prevThreshold) / (nextThreshold - prevThreshold)) * 100));
 
-  // Leaderboard mock generator
-  const leaderboard = [
-    { name: 'GRAND_ORATOR', rating: 1820, avatar: '👑', isYou: false },
-    { name: 'VOICE_MASTER', rating: 1650, avatar: '🔮', isYou: false },
-    { name: 'TALK_CHAMP', rating: 1420, avatar: '💎', isYou: false },
-    { name: playerName, rating: rating, avatar: avatar, isYou: true },
-    { name: 'WORD_SMITH', rating: 1180, avatar: '🥇', isYou: false }
-  ].sort((a, b) => b.rating - a.rating);
+
 
   return (
     <div className="crt-cyberpunk" style={{

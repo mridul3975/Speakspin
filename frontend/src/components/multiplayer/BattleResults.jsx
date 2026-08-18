@@ -181,10 +181,10 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
           boxShadow: '8px 8px 0px 0px #ffffff',
           textAlign: 'center',
           marginBottom: '2rem',
-          borderColor: isDraw ? '#a020f0' : (isWinner ? '#ffd700' : '#ff4500')
+          borderColor: isDraw ? '#ffffff' : (isWinner ? '#ffffff' : 'var(--accent-coral)')
         }}>
           <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>BATTLE OUTCOME</span>
-          <h2 style={{ fontSize: '3rem', fontWeight: 900, textTransform: 'uppercase', margin: '0.5rem 0 1rem 0', letterSpacing: '-0.02em', color: isDraw ? '#a020f0' : (isWinner ? '#ffd700' : '#ff4500') }}>
+          <h2 style={{ fontSize: '3rem', fontWeight: 900, textTransform: 'uppercase', margin: '0.5rem 0 1rem 0', letterSpacing: '-0.02em', color: isDraw ? '#ffffff' : (isWinner ? '#ffffff' : 'var(--accent-coral)') }}>
             {isDraw ? '🤝 DRAW BATTLE' : (isWinner ? '🏆 VICTORY!' : '💀 DEFEATED')}
           </h2>
 
@@ -197,8 +197,8 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
               fontSize: '0.95rem',
               fontWeight: 900,
               padding: '0.2rem 0.5rem',
-              backgroundColor: isWinner ? 'rgba(0,255,0,0.15)' : (isDraw ? 'rgba(255,255,255,0.1)' : 'rgba(255,0,0,0.15)'),
-              color: isWinner ? '#00ff00' : (isDraw ? '#ffffff' : '#ff3333'),
+              backgroundColor: isWinner ? 'rgba(255,255,255,0.1)' : (isDraw ? 'rgba(255,255,255,0.1)' : 'rgba(255,51,51,0.15)'),
+              color: isWinner ? '#ffffff' : (isDraw ? '#ffffff' : 'var(--accent-coral)'),
               border: '1.5px solid currentColor'
             }}>
               {me.ratingChange >= 0 ? `+${me.ratingChange}` : me.ratingChange} {me.ratingChange >= 0 ? '📈' : '📉'}
