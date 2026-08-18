@@ -523,9 +523,29 @@ async function analyzeAndRevealResults(room, io) {
   }
 }
 
-// Fallback dynamic grading (Toastmasters standards)
 async function runParallelSpeechAnalysis(transcript, topic, targetDuration, actualDuration) {
-  const wordCount = transcript.split(/\s+/).filter(Boolean).length;
+  const trimmed = (transcript || '').trim();
+  const wordCount = trimmed.split(/\s+/).filter(Boolean).length;
+
+  if (wordCount < 5) {
+    return {
+      overallScore: 0,
+      categories: {
+        confidence: { score: 0, feedback: "No speech detected." },
+        fluency: { score: 0, feedback: "No speech detected." },
+        relevance: { score: 0, feedback: "No speech detected." },
+        vocabulary: { score: 0, feedback: "No speech detected." },
+        structure: { score: 0, feedback: "No speech detected." },
+        clarity: { score: 0, feedback: "No speech detected." },
+        engagement: { score: 0, feedback: "No speech detected." },
+        timeManagement: { score: 0, feedback: "No speech detected." }
+      },
+      strengths: ["None (no speech detected)"],
+      improvements: ["Please speak clearly into your microphone during the recording period."],
+      overallFeedback: "No speech was detected or the recorded audio was too short to analyze. Make sure your microphone is working and speak clearly on the given topic."
+    };
+  }
+
   const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
 
   const client = getOpenAIClient();
@@ -544,6 +564,8 @@ CRITICAL GRADING CRITERIA:
 3. Structuring Rules:
    - For targetDuration <= 60 seconds: Requires a quick, compelling hook/opening, body points, and a neat conclusion that is NOT rushed.
    - For targetDuration > 60 seconds (up to 300 seconds): Requires a formal opening, structured discussion body containing exactly 2 to 3 distinct examples or points, and a powerful conclusion (optionally ending with a question).
+4. Strictness on Short/Silent Answers:
+   - If the speech word count is extremely low relative to the duration (e.g., less than 20 words for a 60s speech), you MUST award an overall score below 20. Do not give average or high scores to incomplete, silent, or single-phrase answers.
 
 Return valid JSON only matching the structure requested.`;
       const userPrompt = `BATTLE EVALUATION:
