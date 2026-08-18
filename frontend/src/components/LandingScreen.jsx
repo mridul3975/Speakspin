@@ -57,47 +57,67 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
         Master public speaking with AI-powered coaching
       </motion.p>
 
-      {/* Large Battle Mode Featured Card */}
+      {/* Large Intimidating Battle Mode Featured Card */}
       <motion.div
         className="landing-card"
         variants={itemVariants}
         style={{
           width: '100%',
-          maxWidth: '500px',
-          margin: '2.5rem auto',
-          padding: '2.5rem 1.5rem',
-          border: '4px solid var(--accent-coral)',
-          boxShadow: '8px 8px 0px 0px var(--accent-coral)',
-          backgroundColor: '#000000',
+          maxWidth: '650px',
+          margin: '3rem auto',
+          padding: '4rem 2.5rem',
+          border: '5px solid #880000',
+          boxShadow: '12px 12px 0px 0px #880000',
+          backgroundColor: '#1a0000',
           textAlign: 'center'
         }}
       >
-        <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>⚔️</span>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.6rem', textTransform: 'uppercase', color: 'var(--accent-coral)', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-          BATTLE MODE
+        <span style={{ fontSize: '4.5rem', display: 'block', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 10px #ff3333)' }}>⚔️</span>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '2.5rem', textTransform: 'uppercase', color: '#ff3333', letterSpacing: '0.1em', marginBottom: '1rem', lineHeight: '1.1' }}>
+          ENTER BATTLE
         </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '2rem', textTransform: 'uppercase', fontWeight: 700 }}>
-          Duel other users live in real-time or practice with AI bots to rank up.
+        <p style={{ fontSize: '0.95rem', color: '#ffcccc', lineHeight: '1.5', marginBottom: '2.5rem', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
+          Duel real speakers live. Climb the ELO ladder. Prove your speech dominance.
         </p>
         <button
-          className="btn btn-primary"
+          className="btn"
           onClick={onStartBattle}
-          style={{ width: '100%', backgroundColor: 'var(--accent-coral)', color: '#ffffff', borderColor: 'var(--accent-coral)', fontSize: '0.95rem' }}
+          style={{
+            width: '100%',
+            backgroundColor: '#ff3333',
+            color: '#ffffff',
+            borderColor: '#ff3333',
+            fontSize: '1.25rem',
+            padding: '1.1rem',
+            boxShadow: '6px 6px 0px 0px #ffffff',
+            fontWeight: 900,
+            fontFamily: 'var(--font-heading)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em'
+          }}
         >
           START BATTLE
         </button>
       </motion.div>
 
       {/* Action buttons */}
-      <motion.div className="landing-actions" variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
+      <motion.div className="landing-actions" variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '350px', margin: '0 auto' }}>
         <motion.button
           className="btn btn-secondary"
-          style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            fontSize: '0.8rem',
+            borderColor: '#333333',
+            color: '#888888',
+            background: 'transparent',
+            boxShadow: 'none'
+          }}
           whileTap={{ scale: 0.98 }}
           onClick={onStart}
         >
-          <span className="material-symbols-outlined text-sm">rocket_launch</span>
-          START PRACTICING (SOLO)
+          <span className="material-symbols-outlined text-xs">rocket_launch</span>
+          Practice Solo (Training Mode)
         </motion.button>
       </motion.div>
     </motion.div>
