@@ -88,7 +88,7 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
                 width: '100%',
                 height: '100%',
                 borderRadius: '50%',
-                border: '2px solid var(--accent-teal)',
+                border: '2px solid var(--accent-cyan)',
                 opacity: 0.8,
                 transform: 'scale(1)',
                 animation: `radar-pulse 2s cubic-bezier(0.1, 0.8, 0.3, 1) infinite`,
@@ -107,12 +107,12 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
               width: '60px',
               height: '60px',
               borderRadius: '50%',
-              backgroundColor: '#ffffff',
+              backgroundColor: 'var(--accent-cyan)',
               color: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 0 20px #ffffff'
+              boxShadow: '0 0 25px var(--accent-cyan-glow)'
             }}
           >
             <span className="material-symbols-outlined text-3xl" style={{ animation: 'spin 4s linear infinite' }}>
@@ -123,8 +123,8 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
       </div>
 
       {/* Matching Constraints info */}
-      <div style={{ border: '1px dashed #ffffff', padding: '0.75rem', fontSize: '0.8rem', display: 'inline-block', marginBottom: '2rem' }}>
-        Your Rating: <strong style={{ color: 'var(--accent-teal)' }}>{rating} ELO</strong>
+      <div style={{ border: '1px dashed rgba(255, 255, 255, 0.15)', padding: '0.75rem', fontSize: '0.8rem', display: 'inline-block', marginBottom: '2rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-card-alt)' }}>
+        Your Rating: <strong style={{ color: 'var(--accent-cyan)' }}>{rating} ELO</strong>
         {seconds < 10 && ' (Searching within ±200)'}
         {seconds >= 10 && seconds < 20 && ' (Expanding search to ±500)'}
         {seconds >= 20 && ' (Matching with any ELO)'}
@@ -169,7 +169,7 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
               padding: '1.5rem'
             }}
           >
-            <div style={{ border: '4px solid #ffffff', padding: '2rem 1.5rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
+            <div style={{ border: 'var(--border-glow)', padding: '2.5rem 1.5rem', backgroundColor: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', backdropFilter: 'blur(12px)' }}>
               <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '0.5rem' }}>🤖</span>
               <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>
                 No Opponents Found
@@ -179,8 +179,8 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <button className="btn btn-primary" onClick={handleFightBot} style={{ backgroundColor: 'var(--accent-teal)', borderColor: 'var(--accent-teal)' }}>
-                  🤖 DUEL SPEECh BOT
+                <button className="btn btn-primary" onClick={handleFightBot} style={{ background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)', borderColor: 'var(--accent-rose)', color: '#000000', boxShadow: '0 0 15px var(--accent-rose-glow)' }}>
+                  🤖 DUEL SPEECH BOT
                 </button>
                 <button className="btn btn-secondary" onClick={() => { setShowBotModal(false); setSeconds(0); }}>
                   KEEP SEARCHING

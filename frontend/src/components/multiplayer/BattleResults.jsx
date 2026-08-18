@@ -175,16 +175,16 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
         
         {/* Results Banner card */}
         <div style={{
-          border: '4px solid #ffffff',
-          padding: '2.5rem 1.5rem',
-          backgroundColor: '#000000',
-          boxShadow: '8px 8px 0px 0px #ffffff',
+          border: 'var(--border-glow)',
+          borderRadius: 'var(--radius-lg)',
+          backgroundColor: 'var(--bg-card-alt)',
+          boxShadow: 'var(--shadow)',
           textAlign: 'center',
           marginBottom: '2rem',
-          borderColor: isDraw ? '#a020f0' : (isWinner ? '#ffd700' : '#ff4500')
+          borderColor: isDraw ? 'var(--accent-rose)' : (isWinner ? '#fbbf24' : '#ef4444')
         }}>
           <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>BATTLE OUTCOME</span>
-          <h2 style={{ fontSize: '3rem', fontWeight: 900, textTransform: 'uppercase', margin: '0.5rem 0 1rem 0', letterSpacing: '-0.02em', color: isDraw ? '#a020f0' : (isWinner ? '#ffd700' : '#ff4500') }}>
+          <h2 style={{ fontSize: '3rem', fontWeight: 900, textTransform: 'uppercase', margin: '0.5rem 0 1rem 0', letterSpacing: '-0.02em', color: isDraw ? 'var(--accent-rose)' : (isWinner ? '#fbbf24' : '#ef4444'), filter: isWinner ? 'drop-shadow(0 0 10px rgba(251,191,36,0.3))' : 'none' }}>
             {isDraw ? '🤝 DRAW BATTLE' : (isWinner ? '🏆 VICTORY!' : '💀 DEFEATED')}
           </h2>
 
@@ -211,26 +211,26 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
         </div>
 
         {/* SCORE COMPARISON - YOURS HIGHLIGHTED & LARGER */}
-        <div style={{ border: '4px solid #ffffff', padding: '1.5rem', backgroundColor: '#000000', marginBottom: '2rem', boxShadow: '5px 5px 0px 0px #ffffff' }}>
+        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-lg)', padding: '1.5rem', backgroundColor: 'var(--bg-card-alt)', marginBottom: '2rem', boxShadow: 'var(--shadow)' }}>
           <div className="score-comparison-grid" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.6fr 1.2fr', alignItems: 'center', textAlign: 'center', marginBottom: '1.5rem' }}>
             {/* Your Score */}
-            <div style={{ padding: '1rem', border: '2px solid var(--accent-teal)', backgroundColor: 'rgba(0, 255, 200, 0.05)' }}>
+            <div style={{ padding: '1.5rem 1rem', border: '1px solid var(--accent-cyan)', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-card)', boxShadow: '0 0 10px var(--accent-cyan-glow)' }}>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>YOUR SCORE</span>
-              <span style={{ fontSize: '4.5rem', fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--accent-teal)', display: 'block', lineHeight: '1.1' }}>
+              <span style={{ fontSize: '4.5rem', fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--accent-cyan)', display: 'block', lineHeight: '1.1' }}>
                 {me.overallScore}
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase' }}>{me.name}</span>
             </div>
 
             {/* VS Divider */}
-            <div className="score-comparison-vs" style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-coral)', fontFamily: 'var(--font-heading)' }}>
+            <div className="score-comparison-vs" style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--accent-rose)', fontFamily: 'var(--font-heading)' }}>
               VS
             </div>
 
             {/* Opponent's Score */}
-            <div style={{ padding: '1rem', border: '2px solid rgba(255,255,255,0.2)', opacity: 0.75 }}>
+            <div style={{ padding: '1.5rem 1rem', border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-card)', opacity: 0.8 }}>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 800, textTransform: 'uppercase', display: 'block' }}>OPPONENT</span>
-              <span style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 900, color: '#ffffff', display: 'block', lineHeight: '1.1', margin: '0.25rem 0' }}>
+              <span style={{ fontSize: '2.5rem', fontFamily: 'var(--font-heading)', fontWeight: 900, color: 'var(--text-primary)', display: 'block', lineHeight: '1.1', margin: '0.25rem 0' }}>
                 {opponent.overallScore}
               </span>
               <span style={{ fontSize: '0.85rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{opponent.name}</span>
@@ -239,7 +239,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
 
           {/* Categories bar chart showing ONLY YOUR details */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.25rem' }}>
-            <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.85rem', margin: '0 0 1rem 0', color: 'var(--accent-teal)' }}>
+            <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.85rem', margin: '0 0 1rem 0', color: 'var(--accent-cyan)' }}>
               🎯 YOUR CATEGORY SCORES
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
@@ -249,10 +249,10 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
                   <div key={catKey}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '0.2rem' }}>
                       <span style={{ color: '#ffffff' }}>{catKey}</span>
-                      <span style={{ color: 'var(--accent-teal)', fontWeight: 900 }}>{myVal}/100</span>
+                      <span style={{ color: 'var(--accent-cyan)', fontWeight: 900 }}>{myVal}/100</span>
                     </div>
-                    <div style={{ height: '6px', border: '1px solid rgba(255,255,255,0.2)', backgroundColor: '#000000' }}>
-                      <div style={{ width: `${myVal}%`, height: '100%', backgroundColor: 'var(--accent-teal)' }} />
+                    <div style={{ height: '6px', border: 'var(--border-glow)', backgroundColor: 'var(--bg-card)', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${myVal}%`, height: '100%', backgroundColor: 'var(--accent-cyan)', boxShadow: '0 0 4px var(--accent-cyan-glow)' }} />
                     </div>
                   </div>
                 );
@@ -262,8 +262,8 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
         </div>
 
         {/* EMOJI REACTIONS PANEL */}
-        <div style={{ border: '2px solid #ffffff', padding: '1rem', backgroundColor: '#000000', marginBottom: '2rem', textAlign: 'center' }}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>
+        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1rem', backgroundColor: 'var(--bg-card-alt)', marginBottom: '2rem', textAlign: 'center' }}>
+          <span style={{ fontSize: '0.7rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem', letterSpacing: '0.05em' }}>
             SEND EMOJI REACTION TO OPPONENT
           </span>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '0.75rem' }}>
@@ -282,29 +282,29 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
         </div>
 
         {/* Tabs switcher: mine | transcripts */}
-        <div style={{ display: 'flex', border: '2px solid #ffffff', borderBottom: 'none', backgroundColor: '#0a0a1a' }}>
+        <div style={{ display: 'flex', border: 'var(--border-glow)', borderBottom: 'none', backgroundColor: 'var(--bg-card-alt)', borderRadius: 'var(--radius-md) var(--radius-md) 0 0', overflow: 'hidden' }}>
           <button
             onClick={() => setActiveTab('mine')}
-            style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'mine' ? '#ffffff' : 'transparent', color: activeTab === 'mine' ? '#000000' : '#ffffff', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer' }}
+            style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'mine' ? 'var(--accent-cyan)' : 'transparent', color: activeTab === 'mine' ? '#000000' : 'var(--text-secondary)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
           >
             📋 MY FEEDBACK
           </button>
           <button
             onClick={() => setActiveTab('transcripts')}
-            style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'transcripts' ? '#ffffff' : 'transparent', color: activeTab === 'transcripts' ? '#000000' : '#ffffff', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer' }}
+            style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'transcripts' ? 'var(--accent-cyan)' : 'transparent', color: activeTab === 'transcripts' ? '#000000' : 'var(--text-secondary)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer', transition: 'all 0.2s ease' }}
           >
             📜 SPEECH TRANSCRIPTS
           </button>
         </div>
 
-        <div style={{ border: '2px solid #ffffff', padding: '1.5rem', backgroundColor: '#000000', minHeight: '150px', marginBottom: '2rem' }}>
+        <div style={{ border: 'var(--border-glow)', padding: '1.5rem', backgroundColor: 'var(--bg-card)', minHeight: '150px', marginBottom: '2rem', borderRadius: '0 0 var(--radius-md) var(--radius-md)' }}>
           {activeTab === 'mine' && (
             <div>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-teal)', textTransform: 'uppercase', fontSize: '0.85rem' }}>Strengths:</h4>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-cyan)', textTransform: 'uppercase', fontSize: '0.85rem' }}>Strengths:</h4>
               <ul style={{ margin: '0 0 1rem 0', paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 {me.strengths?.map((s, i) => <li key={i}>{s}</li>) || <li>Clear articulation.</li>}
               </ul>
-              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-coral)', textTransform: 'uppercase', fontSize: '0.85rem' }}>Improvements:</h4>
+              <h4 style={{ margin: '0 0 0.5rem 0', color: 'var(--accent-rose)', textTransform: 'uppercase', fontSize: '0.85rem' }}>Improvements:</h4>
               <ul style={{ margin: '0 0 1rem 0', paddingLeft: '1.25rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 {me.improvements?.map((s, i) => <li key={i}>{s}</li>) || <li>Try to minimize pauses.</li>}
               </ul>
@@ -333,7 +333,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
         {/* Action Panel: Rematch / Find New Opponent / Leave */}
         <div className="action-buttons-panel" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center' }}>
           {opponentWantsRematch && !rematchRequested && (
-            <div style={{ width: '100%', border: '1px dashed #ffffff', padding: '0.75rem', textTransform: 'uppercase', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-teal)', marginBottom: '0.5rem', textAlign: 'center' }}>
+            <div style={{ width: '100%', border: '1px dashed var(--accent-cyan)', padding: '0.75rem', textTransform: 'uppercase', fontSize: '0.8rem', fontWeight: 800, color: 'var(--accent-cyan)', marginBottom: '0.5rem', textAlign: 'center', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-card-alt)' }}>
               ⚔️ Opponent requested a rematch! Accept below.
             </div>
           )}
@@ -345,16 +345,18 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
               style={{
                 flex: 1,
                 minWidth: '150px',
-                backgroundColor: 'var(--accent-teal)',
-                borderColor: 'var(--accent-teal)',
+                background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+                border: 'none',
                 fontFamily: 'var(--font-heading)',
-                fontWeight: 900
+                fontWeight: 900,
+                boxShadow: '0 0 15px var(--accent-rose-glow)',
+                color: '#000000'
               }}
             >
               🔄 REMATCH
             </button>
           ) : (
-            <div style={{ border: '2px dashed #ffffff', padding: '0.75rem', flex: 1, textAlign: 'center', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.9rem' }}>
+            <div style={{ border: '1px dashed rgba(255, 255, 255, 0.15)', padding: '0.75rem', flex: 1, textAlign: 'center', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.9rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-card-alt)' }}>
               ⌛ Requesting Rematch...
             </div>
           )}

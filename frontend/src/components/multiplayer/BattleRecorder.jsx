@@ -205,8 +205,8 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
   if (!hasStarted) {
     return (
       <div className="setup-container" style={{ margin: '3rem auto', maxWidth: '500px', textAlign: 'center' }}>
-        <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
-          <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem', animation: 'pulse 1s infinite' }}>🎤</span>
+        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-lg)', padding: '3rem 2rem', backgroundColor: 'var(--bg-card)', boxShadow: 'var(--shadow)', backdropFilter: 'blur(12px)' }}>
+          <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem', animation: 'pulse 1s infinite', filter: 'drop-shadow(0 0 8px var(--accent-cyan-glow))' }}>🎤</span>
           <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.25rem', margin: '0 0 1.5rem 0' }}>
             READY TO RECORD?
           </h3>
@@ -223,10 +223,13 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
               width: '100%',
               padding: '1.1rem',
               fontSize: '1.2rem',
-              backgroundColor: 'var(--accent-teal)',
-              borderColor: 'var(--accent-teal)',
+              background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+              border: 'none',
+              borderRadius: 'var(--radius-sm)',
               fontFamily: 'var(--font-heading)',
-              fontWeight: 900
+              fontWeight: 900,
+              boxShadow: '0 0 15px var(--accent-rose-glow)',
+              color: '#000000'
             }}
           >
             🔥 START SPEAKING!
@@ -239,8 +242,8 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
   if (isTranscribing) {
     return (
       <div className="setup-container" style={{ margin: '3rem auto', maxWidth: '500px', textAlign: 'center' }}>
-        <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
-          <div style={{ display: 'inline-block', fontSize: '3rem', animation: 'spin 3s linear infinite', marginBottom: '1.5rem' }}>
+        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-lg)', padding: '3rem 2rem', backgroundColor: 'var(--bg-card)', boxShadow: 'var(--shadow)', backdropFilter: 'blur(12px)' }}>
+          <div style={{ display: 'inline-block', fontSize: '3rem', animation: 'spin 3s linear infinite', marginBottom: '1.5rem', color: 'var(--accent-cyan)', filter: 'drop-shadow(0 0 10px var(--accent-cyan-glow))' }}>
             <span className="material-symbols-outlined text-5xl">sync</span>
           </div>
           <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '1.25rem', margin: '0 0 0.5rem 0' }}>
@@ -263,7 +266,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
       </div>
 
       {/* TOP HALF: YOUR SIDE */}
-      <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#000000', marginBottom: '1rem', position: 'relative' }}>
+      <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-card-alt)', marginBottom: '1rem', position: 'relative' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <div>
             <span style={{ fontSize: '1.25rem', marginRight: '0.35rem' }}>{user.avatar}</span>
@@ -280,12 +283,12 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
                 cx={size / 2}
                 cy={size / 2}
                 r={radius}
-                stroke="var(--accent-teal)"
+                stroke="var(--accent-cyan)"
                 strokeWidth={strokeWidth}
                 fill="transparent"
                 strokeDasharray={circumference}
                 strokeDashoffset={isNaN(strokeDashoffset) ? 0 : strokeDashoffset}
-                style={{ transition: 'stroke-dashoffset 0.5s linear' }}
+                style={{ transition: 'stroke-dashoffset 0.5s linear', filter: 'drop-shadow(0 0 3px var(--accent-cyan-glow))' }}
               />
             </svg>
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
@@ -304,15 +307,16 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
           style={{
             width: '100%',
             minHeight: '90px',
-            backgroundColor: '#07070f',
-            border: '1px solid #333333',
-            color: '#ffffff',
+            backgroundColor: 'var(--bg-card)',
+            border: 'var(--border-glow)',
+            color: 'var(--text-primary)',
             padding: '0.75rem',
             resize: 'none',
             fontSize: '0.85rem',
             fontFamily: 'var(--font-body)',
             outline: 'none',
-            marginBottom: '0.5rem'
+            marginBottom: '0.5rem',
+            borderRadius: 'var(--radius-sm)'
           }}
         />
 
@@ -329,11 +333,11 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
         {/* Your visualizer */}
         <div style={{ display: 'flex', gap: '2px', height: '24px', alignItems: 'center', justifyContent: 'flex-end', overflow: 'hidden' }}>
           {audioLevels.map((lvl, idx) => (
-            <div key={idx} style={{ width: '3px', height: `${Math.max(3, lvl * 24)}px`, backgroundColor: 'var(--accent-teal)', transition: 'height 0.1s ease' }} />
+            <div key={idx} style={{ width: '3px', height: `${Math.max(3, lvl * 24)}px`, backgroundColor: 'var(--accent-cyan)', transition: 'height 0.1s ease', borderRadius: '1.5px' }} />
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '0.85rem', color: 'var(--accent-coral)' }}>VS</div>
+        <div style={{ textAlign: 'center', fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '0.85rem', color: 'var(--accent-rose)' }}>VS</div>
 
         {/* Opponent visualizer simulation */}
         <div style={{ display: 'flex', gap: '2px', height: '24px', alignItems: 'center', justifyContent: 'flex-start', overflow: 'hidden' }}>
@@ -343,8 +347,9 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
               style={{
                 width: '3px',
                 height: opponentSpeaking ? `${Math.max(3, Math.random() * 20)}px` : '3px',
-                backgroundColor: opponentSpeaking ? 'var(--accent-coral)' : '#333333',
-                transition: 'height 0.15s ease'
+                backgroundColor: opponentSpeaking ? 'var(--accent-rose)' : 'rgba(255, 255, 255, 0.08)',
+                transition: 'height 0.15s ease',
+                borderRadius: '1.5px'
               }}
             />
           ))}
@@ -352,16 +357,16 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
       </div>
 
       {/* BOTTOM HALF: OPPONENT SIDE */}
-      <div style={{ border: '2px solid #555555', padding: '1.25rem', backgroundColor: '#07070f', opacity: 0.85 }}>
+      <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'rgba(20, 20, 23, 0.35)', opacity: 0.85 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ fontSize: '2.5rem', filter: opponentSpeaking ? 'drop-shadow(0 0 8px var(--accent-coral))' : 'none' }}>
+          <div style={{ fontSize: '2.5rem', filter: opponentSpeaking ? 'drop-shadow(0 0 8px var(--accent-rose-glow))' : 'none' }}>
             {opponent.avatar}
           </div>
           <div>
             <h4 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.9rem', margin: 0 }}>
               {opponent.name}
             </h4>
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: opponentSpeaking ? 'var(--accent-coral)' : 'var(--text-secondary)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.2rem', marginTop: '0.2rem' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: opponentSpeaking ? 'var(--accent-rose)' : 'var(--text-secondary)', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: '0.2rem', marginTop: '0.2rem' }}>
               <span className="material-symbols-outlined text-xs" style={{ animation: opponentSpeaking ? 'pulse 1s infinite' : 'none' }}>
                 {opponentSpeaking ? 'mic' : 'mic_off'}
               </span>
@@ -376,7 +381,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
         <button
           onClick={stopRecordingSession}
           className="btn btn-secondary"
-          style={{ borderColor: 'var(--accent-coral)', color: 'var(--accent-coral)' }}
+          style={{ borderColor: 'var(--accent-rose)', color: 'var(--accent-rose)', boxShadow: '0 0 10px var(--accent-rose-glow)', background: 'rgba(217, 70, 239, 0.05)' }}
         >
           <span className="material-symbols-outlined text-sm">stop</span> SUBMIT EARLY
         </button>

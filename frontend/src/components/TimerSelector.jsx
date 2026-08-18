@@ -97,14 +97,14 @@ export function TimerSelector({
         style={{
           width: '100%',
           padding: '0.85rem',
-          backgroundColor: '#000000',
-          border: '2px solid #ffffff',
-          color: '#ffffff',
+          backgroundColor: 'var(--bg-card-alt)',
+          border: 'var(--border-glow)',
+          color: 'var(--text-primary)',
           fontFamily: 'var(--font-heading)',
           fontWeight: 800,
           fontSize: '0.9rem',
           marginBottom: '1.5rem',
-          borderRadius: '0px',
+          borderRadius: 'var(--radius-sm)',
           outline: 'none',
           cursor: 'pointer'
         }}
@@ -123,14 +123,14 @@ export function TimerSelector({
         style={{
           width: '100%',
           padding: '0.85rem',
-          backgroundColor: '#000000',
-          border: '2px solid #ffffff',
-          color: '#ffffff',
+          backgroundColor: 'var(--bg-card-alt)',
+          border: 'var(--border-glow)',
+          color: 'var(--text-primary)',
           fontFamily: 'var(--font-heading)',
           fontWeight: 800,
           fontSize: '0.9rem',
           marginBottom: '2rem',
-          borderRadius: '0px',
+          borderRadius: 'var(--radius-sm)',
           outline: 'none',
           cursor: 'pointer'
         }}

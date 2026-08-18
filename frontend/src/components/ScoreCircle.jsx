@@ -22,11 +22,12 @@ export function ScoreCircle({ score = 0, size = 150, strokeWidth = 8 }) {
     <div className="score-circle-container" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="score-circle-svg">
         <circle
-          className="score-circle-bg"
+          className="score-circle-track"
           cx={size / 2}
           cy={size / 2}
           r={radius}
           strokeWidth={strokeWidth}
+          fill="none"
         />
         <motion.circle
           className="score-circle-fill"
@@ -38,7 +39,7 @@ export function ScoreCircle({ score = 0, size = 150, strokeWidth = 8 }) {
           initial={{ strokeDashoffset: circumference }}
           animate={{ strokeDashoffset: offset }}
           transition={{ duration: 1, ease: 'easeOut' }}
-          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          fill="none"
         />
       </svg>
       <div className="score-text-center">
