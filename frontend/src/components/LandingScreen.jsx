@@ -105,7 +105,7 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
           onClick={onStartBattle}
           style={{
             width: '100%',
-            background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+            background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)',
             borderColor: 'var(--accent-rose)',
             color: '#000000',
             boxShadow: '0 0 15px var(--accent-rose-glow)',

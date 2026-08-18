@@ -345,7 +345,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
               style={{
                 flex: 1,
                 minWidth: '150px',
-                background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+                background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)',
                 border: 'none',
                 fontFamily: 'var(--font-heading)',
                 fontWeight: 900,

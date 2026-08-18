@@ -415,7 +415,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                 onClick={() => onFindMatch({ playerName, avatar, rating, language: selectedLanguage })}
                 style={{
                   width: '100%',
-                  background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+                  background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)',
                   color: '#000000',
                   border: 'none',
                   borderRadius: 'var(--radius-sm)',

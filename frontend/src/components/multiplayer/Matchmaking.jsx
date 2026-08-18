@@ -179,7 +179,7 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <button className="btn btn-primary" onClick={handleFightBot} style={{ background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)', borderColor: 'var(--accent-rose)', color: '#000000', boxShadow: '0 0 15px var(--accent-rose-glow)' }}>
+                <button className="btn btn-primary" onClick={handleFightBot} style={{ background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)', borderColor: 'var(--accent-rose)', color: '#000000', boxShadow: '0 0 15px var(--accent-rose-glow)' }}>
                   🤖 DUEL SPEECH BOT
                 </button>
                 <button className="btn btn-secondary" onClick={() => { setShowBotModal(false); setSeconds(0); }}>

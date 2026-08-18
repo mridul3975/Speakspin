@@ -223,7 +223,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
               width: '100%',
               padding: '1.1rem',
               fontSize: '1.2rem',
-              background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+              background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
               fontFamily: 'var(--font-heading)',

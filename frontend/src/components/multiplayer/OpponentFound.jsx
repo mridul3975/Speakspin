@@ -128,7 +128,7 @@ export function OpponentFound({ user, opponent, onReady }) {
               width: '100%',
               padding: '1rem',
               fontSize: '1.25rem',
-              background: 'linear-gradient(135deg, var(--accent-rose) 0%, #c084fc 100%)',
+              background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)',
               border: 'none',
               borderRadius: 'var(--radius-sm)',
               fontFamily: 'var(--font-heading)',
