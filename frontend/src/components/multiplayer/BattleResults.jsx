@@ -293,7 +293,7 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
             onClick={() => setActiveTab('transcripts')}
             style={{ flex: 1, padding: '0.75rem', border: 'none', background: activeTab === 'transcripts' ? '#ffffff' : 'transparent', color: activeTab === 'transcripts' ? '#000000' : '#ffffff', fontWeight: 900, textTransform: 'uppercase', fontSize: '0.75rem', cursor: 'pointer' }}
           >
-            📜 SPEECH TRANSCRIPTS
+            📜 MY TRANSCRIPT
           </button>
         </div>
 
@@ -314,17 +314,11 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
             </div>
           )}
 
-          {/* Opponent feedback removed */}
-
           {activeTab === 'transcripts' && (
-            <div className="battle-transcript-split" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', fontSize: '0.85rem' }}>
+            <div className="battle-transcript-split" style={{ fontSize: '0.85rem' }}>
               <div>
                 <span style={{ fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>YOUR TRANSCRIPT</span>
                 <p style={{ margin: 0, fontStyle: 'italic', lineHeight: '1.5', color: 'var(--text-secondary)' }}>"{me.transcript}"</p>
-              </div>
-              <div style={{ borderLeft: '1px solid rgba(255,255,255,0.1)', paddingLeft: '1.5rem' }}>
-                <span style={{ fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.5rem' }}>OPPONENT TRANSCRIPT</span>
-                <p style={{ margin: 0, fontStyle: 'italic', lineHeight: '1.5', color: 'var(--text-secondary)' }}>"{opponent.transcript}"</p>
               </div>
             </div>
           )}

@@ -458,8 +458,16 @@ async function analyzeAndRevealResults(room, io) {
       runParallelSpeechAnalysis(p2.transcript, room.topic, room.duration, p2.actualDuration, room.language)
     ]);
 
-    const score1 = analysis1.overallScore;
-    const score2 = analysis2.overallScore;
+    let score1 = analysis1.overallScore;
+    let score2 = analysis2.overallScore;
+
+    if (p1.isBot) {
+      score1 = Math.floor(60 + Math.random() * 21);
+    }
+    if (p2.isBot) {
+      score2 = Math.floor(60 + Math.random() * 21);
+    }
+
     let winner = 'draw';
     if (score1 > score2) {
       winner = 'player1';
