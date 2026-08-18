@@ -672,6 +672,10 @@ function resetRoomForRematch(room, io) {
 }
 
 function getRandomTopic() {
+  const generalTopics = TOPICS.filter(t => t.category === 'General');
+  if (generalTopics.length > 0) {
+    return generalTopics[Math.floor(Math.random() * generalTopics.length)];
+  }
   return TOPICS[Math.floor(Math.random() * TOPICS.length)];
 }
 
