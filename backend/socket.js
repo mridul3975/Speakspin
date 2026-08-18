@@ -116,7 +116,7 @@ export function initSocket(httpServer) {
             createBotRoom(pObj, botProfile, io);
           }
         }
-      }, 3000);
+      }, 4000);
     });
 
     // CLIENT -> SERVER: cancel_search

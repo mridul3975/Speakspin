@@ -2,47 +2,49 @@ import { useEffect, useRef, useState } from 'react';
 import io from 'socket.io-client';
 
 export function useSocket() {
-  const socketRef = useRef(null);
+  const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
 
   const connect = (url) => {
-    if (socketRef.current) return socketRef.current;
+    if (socket) return socket;
 
-    const socket = io(url, {
+    const newSocket = io(url, {
       transports: ['websocket'],
       autoConnect: true,
     });
 
-    socket.on('connect', () => {
+    newSocket.on('connect', () => {
       setIsConnected(true);
       console.log('Battle socket connected successfully');
     });
 
-    socket.on('disconnect', () => {
+    newSocket.on('disconnect', () => {
       setIsConnected(false);
       console.log('Battle socket disconnected');
     });
 
-    socketRef.current = socket;
-    return socket;
+    setSocket(newSocket);
+    return newSocket;
   };
 
   const disconnect = () => {
-    if (socketRef.current) {
-      socketRef.current.disconnect();
-      socketRef.current = null;
+    if (socket) {
+      socket.disconnect();
+      setSocket(null);
       setIsConnected(false);
     }
   };
 
   useEffect(() => {
     return () => {
-      disconnect();
+      if (socket) {
+        socket.disconnect();
+      }
     };
-  }, []);
+  }, [socket]);
 
   return {
-    socket: socketRef.current,
+    socket,
     isConnected,
     connect,
     disconnect
