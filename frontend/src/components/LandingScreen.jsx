@@ -57,7 +57,7 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
         Master public speaking with AI-powered coaching
       </motion.p>
 
-      {/* Large Intimidating Battle Mode Featured Card */}
+      {/* Large Intimidating Battle Mode Featured Card matching the reference design */}
       <motion.div
         className="landing-card"
         variants={itemVariants}
@@ -65,39 +65,69 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
           width: '100%',
           maxWidth: '650px',
           margin: '3rem auto',
-          padding: '4rem 2.5rem',
-          border: '5px solid #880000',
-          boxShadow: '12px 12px 0px 0px #880000',
-          backgroundColor: '#1a0000',
-          textAlign: 'center'
+          padding: '3rem 2.5rem',
+          border: '3px solid #ffffff',
+          backgroundColor: '#0a0101',
+          textAlign: 'center',
+          boxShadow: 'none',
+          borderRadius: '0px'
         }}
       >
-        <span style={{ fontSize: '4.5rem', display: 'block', marginBottom: '1.5rem', filter: 'drop-shadow(0 0 10px #ff3333)' }}>⚔️</span>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '2.5rem', textTransform: 'uppercase', color: '#ff3333', letterSpacing: '0.1em', marginBottom: '1rem', lineHeight: '1.1' }}>
-          ENTER BATTLE
-        </h2>
-        <p style={{ fontSize: '0.95rem', color: '#ffcccc', lineHeight: '1.5', marginBottom: '2.5rem', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.05em' }}>
-          Duel real speakers live. Climb the ELO ladder. Prove your speech dominance.
-        </p>
+        {/* Crossed Swords with Red Glow */}
+        <span 
+          className="material-symbols-outlined" 
+          style={{ 
+            fontSize: '5rem', 
+            display: 'block', 
+            margin: '0 auto 1.5rem', 
+            color: '#c0c0c0',
+            filter: 'drop-shadow(0 0 15px rgba(255, 0, 0, 0.95))',
+            fontVariationSettings: "'FILL' 1"
+          }}
+        >
+          swords
+        </span>
+
+        {/* Start Battle Solid Red Banner Button */}
         <button
-          className="btn"
           onClick={onStartBattle}
           style={{
             width: '100%',
-            backgroundColor: '#ff3333',
+            backgroundColor: '#e60000',
             color: '#ffffff',
-            borderColor: '#ff3333',
-            fontSize: '1.25rem',
-            padding: '1.1rem',
-            boxShadow: '6px 6px 0px 0px #ffffff',
+            border: '3px solid #ffffff',
+            fontSize: '2.5rem',
+            padding: '0.75rem 1rem',
             fontWeight: 900,
             fontFamily: 'var(--font-heading)',
             textTransform: 'uppercase',
-            letterSpacing: '0.1em'
+            letterSpacing: '0.05em',
+            cursor: 'pointer',
+            display: 'block',
+            marginBottom: '2rem',
+            borderRadius: '0px',
+            transition: 'transform 0.1s ease'
           }}
+          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.99)'}
+          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
           START BATTLE
         </button>
+
+        {/* Capitalized Description Text */}
+        <p style={{ 
+          fontSize: '0.9rem', 
+          color: '#ffffff', 
+          lineHeight: '1.6', 
+          margin: 0, 
+          textTransform: 'uppercase', 
+          fontWeight: 900, 
+          letterSpacing: '0.08em',
+          fontFamily: 'var(--font-heading)'
+        }}>
+          DUEL REAL SPEAKERS LIVE. CLIMB THE ELO LADDER.<br />
+          PROVE YOUR SPEECH DOMINANCE.
+        </p>
       </motion.div>
 
       {/* Action buttons */}
@@ -111,7 +141,8 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
             borderColor: '#333333',
             color: '#888888',
             background: 'transparent',
-            boxShadow: 'none'
+            boxShadow: 'none',
+            borderRadius: '0px'
           }}
           whileTap={{ scale: 0.98 }}
           onClick={onStart}
