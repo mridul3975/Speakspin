@@ -27,13 +27,11 @@ export function BattleProfile({ user, onBack }) {
       {/* Header Banner */}
       <div
         style={{
-          border: 'var(--border-glow)',
-          borderRadius: 'var(--radius-lg)',
-          backgroundColor: 'var(--bg-card)',
-          backdropFilter: 'blur(12px)',
+          border: '4px solid #ffffff',
+          backgroundColor: '#000000',
           padding: '2rem',
           position: 'relative',
-          boxShadow: 'var(--shadow)',
+          boxShadow: '8px 8px 0px 0px #ffffff',
           marginBottom: '2.5rem',
           display: 'flex',
           justifyContent: 'space-between',
@@ -45,16 +43,15 @@ export function BattleProfile({ user, onBack }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
           <div
             style={{
-              fontSize: '4.5rem',
+              fontSize: '4rem',
               width: '100px',
               height: '100px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: 'var(--bg-card-alt)',
-              border: 'var(--border-glow)',
-              borderRadius: 'var(--radius-md)',
-              boxShadow: 'var(--shadow)'
+              backgroundColor: '#111111',
+              border: '3px solid #ffffff',
+              boxShadow: '4px 4px 0px 0px #ffffff'
             }}
           >
             {user.avatar}
@@ -93,6 +90,16 @@ export function BattleProfile({ user, onBack }) {
         <button
           onClick={onBack}
           className="btn btn-secondary"
+          style={{
+            fontFamily: 'var(--font-heading)',
+            fontWeight: 800,
+            padding: '0.75rem 1.5rem',
+            border: '2px solid #ffffff',
+            backgroundColor: '#000000',
+            color: '#ffffff',
+            textTransform: 'uppercase',
+            cursor: 'pointer'
+          }}
         >
           ⬅️ Back to Lobby
         </button>
@@ -108,24 +115,24 @@ export function BattleProfile({ user, onBack }) {
         }}
       >
         {/* Record Block */}
-        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-card-alt)' }}>
+        <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#000000' }}>
           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 800, marginBottom: '0.25rem' }}>
             Battle Record
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: 'var(--text-primary)' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: '#ffffff' }}>
             {wins}W - {losses}L - {draws}D
           </div>
-          <div style={{ fontSize: '0.75rem', color: 'var(--accent-cyan)', marginTop: '0.2rem', fontWeight: 650 }}>
+          <div style={{ fontSize: '0.75rem', color: 'var(--accent-teal)', marginTop: '0.2rem', fontWeight: 650 }}>
             Win Rate: {winRate}
           </div>
         </div>
 
         {/* Win Streak Block */}
-        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-card-alt)' }}>
+        <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#000000' }}>
           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 800, marginBottom: '0.25rem' }}>
             Win Streak
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: streak > 0 ? 'var(--accent-rose)' : 'var(--text-primary)' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: streak > 0 ? 'var(--accent-teal)' : '#ffffff' }}>
             🔥 {streak}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
@@ -134,11 +141,11 @@ export function BattleProfile({ user, onBack }) {
         </div>
 
         {/* Best Rating Block */}
-        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-card-alt)' }}>
+        <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#000000' }}>
           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 800, marginBottom: '0.25rem' }}>
             Peak Rating
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: 'var(--accent-rose)' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: 'var(--accent-pink)' }}>
             ⚡ {bestRating}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
@@ -147,11 +154,11 @@ export function BattleProfile({ user, onBack }) {
         </div>
 
         {/* Scores Block */}
-        <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '1.25rem', backgroundColor: 'var(--bg-card-alt)' }}>
+        <div style={{ border: '2px solid #ffffff', padding: '1.25rem', backgroundColor: '#000000' }}>
           <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-secondary)', fontWeight: 800, marginBottom: '0.25rem' }}>
             Speech Scores
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: 'var(--text-primary)' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.5rem', color: '#ffffff' }}>
             {avgScore} <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>AVG</span> / {bestScore} <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>MAX</span>
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
@@ -168,11 +175,9 @@ export function BattleProfile({ user, onBack }) {
             fontWeight: 900,
             fontSize: '1.5rem',
             textTransform: 'uppercase',
-            borderBottom: 'var(--border-glow)',
+            borderBottom: '2px solid #ffffff',
             paddingBottom: '0.5rem',
-            marginBottom: '1.5rem',
-            color: 'var(--accent-cyan)',
-            borderRadius: '0px'
+            marginBottom: '1.5rem'
           }}
         >
           ⚔️ Duel History
@@ -181,14 +186,13 @@ export function BattleProfile({ user, onBack }) {
         {battleHistory.length === 0 ? (
           <div
             style={{
-              border: '2px dashed rgba(255,255,255,0.15)',
-              borderRadius: 'var(--radius-lg)',
+              border: '2px dashed rgba(255,255,255,0.2)',
               padding: '3rem',
               textAlign: 'center',
-              backgroundColor: 'var(--bg-card-alt)'
+              backgroundColor: 'rgba(0,0,0,0.2)'
             }}
           >
-            <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '1rem', color: 'var(--accent-cyan)', filter: 'drop-shadow(0 0 5px var(--accent-cyan-glow))' }}>🏆</span>
+            <span style={{ fontSize: '2.5rem', display: 'block', marginBottom: '1rem' }}>🏆</span>
             <p style={{ margin: 0, fontFamily: 'var(--font-heading)', fontWeight: 700, textTransform: 'uppercase', fontSize: '1rem' }}>
               No completed duels found
             </p>
@@ -205,16 +209,16 @@ export function BattleProfile({ user, onBack }) {
 
               let outcomeText = 'DRAW';
               let outcomeColor = 'var(--text-secondary)';
-              let borderStyle = 'var(--border-glow)';
+              let borderStyle = '2px solid rgba(255,255,255,0.3)';
 
               if (isWin) {
                 outcomeText = 'VICTORY';
-                outcomeColor = 'var(--accent-cyan)';
-                borderStyle = '1px solid var(--accent-cyan)';
+                outcomeColor = 'var(--accent-teal)';
+                borderStyle = '2px solid var(--accent-teal)';
               } else if (isLoss) {
                 outcomeText = 'DEFEAT';
-                outcomeColor = 'var(--accent-rose)';
-                borderStyle = '1px solid var(--accent-rose)';
+                outcomeColor = 'var(--accent-pink)';
+                borderStyle = '2px solid var(--accent-pink)';
               }
 
               const formattedDate = new Date(item.date).toLocaleDateString(undefined, {
@@ -229,13 +233,12 @@ export function BattleProfile({ user, onBack }) {
                   key={item.id}
                   style={{
                     border: borderStyle,
-                    borderRadius: 'var(--radius-md)',
-                    backgroundColor: 'var(--bg-card-alt)',
+                    backgroundColor: '#000000',
                     padding: '1.25rem',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '0.75rem',
-                    transition: 'all 0.2s ease',
+                    transition: 'transform 0.2s',
                     position: 'relative'
                   }}
                 >
@@ -278,10 +281,9 @@ export function BattleProfile({ user, onBack }) {
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      borderTop: 'var(--border-glow)',
-                      borderBottom: 'var(--border-glow)',
-                      padding: '0.6rem 0',
-                      borderRadius: '0px'
+                      borderTop: '1px solid rgba(255,255,255,0.1)',
+                      borderBottom: '1px solid rgba(255,255,255,0.1)',
+                      padding: '0.6rem 0'
                     }}
                   >
                     <div>
@@ -297,9 +299,9 @@ export function BattleProfile({ user, onBack }) {
 
                     <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1rem' }}>
                       SCORE:{' '}
-                      <span style={{ color: isWin ? 'var(--accent-cyan)' : 'var(--text-primary)' }}>{item.myScore}</span>{' '}
+                      <span style={{ color: isWin ? 'var(--accent-teal)' : '#ffffff' }}>{item.myScore}</span>{' '}
                       <span style={{ opacity: 0.3 }}>vs</span>{' '}
-                      <span style={{ color: isLoss ? 'var(--accent-rose)' : 'var(--text-primary)' }}>
+                      <span style={{ color: isLoss ? 'var(--accent-pink)' : '#ffffff' }}>
                         {item.opponentScore}
                       </span>
                     </div>

@@ -11,8 +11,8 @@ export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory,
   
   const segments = 10;
   const colors = [
-    '#18181b', '#06b6d4', '#27272a', '#d946ef', '#18181b',
-    '#0891b2', '#27272a', '#a855f7', '#09090b', '#06b6d4'
+    '#000000', '#ffffff', '#eeeeee', '#000000', '#ffffff',
+    '#dadada', '#000000', '#ffffff', '#f5f3f3', '#000000'
   ];
 
   useEffect(() => {
@@ -52,15 +52,14 @@ export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory,
       ctx.arc(0, 0, radius, angle, angle + arcSize);
       ctx.lineTo(0, 0);
       ctx.fill();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
       ctx.stroke();
 
       ctx.save();
       ctx.rotate(angle + arcSize / 2);
       
-      const isBright = bgColor === '#06b6d4' || bgColor === '#0891b2' || bgColor === '#d946ef' || bgColor === '#a855f7';
-      ctx.fillStyle = isBright ? '#000000' : '#ffffff';
+      ctx.fillStyle = bgColor === '#000000' ? '#ffffff' : '#000000';
       ctx.font = 'bold 9px Montserrat';
       ctx.textAlign = 'right';
       
@@ -73,19 +72,19 @@ export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory,
 
     ctx.restore();
     ctx.beginPath();
-    ctx.fillStyle = '#09090b';
+    ctx.fillStyle = '#000000';
     ctx.arc(center, center, 20, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.beginPath();
-    ctx.fillStyle = '#06b6d4';
-    ctx.arc(center, center, 14, 0, 2 * Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.arc(center, center, 16, 0, 2 * Math.PI);
     ctx.fill();
     
     ctx.fillStyle = '#000000';
-    ctx.font = '900 7px Montserrat';
+    ctx.font = '900 8px Montserrat';
     ctx.textAlign = 'center';
-    ctx.fillText('SPIN', center, center + 2.5);
+    ctx.fillText('SPIN', center, center + 3);
   }, [rotation, wheelTopics]);
 
   const spin = () => {

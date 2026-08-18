@@ -96,8 +96,8 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
       </div>
 
       {totalSessions === 0 ? (
-        <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '2px dashed rgba(255, 255, 255, 0.1)', borderRadius: 'var(--radius-lg)', backgroundColor: 'var(--bg-card)' }}>
-          <span className="material-symbols-outlined text-5xl mb-4" style={{ color: 'var(--accent-cyan)' }}>mic_off</span>
+        <div style={{ textAlign: 'center', padding: '4rem 2rem', border: '2px dashed #000000' }}>
+          <span className="material-symbols-outlined text-5xl mb-4">mic_off</span>
           <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.25rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>No sessions yet</h3>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Start practicing to track your public speaking improvements over time!</p>
           <button className="btn btn-primary" onClick={onBack}>
@@ -210,13 +210,13 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
               <button
                 className="btn btn-secondary"
                 onClick={() => setSelectedSession(null)}
-                style={{ borderColor: 'var(--accent-rose)', color: 'var(--accent-rose)', fontWeight: 900, fontSize: '0.8rem', padding: '0.5rem 1.25rem', boxShadow: '0 0 10px var(--accent-rose-glow)' }}
+                style={{ borderColor: 'var(--accent-coral)', color: 'var(--accent-coral)', fontWeight: 900, fontSize: '0.8rem', padding: '0.5rem 1.25rem' }}
               >
                 ❌ CLOSE LOG
               </button>
             </div>
             
-            <div style={{ width: '100%', maxWidth: '800px', backgroundColor: 'var(--bg-card)', border: 'var(--border-glow)', padding: '1.5rem', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', backdropFilter: 'blur(12px)' }}>
+            <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#000000', border: '4px solid #ffffff', padding: '1.5rem', boxShadow: '8px 8px 0px 0px #ffffff' }}>
               <FeedbackDashboard
                 topic={{ topic: selectedSession.topic, category: selectedSession.category }}
                 analysis={getFormattedAnalysis(selectedSession)}

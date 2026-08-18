@@ -115,71 +115,56 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
       minHeight: '90vh',
       display: 'flex',
       flexDirection: 'column',
-      color: 'var(--text-primary)',
-      padding: '2rem 1rem',
+      color: '#ffffff',
+      padding: '1.5rem 1rem',
       boxSizing: 'border-box'
     }}>
-      {/* Dynamic Cyberpunk Styles */}
+      {/* Dynamic Brutalist Styles */}
       <style>{`
+        .crt-cyberpunk {
+          background-color: #000000;
+        }
         .retro-input:focus {
-          border-color: var(--accent-cyan) !important;
-          box-shadow: 0 0 10px var(--accent-cyan-glow);
+          border-color: #ffffff !important;
           outline: none;
         }
-        .lobby-btn-hover {
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        .brutalist-card-hover {
+          transition: background-color 0.25s, color 0.25s;
         }
-        .lobby-btn-hover:hover {
-          background-color: var(--accent-cyan) !important;
-          color: #000000 !important;
-          box-shadow: 0 0 15px var(--accent-cyan-glow);
-          transform: translateY(-1px);
-        }
-        .lobby-btn-hover:hover * {
+        .brutalist-card-hover:hover {
+          background-color: #ffffff !important;
           color: #000000 !important;
         }
-        .lobby-btn-exit-hover {
-          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .lobby-btn-exit-hover:hover {
-          background-color: #ef4444 !important;
-          color: #ffffff !important;
-          box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
-          transform: translateY(-1px);
-        }
-        .lobby-btn-exit-hover:hover * {
-          color: #ffffff !important;
+        .brutalist-card-hover:hover * {
+          color: #000000 !important;
         }
       `}</style>
 
-      {/* Main Cyberpunk Frame */}
+      {/* Main Brutalist Frame */}
       <div style={{
         width: '100%',
         maxWidth: '900px',
         margin: '0 auto',
-        backgroundColor: 'var(--bg-card)',
-        backdropFilter: 'blur(12px)',
-        border: 'var(--border-glow)',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: 'var(--shadow)',
+        backgroundColor: '#000000',
+        border: '4px solid #ffffff',
+        boxShadow: '8px 8px 0px 0px #ffffff',
         display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden'
+        flexDirection: 'column'
       }}>
         {/* Header Bar */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '1.25rem 1.5rem',
-          borderBottom: 'var(--border-glow)',
-          backgroundColor: 'var(--bg-card-alt)'
+          padding: '1rem',
+          borderBottom: '4px solid #ffffff',
+          backgroundColor: '#000000'
         }}>
-          <div style={{ fontWeight: 900, fontSize: '1.1rem', letterSpacing: '0.15em', color: 'var(--accent-cyan)', filter: 'drop-shadow(0 0 8px var(--accent-cyan-glow))' }}>
+          <div style={{ fontWeight: 900, fontSize: '1rem', letterSpacing: '0.15em', color: '#ffffff' }}>
             SPEAKSPIN
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            <span style={{ width: '8px', height: '8px', backgroundColor: 'var(--accent-rose)', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px var(--accent-rose-glow)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#ffffff', fontWeight: 900, textTransform: 'uppercase' }}>
+            <span style={{ width: '8px', height: '8px', backgroundColor: '#ffffff', borderRadius: '50%', display: 'inline-block' }} />
             BATTLE_PORTAL
           </div>
         </div>
@@ -190,15 +175,15 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
           <div style={{
             width: '100%',
             maxWidth: '280px',
-            borderRight: 'var(--border-glow)',
+            borderRight: '4px solid #ffffff',
             padding: '1.5rem',
             boxSizing: 'border-box',
-            backgroundColor: 'rgba(20, 20, 23, 0.3)',
+            backgroundColor: '#000000',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.5rem'
           }}>
-            <div style={{ fontSize: '0.7rem', color: 'var(--accent-cyan)', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            <div style={{ fontSize: '0.7rem', color: '#ffffff', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase' }}>
               <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>terminal</span>
               IDENT_INFO
             </div>
@@ -207,29 +192,27 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
             <div style={{
               width: '100%',
               aspectRatio: '1',
-              border: 'var(--border-glow)',
-              borderRadius: 'var(--radius-md)',
+              border: '3px solid #ffffff',
               padding: '0.75rem',
-              backgroundColor: 'var(--bg-card-alt)',
+              backgroundColor: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               position: 'relative',
               cursor: 'pointer'
             }} onClick={() => setIsEditingAvatar(!isEditingAvatar)}>
-              <div style={{ fontSize: '5.5rem', userSelect: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}>
+              <div style={{ fontSize: '5.5rem', userSelect: 'none' }}>
                 {avatar}
               </div>
               <div style={{
                 position: 'absolute',
                 bottom: '10px',
                 right: '10px',
-                backgroundColor: 'var(--accent-cyan)',
-                borderRadius: '50%',
-                padding: '0.35rem',
+                backgroundColor: '#ffffff',
+                border: '2px solid #000000',
+                padding: '0.2rem',
                 display: 'flex',
-                alignItems: 'center',
-                boxShadow: '0 2px 8px var(--accent-cyan-glow)'
+                alignItems: 'center'
               }}>
                 <span className="material-symbols-outlined" style={{ fontSize: '14px', color: '#000000' }}>edit</span>
               </div>
@@ -242,7 +225,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  style={{ border: '1px dashed var(--accent-cyan)', borderRadius: 'var(--radius-sm)', padding: '0.5rem', backgroundColor: 'var(--bg-card-alt)' }}
+                  style={{ border: '2px dashed #ffffff', padding: '0.5rem', backgroundColor: '#000000' }}
                 >
                   <AvatarSelector selectedAvatar={avatar} onSelect={handleSaveAvatar} />
                 </motion.div>
@@ -265,56 +248,55 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                     fontWeight: 900,
                     fontSize: '1rem',
                     textAlign: 'center',
-                    border: '1px solid var(--accent-cyan)',
-                    backgroundColor: 'var(--bg-card-alt)',
-                    color: 'var(--text-primary)',
-                    padding: '0.5rem',
+                    border: '3px solid #ffffff',
+                    backgroundColor: '#000000',
+                    color: '#ffffff',
+                    padding: '0.4rem',
                     width: '100%',
                     boxSizing: 'border-box',
-                    borderRadius: 'var(--radius-sm)'
+                    borderRadius: '0px'
                   }}
                 />
               ) : (
                 <div 
                   onClick={() => setIsEditingName(true)}
-                  style={{ fontWeight: 800, fontSize: '1.2rem', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem', textTransform: 'uppercase', color: 'var(--text-primary)' }}
+                  style={{ fontWeight: 900, fontSize: '1.25rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.4rem', textTransform: 'uppercase', color: '#ffffff' }}
                 >
                   {playerName}
-                  <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--accent-cyan)', opacity: 0.8 }}>edit</span>
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px', opacity: 0.8 }}>edit</span>
                 </div>
               )}
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', opacity: 0.8, fontWeight: 700 }}>USR-#{Math.floor(1000 + (rating % 9000))}</div>
+              <div style={{ fontSize: '0.7rem', color: '#ffffff', opacity: 0.7, fontWeight: 700 }}>USR-#{Math.floor(1000 + (rating % 9000))}</div>
             </div>
 
             {/* ELO Rank Box */}
             <div style={{
-              border: 'var(--border-glow)',
-              borderRadius: 'var(--radius-md)',
-              padding: '0.85rem',
-              backgroundColor: 'var(--bg-card-alt)',
+              border: '3px solid #ffffff',
+              padding: '0.75rem',
+              backgroundColor: '#000000',
               fontSize: '0.8rem',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.5rem',
+              gap: '0.4rem',
               fontWeight: 800
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-secondary)', opacity: 0.8 }}>RANK:</span>
-                <span style={{ color: 'var(--accent-cyan)' }}>{tier.name.toUpperCase()}</span>
+              <div style={{ display: 'flex', justifyBetween: 'space-between', justifyContent: 'space-between' }}>
+                <span style={{ color: '#ffffff', opacity: 0.7 }}>RANK:</span>
+                <span style={{ color: '#ffffff' }}>{tier.name.toUpperCase()}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-secondary)', opacity: 0.8 }}>ELO:</span>
-                <span style={{ color: 'var(--text-primary)' }}>{String(rating).padStart(4, '0')}</span>
+              <div style={{ display: 'flex', justifyBetween: 'space-between', justifyContent: 'space-between' }}>
+                <span style={{ color: '#ffffff', opacity: 0.7 }}>ELO:</span>
+                <span style={{ color: '#ffffff' }}>{String(rating).padStart(4, '0')}</span>
               </div>
             </div>
 
             {/* Sidebar Action Buttons */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: 'auto' }}>
-              <button onClick={onViewProfile} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: 'var(--border-glow)', borderRadius: 'var(--radius-sm)', background: 'var(--bg-card-alt)', color: 'var(--text-primary)', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.65rem 0.75rem', fontWeight: 800, textTransform: 'uppercase' }} className="lobby-btn-hover">
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--accent-cyan)' }}>analytics</span>
+              <button onClick={onViewProfile} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: '2px solid #ffffff', background: 'none', color: '#ffffff', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.5rem', fontWeight: 900, textTransform: 'uppercase' }} className="brutalist-card-hover">
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>analytics</span>
                 &gt; VIEW_PROFILE
               </button>
-              <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: 'var(--radius-sm)', background: 'rgba(239, 68, 68, 0.05)', color: '#ef4444', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.65rem 0.75rem', fontWeight: 800, textTransform: 'uppercase' }} className="lobby-btn-exit-hover">
+              <button onClick={onBack} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', border: '2px solid #ff3333', background: 'none', color: '#ff3333', cursor: 'pointer', textAlign: 'left', fontSize: '0.75rem', padding: '0.5rem', fontWeight: 900, textTransform: 'uppercase' }} className="brutalist-card-hover">
                 <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_back</span>
                 &gt; BACK TO HOME
               </button>
@@ -326,7 +308,7 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
             flex: 1,
             padding: '1.5rem',
             boxSizing: 'border-box',
-            backgroundColor: 'transparent',
+            backgroundColor: '#000000',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.5rem',
@@ -337,45 +319,46 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              borderBottom: 'var(--border-glow)',
+              borderBottom: '3px solid #ffffff',
               paddingBottom: '0.75rem'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'var(--accent-rose)' }}>swords</span>
-                <h1 style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '0.15em', margin: 0, color: 'var(--text-primary)' }}>BATTLE_PROTOCOL</h1>
+                <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#ffffff' }}>swords</span>
+                <h1 style={{ fontSize: '1.1rem', fontWeight: 900, letterSpacing: '0.15em', margin: 0 }}>BATTLE_PROTOCOL</h1>
               </div>
             </div>
 
             {/* Stats Row */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-              <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '0.85rem', backgroundColor: 'var(--bg-card-alt)' }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', opacity: 0.8, marginBottom: '0.25rem', fontWeight: 900 }}>&gt; RECORD</div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 900, color: 'var(--text-primary)' }}>
+              <div style={{ border: '3px solid #ffffff', padding: '0.75rem', backgroundColor: '#000000' }} className="brutalist-card-hover">
+                <div style={{ fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.25rem', fontWeight: 900 }}>&gt; RECORD</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900 }}>
                   {String(wins).padStart(2, '0')}W / {String(losses).padStart(2, '0')}L / {String(draws).padStart(2, '0')}D
                 </div>
               </div>
-              <div style={{ border: 'var(--border-glow)', borderRadius: 'var(--radius-md)', padding: '0.85rem', backgroundColor: 'var(--bg-card-alt)' }}>
-                <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', opacity: 0.8, marginBottom: '0.25rem', fontWeight: 900 }}>&gt; STREAK</div>
-                <div style={{ fontSize: '1.2rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--accent-rose)' }}>
+              <div style={{ border: '3px solid #ffffff', padding: '0.75rem', backgroundColor: '#000000' }} className="brutalist-card-hover">
+                <div style={{ fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, marginBottom: '0.25rem', fontWeight: 900 }}>&gt; STREAK</div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 900, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
                   <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>local_fire_department</span>
                   {String(streak).padStart(2, '0')}_STREAK
                 </div>
               </div>
             </div>
 
+
+
             {/* Matchmaking controls */}
             <div style={{
-              border: 'var(--border-glow)',
-              borderRadius: 'var(--radius-md)',
-              padding: '1.5rem',
-              backgroundColor: 'var(--bg-card-alt)',
+              border: '3px solid #ffffff',
+              padding: '1.25rem',
+              backgroundColor: '#000000',
               display: 'flex',
               flexDirection: 'column',
-              gap: '1.25rem'
+              gap: '1rem'
             }}>
               {/* Speaking Language Selector */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', textAlign: 'left' }}>
-                <label style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', opacity: 0.8, fontWeight: 900, letterSpacing: '0.05em' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', textAlign: 'left' }}>
+                <label style={{ fontSize: '0.65rem', color: '#ffffff', opacity: 0.7, fontWeight: 900 }}>
                   &gt; SELECT_COMM_PROTOCOL
                 </label>
                 <div style={{ position: 'relative', width: '100%' }}>
@@ -387,14 +370,14 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                     }}
                     style={{
                       width: '100%',
-                      padding: '0.85rem',
-                      backgroundColor: 'var(--bg-card)',
-                      border: 'var(--border-glow)',
-                      color: 'var(--text-primary)',
+                      padding: '0.75rem',
+                      backgroundColor: '#000000',
+                      border: '3px solid #ffffff',
+                      color: '#ffffff',
                       fontFamily: "'Montserrat', sans-serif",
                       fontWeight: 800,
                       fontSize: '0.85rem',
-                      borderRadius: 'var(--radius-sm)',
+                      borderRadius: '0px',
                       outline: 'none',
                       cursor: 'pointer',
                       appearance: 'none'
@@ -404,8 +387,8 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                       <option key={lang.code} value={lang.code}>{lang.name}</option>
                     ))}
                   </select>
-                  <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, bottom: 0, right: 0, display: 'flex', alignItems: 'center', paddingRight: '12px', color: 'var(--text-secondary)' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_drop_down</span>
+                  <div style={{ pointerEvents: 'none', position: 'absolute', insetY: 0, right: 0, display: 'flex', alignItems: 'center', paddingRight: '10px', color: '#ffffff' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_drop_down</span>
                   </div>
                 </div>
               </div>
@@ -415,10 +398,9 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                 onClick={() => onFindMatch({ playerName, avatar, rating, language: selectedLanguage })}
                 style={{
                   width: '100%',
-                  background: 'linear-gradient(135deg, var(--accent-rose) 0%, var(--accent-rose-hover) 100%)',
+                  backgroundColor: '#ffffff',
                   color: '#000000',
-                  border: 'none',
-                  borderRadius: 'var(--radius-sm)',
+                  border: '3px solid #ffffff',
                   padding: '1rem',
                   fontSize: '0.9rem',
                   fontWeight: 900,
@@ -429,24 +411,26 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '0.5rem',
-                  boxShadow: '0 0 15px var(--accent-rose-glow)',
-                  transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                  transition: 'background-color 0.25s, color 0.25s',
+                  boxShadow: '4px 4px 0px 0px #ffffff'
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.filter = 'brightness(1.1)';
-                  e.currentTarget.style.boxShadow = '0 0 25px var(--accent-rose-glow)';
-                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.backgroundColor = '#000000';
+                  e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.boxShadow = 'none';
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.filter = 'none';
-                  e.currentTarget.style.boxShadow = '0 0 15px var(--accent-rose-glow)';
-                  e.currentTarget.style.transform = 'none';
+                  e.currentTarget.style.backgroundColor = '#ffffff';
+                  e.currentTarget.style.color = '#000000';
+                  e.currentTarget.style.boxShadow = '4px 4px 0px 0px #ffffff';
                 }}
               >
                 <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>radar</span>
                 INITIATE_MATCHMAKING
               </button>
             </div>
+
+
           </div>
         </div>
 
@@ -455,15 +439,15 @@ export function BattleLobby({ user, onFindMatch, onBack, onViewProfile, selected
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '1rem 1.5rem',
-          borderTop: 'var(--border-glow)',
-          backgroundColor: 'var(--bg-card-alt)',
+          padding: '0.75rem 1rem',
+          borderTop: '4px solid #ffffff',
+          backgroundColor: '#000000',
           fontSize: '0.7rem',
-          color: 'var(--text-secondary)',
-          fontWeight: 800
+          color: '#ffffff',
+          fontWeight: 900
         }}>
           <div>SYS.V.2026 (c) SPKSPN</div>
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
             <span>[TERMS]</span>
             <span>[PRIVACY]</span>
             <span>[SUPPORT]</span>

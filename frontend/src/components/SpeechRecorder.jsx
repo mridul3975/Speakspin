@@ -268,9 +268,9 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div style={{ border: 'var(--border-glow)', padding: '3rem 2rem', backgroundColor: 'var(--bg-card)', width: '100%', maxWidth: '600px', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow)', backdropFilter: 'blur(12px)' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.05em' }}>Get ready to speak about:</span>
-              <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0', color: 'var(--accent-cyan)' }}>
+            <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', width: '100%', maxWidth: '600px', boxShadow: '8px 8px 0px 0px #ffffff' }}>
+              <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Get ready to speak about:</span>
+              <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0' }}>
                 {translatedTopic === topic.topic ? `"${topic.topic}"` : `"${translatedTopic}"`}
                 {translatedTopic !== topic.topic && (
                   <div style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
@@ -280,7 +280,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
               </h2>
               <motion.div
                 key={countdown}
-                style={{ fontSize: '6rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: 'var(--accent-cyan)' }}
+                style={{ fontSize: '6rem', fontWeight: 900, fontFamily: 'var(--font-heading)' }}
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 1.2, opacity: 0 }}
@@ -399,7 +399,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
       {/* Error warnings */}
       {!isSupported && <div style={{ color: 'var(--accent-coral)', fontWeight: 700, fontSize: '0.85rem' }}>⚠️ {speechError}</div>}
       {isSupported && speechError && (
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', border: 'var(--border-glow)', padding: '0.75rem', width: '100%', textAlign: 'left', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--bg-card-alt)' }}>
+        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', border: '2px solid #ffffff', padding: '0.75rem', width: '100%', textAlign: 'left' }}>
           ⚠️ {speechError}
         </div>
       )}
@@ -413,7 +413,7 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
         )}
 
         {recorderState === 'recording' && (
-          <button className="btn btn-primary" onClick={stopRecording} style={{ background: 'var(--accent-rose)', borderColor: 'var(--accent-rose)', color: '#000000', boxShadow: '0 0 15px var(--accent-rose-glow)' }}>
+          <button className="btn btn-primary" onClick={stopRecording} style={{ borderColor: 'var(--accent-coral)' }}>
             <span className="material-symbols-outlined text-sm">stop</span> STOP RECORDING
           </button>
         )}

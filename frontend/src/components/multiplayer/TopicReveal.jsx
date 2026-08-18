@@ -50,8 +50,8 @@ export function TopicReveal({ topic, category, duration, startCountdown, selecte
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'var(--bg-app)',
-        color: 'var(--text-primary)',
+        backgroundColor: '#05050f',
+        color: '#ffffff',
         zIndex: 99,
         display: 'flex',
         flexDirection: 'column',
@@ -61,7 +61,7 @@ export function TopicReveal({ topic, category, duration, startCountdown, selecte
         textAlign: 'center'
       }}
     >
-      <div style={{ maxWidth: '600px', border: 'var(--border-glow)', borderRadius: 'var(--radius-lg)', padding: '3rem 2rem', backgroundColor: 'var(--bg-card)', boxShadow: 'var(--shadow)', backdropFilter: 'blur(12px)' }}>
+      <div style={{ maxWidth: '600px', border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', boxShadow: '8px 8px 0px 0px #ffffff' }}>
         
         {/* Category Badge */}
         <motion.span
@@ -107,7 +107,7 @@ export function TopicReveal({ topic, category, duration, startCountdown, selecte
           <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
             Battle Starts In:
           </span>
-          <div style={{ fontSize: '4.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: startCountdown <= 1 ? 'var(--accent-rose)' : 'var(--accent-cyan)', animation: 'pulse 1s infinite' }}>
+          <div style={{ fontSize: '4.5rem', fontWeight: 900, fontFamily: 'var(--font-heading)', color: startCountdown <= 1 ? 'var(--accent-coral)' : '#ffffff', animation: 'pulse 1s infinite' }}>
             {startCountdown === 0 ? 'GO! 🎤' : startCountdown}
           </div>
         </motion.div>
