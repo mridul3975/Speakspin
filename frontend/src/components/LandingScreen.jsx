@@ -57,66 +57,47 @@ export function LandingScreen({ onStart, onViewProgress, onStartBattle }) {
         Master public speaking with AI-powered coaching
       </motion.p>
 
-      {/* Features list */}
-      <motion.div className="landing-cards-grid" variants={itemVariants}>
-        {cards.map((card, idx) => (
-          <motion.div
-            key={idx}
-            className="landing-card"
-            variants={itemVariants}
-            whileHover={{ y: -2 }}
-          >
-            <div className="landing-card-icon">
-              <span className="material-symbols-outlined text-4xl">{card.icon}</span>
-            </div>
-            <h3>{card.title}</h3>
-            <p>{card.desc}</p>
-          </motion.div>
-        ))}
+      {/* Large Battle Mode Featured Card */}
+      <motion.div
+        className="landing-card"
+        variants={itemVariants}
+        style={{
+          width: '100%',
+          maxWidth: '500px',
+          margin: '2.5rem auto',
+          padding: '2.5rem 1.5rem',
+          border: '4px solid var(--accent-coral)',
+          boxShadow: '8px 8px 0px 0px var(--accent-coral)',
+          backgroundColor: '#000000',
+          textAlign: 'center'
+        }}
+      >
+        <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>⚔️</span>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.6rem', textTransform: 'uppercase', color: 'var(--accent-coral)', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+          BATTLE MODE
+        </h2>
+        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '2rem', textTransform: 'uppercase', fontWeight: 700 }}>
+          Duel other users live in real-time or practice with AI bots to rank up.
+        </p>
+        <button
+          className="btn btn-primary"
+          onClick={onStartBattle}
+          style={{ width: '100%', backgroundColor: 'var(--accent-coral)', color: '#ffffff', borderColor: 'var(--accent-coral)', fontSize: '0.95rem' }}
+        >
+          START BATTLE
+        </button>
       </motion.div>
 
       {/* Action buttons */}
-      <motion.div className="landing-actions" variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '380px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', gap: '1rem', width: '100%' }}>
-          <motion.button
-            className="btn btn-primary"
-            style={{ flex: 1 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onStart}
-          >
-            <span className="material-symbols-outlined text-sm">rocket_launch</span>
-            Start Speaking
-          </motion.button>
-          
-          <motion.button
-            className="btn btn-secondary"
-            style={{ flex: 1 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={onViewProgress}
-          >
-            <span className="material-symbols-outlined text-sm">bar_chart</span>
-            View Progress
-          </motion.button>
-        </div>
-
+      <motion.div className="landing-actions" variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '500px', margin: '0 auto' }}>
         <motion.button
-          className="btn btn-primary"
+          className="btn btn-secondary"
+          style={{ width: '100%', padding: '1rem', fontSize: '1rem' }}
           whileTap={{ scale: 0.98 }}
-          onClick={onStartBattle}
-          style={{
-            width: '100%',
-            backgroundColor: '#FF416C',
-            borderColor: '#FF4B2B',
-            boxShadow: '0 0 10px rgba(255,65,108,0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem',
-            fontFamily: 'var(--font-heading)',
-            fontWeight: 800
-          }}
+          onClick={onStart}
         >
-          ⚔️ BATTLE MODE
+          <span className="material-symbols-outlined text-sm">rocket_launch</span>
+          START PRACTICING (SOLO)
         </motion.button>
       </motion.div>
     </motion.div>

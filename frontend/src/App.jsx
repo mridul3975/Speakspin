@@ -198,6 +198,18 @@ export function App() {
           console.warn('Session verification failed. Logging out...', error);
           handleSignOut();
         }
+      } else {
+        const guestName = localStorage.getItem('speakspin-player-name') || 'SPEAKER_' + Math.floor(1000 + Math.random() * 9000);
+        const guestAvatar = localStorage.getItem('speakspin-player-avatar') || '🦁';
+        const guestRating = localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000;
+        setUser({
+          id: 'guest',
+          name: guestName,
+          playerName: guestName,
+          avatar: guestAvatar,
+          rating: guestRating,
+          isGuest: true
+        });
       }
       setLoadingUser(false);
     }
