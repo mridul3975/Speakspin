@@ -658,7 +658,7 @@ export function App() {
           </motion.div>
         )}
 
-        {screen === SCREENS.BATTLE_PROFILE && (
+        {screen === SCREENS.BATTLE_PROFILE && user && !user.isGuest && (
           <motion.div
             key="battle_profile"
             initial={{ opacity: 0, y: 15 }}
