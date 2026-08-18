@@ -173,8 +173,18 @@ export function App() {
         ? 'http://localhost:3001'
         : window.location.origin.replace('5173', '3001');
     }
-    connect(API_URL);
-    navigateTo(SCREENS.BATTLE_LOBBY);
+    const currentSocket = connect(API_URL);
+    if (user && user.isGuest) {
+      currentSocket.emit('find_match', {
+        playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+        avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
+        rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000,
+        language: selectedLanguage
+      });
+      navigateTo(SCREENS.BATTLE_MATCHMAKING);
+    } else {
+      navigateTo(SCREENS.BATTLE_LOBBY);
+    }
   };
 
   const handleLeaveBattleMode = () => {
@@ -232,16 +242,15 @@ export function App() {
       
       setScreen(SCREENS.LANDING);
     } catch (err) {
-      console.error('Google Sign-In backend verification failed:', err);
-      alert('❌ Authentication failed. Please check backend connection.');
+      handleLoginError(err);
     } finally {
       setLoadingUser(false);
     }
   };
 
   const handleLoginError = (error) => {
-    console.error('Google Auth SDK error:', error);
-    alert('❌ Google Login failed. Please check browser configurations or test in Guest Mode.');
+    console.error('Session login failure:', error);
+    alert('❌ Authentication failed. Please check backend connection.');
   };
 
   const handleSignOut = () => {
@@ -249,9 +258,7 @@ export function App() {
     setAuthToken(null);
     setUser(null);
     setHistory([]);
-    setCurrentTopic(null);
-    setAnalysisResults(null);
-    setScreen(SCREENS.LANDING);
+    navigateTo(SCREENS.LANDING);
   };
 
   const handleTopicSelected = (topicObj) => {
@@ -325,23 +332,25 @@ export function App() {
   return (
     <div className="app-container">
       {/* User Session Profile Header */}
-      <div className="app-user-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          {user.picture ? (
-            <img src={user.picture} alt={user.name} style={{ width: '32px', height: '32px', border: '1px solid #000000' }} />
-          ) : (
-            <div style={{ width: '32px', height: '32px', border: '1px solid #000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800 }}>SP</div>
-          )}
-          <div>
-            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block', lineHeight: 1.2, fontWeight: 700, textTransform: 'uppercase' }}>Welcome,</span>
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{user.name}</span>
+      {user && !user.isGuest && (
+        <div className="app-user-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {user.picture ? (
+              <img src={user.picture} alt={user.name} style={{ width: '32px', height: '32px', border: '1px solid #000000' }} />
+            ) : (
+              <div style={{ width: '32px', height: '32px', border: '1px solid #000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800 }}>SP</div>
+            )}
+            <div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block', lineHeight: 1.2, fontWeight: 700, textTransform: 'uppercase' }}>Welcome,</span>
+              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{user.name}</span>
+            </div>
           </div>
+          
+          <button onClick={handleSignOut} className="btn-back-ghost" style={{ fontSize: '0.8rem', color: 'var(--accent-coral)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}>
+            <span className="material-symbols-outlined text-sm">logout</span> LOG OUT
+          </button>
         </div>
-        
-        <button onClick={handleSignOut} className="btn-back-ghost" style={{ fontSize: '0.8rem', color: 'var(--accent-coral)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}>
-          <span className="material-symbols-outlined text-sm">logout</span> LOG OUT
-        </button>
-      </div>
+      )}
 
       <AnimatePresence mode="wait">
         {screen === SCREENS.LANDING && (
@@ -505,7 +514,11 @@ export function App() {
               rating={localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000}
               onCancel={() => {
                 socket.emit('cancel_search');
-                navigateTo(SCREENS.BATTLE_LOBBY);
+                if (user && user.isGuest) {
+                  navigateTo(SCREENS.LANDING);
+                } else {
+                  navigateTo(SCREENS.BATTLE_LOBBY);
+                }
               }}
               onFightBot={(botId) => {
                 socket.emit('fight_bot', { 
