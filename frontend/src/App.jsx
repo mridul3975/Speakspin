@@ -651,12 +651,16 @@ export function App() {
               }}
               onNewOpponent={() => {
                 socket.emit('leave_room', { roomId: battleRoomId });
-                socket.emit('find_match', {
-                  playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
-                  avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
-                  rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
-                });
-                navigateTo(SCREENS.BATTLE_MATCHMAKING);
+                if (isGuestSession) {
+                  navigateTo(SCREENS.SIGNUP_PROMPT);
+                } else {
+                  socket.emit('find_match', {
+                    playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                    avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
+                    rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
+                  });
+                  navigateTo(SCREENS.BATTLE_MATCHMAKING);
+                }
               }}
               onLeave={() => {
                 socket.emit('leave_room', { roomId: battleRoomId });
