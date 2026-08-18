@@ -367,6 +367,11 @@ export function App() {
               onStart={() => navigateTo(SCREENS.SETUP)}
               onViewProgress={() => navigateTo(SCREENS.HISTORY)}
               onStartBattle={handleStartBattleMode}
+              selectedLanguage={selectedLanguage}
+              setSelectedLanguage={(lang) => {
+                setSelectedLanguage(lang);
+                localStorage.setItem('speakspin-battle-language', lang);
+              }}
             />
           </motion.div>
         )}
