@@ -63,6 +63,7 @@ export function App() {
 
   // Multiplayer States
   const { socket, isConnected, connect, disconnect } = useSocket();
+  const isGuestSession = user && (user.isGuest || user.email === 'guest.speakspin@example.com' || user.id === 'guest');
   const [battleOpponent, setBattleOpponent] = useState(null);
   const [battleRoomId, setBattleRoomId] = useState(null);
   const [battleTopic, setBattleTopic] = useState(null);
@@ -174,7 +175,7 @@ export function App() {
         : window.location.origin.replace('5173', '3001');
     }
     const currentSocket = connect(API_URL);
-    if (user && user.isGuest) {
+    if (isGuestSession) {
       currentSocket.emit('find_match', {
         playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
         avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
@@ -332,7 +333,7 @@ export function App() {
   return (
     <div className="app-container">
       {/* User Session Profile Header */}
-      {user && !user.isGuest && (
+      {user && !isGuestSession && (
         <div className="app-user-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {user.picture ? (
@@ -478,7 +479,7 @@ export function App() {
            </motion.div>
          )}
 
-        {screen === SCREENS.BATTLE_LOBBY && (
+        {screen === SCREENS.BATTLE_LOBBY && user && !isGuestSession && (
           <motion.div
             key="battle_lobby"
             initial={{ opacity: 0, y: 15 }}
@@ -514,7 +515,7 @@ export function App() {
               rating={localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000}
               onCancel={() => {
                 socket.emit('cancel_search');
-                if (user && user.isGuest) {
+                if (isGuestSession) {
                   navigateTo(SCREENS.LANDING);
                 } else {
                   navigateTo(SCREENS.BATTLE_LOBBY);
@@ -658,7 +659,7 @@ export function App() {
           </motion.div>
         )}
 
-        {screen === SCREENS.BATTLE_PROFILE && user && !user.isGuest && (
+        {screen === SCREENS.BATTLE_PROFILE && user && !isGuestSession && (
           <motion.div
             key="battle_profile"
             initial={{ opacity: 0, y: 15 }}
