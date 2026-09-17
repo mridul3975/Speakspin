@@ -25,3 +25,6 @@ pnpm-debug.log*
 # System Files
 .DS_Store
 Thumbs.db
+
+# Playwright MCP artifacts
+.playwright-mcp/
