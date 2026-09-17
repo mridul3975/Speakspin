@@ -1,4 +1,14 @@
 import pg from 'pg';
+import dns from 'dns';
+import net from 'net';
+
+// Enforce IPv4-first resolution to prevent WSL2/Linux IPv6 ETIMEDOUT & ENETUNREACH issues
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
+if (typeof net.setDefaultAutoSelectFamily === 'function') {
+  net.setDefaultAutoSelectFamily(false);
+}
 
 const { Pool } = pg;
 
@@ -16,7 +26,10 @@ export function getPool() {
 
   poolInstance = new Pool({
     connectionString,
-    ssl: isNeon ? { rejectUnauthorized: false } : false
+    ssl: isNeon ? { rejectUnauthorized: false } : false,
+    lookup: (hostname, options, cb) => {
+      return dns.lookup(hostname, { family: 4, all: false }, cb);
+    }
   });
 
   return poolInstance;
@@ -64,9 +77,8 @@ export async function connectDB() {
     console.log('PostgreSQL Tables initialized (users, sessions).');
     client.release();
   } catch (error) {
-    console.error('PostgreSQL Connection/Initialization Error:');
-    console.error(error);
-    process.exit(1);
+    console.warn('⚠️ PostgreSQL Connection Warning (server will stay online with offline/guest session fallback):');
+    console.warn(error.message || error);
   }
 }
 
