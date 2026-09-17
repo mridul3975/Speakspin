@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { TOPIC_BANK } from '../data/topics';
+import { Button } from "@/components/ui/button";
 
 export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory, onBack }) {
   const canvasRef = useRef(null);
@@ -133,13 +134,13 @@ export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory,
   return (
     <div className="spinning-container" style={{ position: 'relative' }}>
       {!isSpinning && !selectedTopic && onBack && (
-        <button 
-          className="btn-back-ghost" 
+        <Button 
+          variant="ghost" 
           onClick={onBack}
-          style={{ position: 'absolute', top: '0px', left: '0px' }}
+          className="text-white hover:text-white hover:bg-[#1a1a1a] rounded-none px-2 font-black absolute top-0 left-0"
         >
-          <span className="material-symbols-outlined text-sm">arrow_back</span> BACK
-        </button>
+          <span className="material-symbols-outlined text-sm mr-1">arrow_back</span> BACK
+        </Button>
       )}
       <h2 className="spin-title" style={{ marginTop: (!isSpinning && !selectedTopic && onBack) ? '2.5rem' : '0' }}>🎰 Spin to Decide Your Topic</h2>
       
@@ -156,10 +157,10 @@ export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory,
       </div>
 
       {!isSpinning && !selectedTopic && (
-        <button className="btn btn-primary" onClick={spin}>
-          <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>casino</span>
+        <Button onClick={spin} className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12 mt-4">
+          <span className="material-symbols-outlined text-sm mr-2" style={{ fontVariationSettings: "'FILL' 1" }}>casino</span>
           Spin Wheel!
-        </button>
+        </Button>
       )}
 
       {selectedTopic && (
