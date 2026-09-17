@@ -25,15 +25,16 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middlewares
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://speakspin-nine.vercel.app'
-];
+const isOriginAllowed = (origin) => {
+  if (!origin) return true;
+  if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) return true;
+  if (origin.endsWith('.vercel.app') || origin === 'https://speakspin-nine.vercel.app') return true;
+  return false;
+};
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+    if (isOriginAllowed(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -67,6 +68,6 @@ const httpServer = createServer(app);
 initSocket(httpServer);
 
 // Start Server
-httpServer.listen(PORT, () => {
-  console.log(`SpeakSpin Backend server running on port ${PORT} with Battle Mode sockets enabled`);
+httpServer.listen(PORT, '0.0.0.0', () => {
+  console.log(`SpeakSpin Backend server running on http://0.0.0.0:${PORT} (all interfaces) with Battle Mode sockets enabled`);
 });
