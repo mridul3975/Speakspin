@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 const SUPPORTED_LANGUAGES = [
   { code: 'en-US', name: 'EN-US (ENGLISH)' },
@@ -100,98 +103,34 @@ export function LandingScreen({ onStart, onStartBattle, selectedLanguage, setSel
         </span>
 
         {/* Start Battle Solid Red Banner Button */}
-        <button
-          className="landing-battle-btn"
+        <Button
+          className="w-full bg-[#ff5555] hover:bg-[#ff3333] text-white font-black rounded-none border-2 border-white mb-5 uppercase tracking-widest h-12"
           onClick={onStartBattle}
-          style={{ marginBottom: '1.25rem' }}
         >
           START BATTLE
-        </button>
+        </Button>
 
         {/* Choose Language Selector Dropdown (Shadcn style popover) */}
-        <div style={{ position: 'relative', width: '100%', textAlign: 'left', marginBottom: '2.5rem' }} ref={dropdownRef}>
-          <span style={{ fontSize: '0.7rem', fontWeight: 900, color: '#888888', display: 'block', marginBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontFamily: 'var(--font-heading)' }}>
+        <div className="w-full text-left mb-10">
+          <span className="text-[0.7rem] font-black text-[#888888] block mb-1.5 uppercase tracking-widest font-heading">
             Choose a Language
           </span>
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            style={{
-              width: '100%',
-              backgroundColor: '#000000',
-              color: '#ffffff',
-              border: '2px solid #ffffff',
-              padding: '0.65rem 1rem',
-              fontWeight: 900,
-              fontSize: '0.85rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              cursor: 'pointer',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              borderRadius: '0px',
-              fontFamily: 'var(--font-heading)'
-            }}
-          >
-            <span>{SUPPORTED_LANGUAGES.find(l => l.code === selectedLanguage)?.name || 'EN-US (ENGLISH)'}</span>
-            <span className="material-symbols-outlined" style={{ fontSize: '18px', transition: 'transform 0.2s', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
-              keyboard_arrow_down
-            </span>
-          </button>
-          
-          <AnimatePresence>
-            {isOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: 0.1 }}
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  width: '100%',
-                  backgroundColor: '#000000',
-                  border: '2px solid #ffffff',
-                  borderTop: 'none',
-                  zIndex: 99,
-                  maxHeight: '180px',
-                  overflowY: 'auto',
-                  borderRadius: '0px',
-                  boxShadow: '4px 4px 0px 0px #ffffff'
-                }}
-              >
-                {SUPPORTED_LANGUAGES.map((lang) => (
-                  <div
-                    key={lang.code}
-                    onClick={() => {
-                      setSelectedLanguage(lang.code);
-                      setIsOpen(false);
-                    }}
-                    style={{
-                      padding: '0.6rem 1rem',
-                      cursor: 'pointer',
-                      fontSize: '0.8rem',
-                      fontWeight: 900,
-                      color: selectedLanguage === lang.code ? '#ff3333' : '#ffffff',
-                      borderBottom: '1px solid #111111',
-                      backgroundColor: '#000000',
-                      transition: 'background-color 0.1s, color 0.1s',
-                      fontFamily: 'var(--font-heading)'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = '#111111';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = '#000000';
-                    }}
-                  >
-                    {lang.name}
-                  </div>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
+            <SelectTrigger className="w-full bg-black text-white border-2 border-white rounded-none font-black text-[0.85rem] uppercase tracking-widest font-heading h-11">
+              <SelectValue placeholder="Select Language" />
+            </SelectTrigger>
+            <SelectContent className="bg-black text-white border-2 border-white rounded-none font-heading shadow-[4px_4px_0px_0px_#ffffff]">
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <SelectItem 
+                  key={lang.code} 
+                  value={lang.code}
+                  className="font-black hover:bg-[#111111] focus:bg-[#111111] focus:text-white rounded-none"
+                >
+                  {lang.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Capitalized Description Text */}
@@ -211,25 +150,15 @@ export function LandingScreen({ onStart, onStartBattle, selectedLanguage, setSel
       </motion.div>
 
       {/* Action buttons */}
-      <motion.div className="landing-actions" variants={itemVariants} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%', maxWidth: '350px', margin: '0 auto' }}>
-        <motion.button
-          className="btn btn-secondary"
-          style={{
-            width: '100%',
-            padding: '0.75rem',
-            fontSize: '0.8rem',
-            borderColor: '#333333',
-            color: '#888888',
-            background: 'transparent',
-            boxShadow: 'none',
-            borderRadius: '0px'
-          }}
-          whileTap={{ scale: 0.98 }}
+      <motion.div className="flex flex-col gap-4 w-full max-w-[350px] mx-auto mt-6" variants={itemVariants}>
+        <Button
+          variant="outline"
+          className="w-full p-3 text-xs border-[#333333] text-[#888888] bg-transparent shadow-none rounded-none hover:bg-[#111111] hover:text-white"
           onClick={onStart}
         >
-          <span className="material-symbols-outlined text-xs">rocket_launch</span>
+          <span className="material-symbols-outlined text-xs mr-2">rocket_launch</span>
           Practice Solo (Training Mode)
-        </motion.button>
+        </Button>
       </motion.div>
     </motion.div>
   );
