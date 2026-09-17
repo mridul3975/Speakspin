@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
   const getIcon = (key) => {
@@ -31,29 +33,24 @@ export function CategoryCard({ categoryKey, score = 0, feedback = '' }) {
   };
 
   return (
-    <div className="category-card">
-      {/* Horizontal Header (Title on left, score on right) */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span className="material-symbols-outlined text-xl">{getIcon(categoryKey)}</span>
-          <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
-            {getCategoryTitle(categoryKey)}
-          </h4>
+    <Card className="bg-[#1a1a1a] border-2 border-[#333333] rounded-none p-4 text-white text-left h-full flex flex-col hover:border-white transition-colors duration-300">
+      <CardContent className="p-0 flex flex-col h-full">
+        {/* Horizontal Header (Title on left, score on right) */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span className="material-symbols-outlined text-xl">{getIcon(categoryKey)}</span>
+            <h4 style={{ margin: 0, fontWeight: 800, fontSize: '0.9rem', textTransform: 'uppercase', fontFamily: 'var(--font-heading)' }}>
+              {getCategoryTitle(categoryKey)}
+            </h4>
+          </div>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.15rem' }}>{score}</span>
         </div>
-        <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.15rem' }}>{score}</span>
-      </div>
-      
-      <div className="category-bar-container">
-        <motion.div
-          className="category-bar-fill"
-          initial={{ width: 0 }}
-          animate={{ width: `${score}%` }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        />
-      </div>
+        
+        <Progress value={score} className="h-2 rounded-none bg-black mb-3 [&>div]:bg-white" />
 
-      <p className="category-desc" style={{ textAlign: 'left' }}>{feedback}</p>
-    </div>
+        <p className="text-[#c6c6c7] text-[0.8rem] leading-relaxed mt-auto font-body m-0" style={{ textAlign: 'left' }}>{feedback}</p>
+      </CardContent>
+    </Card>
   );
 }
 

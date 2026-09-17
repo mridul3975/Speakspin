@@ -1,5 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 const CATEGORIES = [
   "General",
@@ -57,9 +60,9 @@ export function TimerSelector({
       style={{ maxWidth: '500px', width: '100%', margin: '0 auto' }}
     >
       <div className="setup-header">
-        <button className="btn-back-ghost" onClick={onBack}>
-          <span className="material-symbols-outlined text-sm">arrow_back</span> Back
-        </button>
+        <Button variant="ghost" onClick={onBack} className="text-white hover:text-white hover:bg-[#1a1a1a] rounded-none px-2 font-black -ml-2 mb-2">
+          <span className="material-symbols-outlined text-sm mr-1">arrow_back</span> Back
+        </Button>
         <h2 className="setup-title" style={{ marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
           <span className="material-symbols-outlined text-2xl">settings</span> Set Your Challenge
         </h2>
@@ -91,64 +94,46 @@ export function TimerSelector({
       <div className="setup-instruction">Select Theme Category</div>
 
       {/* Category Dropdown Selector */}
-      <select
-        value={selectedCategory}
-        onChange={(e) => onChangeCategory(e.target.value)}
-        style={{
-          width: '100%',
-          padding: '0.85rem',
-          backgroundColor: '#000000',
-          border: '2px solid #ffffff',
-          color: '#ffffff',
-          fontFamily: 'var(--font-heading)',
-          fontWeight: 800,
-          fontSize: '0.9rem',
-          marginBottom: '1.5rem',
-          borderRadius: '0px',
-          outline: 'none',
-          cursor: 'pointer'
-        }}
-      >
-        {CATEGORIES.map(cat => (
-          <option key={cat} value={cat}>{cat.toUpperCase()}</option>
-        ))}
-      </select>
+      <div className="mb-6">
+        <Select value={selectedCategory} onValueChange={onChangeCategory}>
+          <SelectTrigger className="w-full bg-black text-white border-2 border-white rounded-none font-black text-[0.9rem] uppercase font-heading h-12">
+            <SelectValue placeholder="Select Category" />
+          </SelectTrigger>
+          <SelectContent className="bg-black text-white border-2 border-white rounded-none font-heading shadow-[4px_4px_0px_0px_#ffffff]">
+            {CATEGORIES.map(cat => (
+              <SelectItem key={cat} value={cat} className="font-black hover:bg-[#111111] focus:bg-[#111111] focus:text-white rounded-none">
+                {cat.toUpperCase()}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="setup-instruction">Select Speaking Language</div>
 
       {/* Language Dropdown Selector */}
-      <select
-        value={selectedLanguage}
-        onChange={(e) => onChangeLanguage(e.target.value)}
-        style={{
-          width: '100%',
-          padding: '0.85rem',
-          backgroundColor: '#000000',
-          border: '2px solid #ffffff',
-          color: '#ffffff',
-          fontFamily: 'var(--font-heading)',
-          fontWeight: 800,
-          fontSize: '0.9rem',
-          marginBottom: '2rem',
-          borderRadius: '0px',
-          outline: 'none',
-          cursor: 'pointer'
-        }}
-      >
-        {SUPPORTED_LANGUAGES.map(lang => (
-          <option key={lang.code} value={lang.code}>{lang.name}</option>
-        ))}
-      </select>
+      <div className="mb-8">
+        <Select value={selectedLanguage} onValueChange={onChangeLanguage}>
+          <SelectTrigger className="w-full bg-black text-white border-2 border-white rounded-none font-black text-[0.9rem] uppercase font-heading h-12">
+            <SelectValue placeholder="Select Language" />
+          </SelectTrigger>
+          <SelectContent className="bg-black text-white border-2 border-white rounded-none font-heading shadow-[4px_4px_0px_0px_#ffffff]">
+            {SUPPORTED_LANGUAGES.map(lang => (
+              <SelectItem key={lang.code} value={lang.code} className="font-black hover:bg-[#111111] focus:bg-[#111111] focus:text-white rounded-none">
+                {lang.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-      <motion.button
-        className="btn btn-primary"
-        style={{ width: '100%', padding: '1.25rem' }}
-        whileTap={{ scale: 0.98 }}
+      <Button
+        className="w-full h-14 bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white text-base"
         onClick={onNext}
       >
-        <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>casino</span>
+        <span className="material-symbols-outlined text-base mr-2" style={{ fontVariationSettings: "'FILL' 1" }}>casino</span>
         Spin the "{selectedCategory}" Wheel!
-      </motion.button>
+      </Button>
     </motion.div>
   );
 }
