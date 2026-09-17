@@ -1,0 +1,12 @@
+{
+  "legacyWatch": true,
+  "interval": 250,
+  "watch": [
+    "server.js",
+    "socket.js",
+    "config/",
+    "routes/",
+    ".env"
+  ],
+  "ext": "js,mjs,json"
+}
