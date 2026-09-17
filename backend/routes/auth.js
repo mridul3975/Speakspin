@@ -93,26 +93,40 @@ router.post('/google', async (req, res) => {
 
     const { sub: googleId, email, name, picture } = profile;
 
-    const dbPool = getPool();
+    let user = null;
 
-    // Find user or create if new in PostgreSQL
-    const userRes = await dbPool.query('SELECT * FROM users WHERE google_id = $1', [googleId]);
-    let user = userRes.rows[0];
+    try {
+      const dbPool = getPool();
 
-    if (!user) {
-      const insertRes = await dbPool.query(
-        'INSERT INTO users (google_id, email, name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
-        [googleId, email, name, picture]
-      );
-      user = insertRes.rows[0];
-      console.log(`Created new user account in PostgreSQL: ${email}`);
-    } else {
-      // Update details in case user changed picture or name in Google
-      const updateRes = await dbPool.query(
-        'UPDATE users SET name = $1, picture = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
-        [name, picture, user.id]
-      );
-      user = updateRes.rows[0];
+      // Find user or create if new in PostgreSQL
+      const userRes = await dbPool.query('SELECT * FROM users WHERE google_id = $1', [googleId]);
+      user = userRes.rows[0];
+
+      if (!user) {
+        const insertRes = await dbPool.query(
+          'INSERT INTO users (google_id, email, name, picture) VALUES ($1, $2, $3, $4) RETURNING *',
+          [googleId, email, name, picture]
+        );
+        user = insertRes.rows[0];
+        console.log(`Created new user account in PostgreSQL: ${email}`);
+      } else {
+        // Update details in case user changed picture or name in Google
+        const updateRes = await dbPool.query(
+          'UPDATE users SET name = $1, picture = $2, updated_at = NOW() WHERE id = $3 RETURNING *',
+          [name, picture, user.id]
+        );
+        user = updateRes.rows[0];
+      }
+    } catch (dbError) {
+      console.warn('Database unavailable during login, using in-memory session:', dbError.message);
+      // Fallback: create in-memory user when DB is down
+      user = {
+        id: `mem_${googleId}`,
+        google_id: googleId,
+        email: email,
+        name: name,
+        picture: picture,
+      };
     }
 
     const sessionToken = generateToken(user.id);
@@ -150,6 +164,16 @@ router.get('/me', authMiddleware, async (req, res) => {
       picture: user.picture,
     });
   } catch (error) {
+    // If DB is down but user has a valid JWT, return minimal profile
+    if (req.userId) {
+      console.warn('Database unavailable for /me, returning minimal profile for userId:', req.userId);
+      return res.json({
+        id: req.userId,
+        email: 'offline@speakspin.app',
+        name: 'SpeakSpin User',
+        picture: null,
+      });
+    }
     console.error('Fetch profile error:', error);
     res.status(500).json({ error: 'Internal server error resolving user session' });
   }
