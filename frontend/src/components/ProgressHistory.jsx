@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import FeedbackDashboard from './FeedbackDashboard';
 
@@ -77,21 +78,21 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
     >
       {/* Header */}
       <div className="history-header">
-        <button className="btn-back-ghost" onClick={onBack}>
+        <Button variant="ghost" className="text-white hover:text-white hover:bg-[#1a1a1a] rounded-none px-2 font-black" onClick={onBack}>
           <span className="material-symbols-outlined text-sm">arrow_back</span> BACK
-        </button>
+        </Button>
         <h2 className="history-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span className="material-symbols-outlined text-3xl">trending_up</span> YOUR PROGRESS
         </h2>
         {totalSessions > 0 && (
-          <button 
-            className="btn btn-secondary" 
+          <Button 
+            variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12" 
             onClick={handleClear} 
             title="Clear All History"
             style={{ padding: '0.5rem 1rem', borderColor: 'var(--accent-coral)' }}
           >
             <span className="material-symbols-outlined text-sm" style={{ color: 'var(--accent-coral)' }}>delete</span>
-          </button>
+          </Button>
         )}
       </div>
 
@@ -100,9 +101,9 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
           <span className="material-symbols-outlined text-5xl mb-4">mic_off</span>
           <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: '1.25rem', textTransform: 'uppercase', marginBottom: '0.5rem' }}>No sessions yet</h3>
           <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Start practicing to track your public speaking improvements over time!</p>
-          <button className="btn btn-primary" onClick={onBack}>
+          <Button className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12" onClick={onBack}>
             START PRACTICE
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -172,13 +173,13 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
                     <div className="history-item-score-box">
                       {session.overallScore}
                     </div>
-                    <button
-                      className="btn btn-secondary"
+                    <Button
+                      variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12"
                       style={{ padding: '0.25rem 0.6rem', fontSize: '0.65rem', fontWeight: 900, minWidth: '85px', border: '1px solid currentColor' }}
                       onClick={() => setSelectedSession(session)}
                     >
                       DETAILS
-                    </button>
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -207,13 +208,13 @@ export function ProgressHistory({ history = [], onBack, onClearHistory }) {
             }}
           >
             <div style={{ width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'flex-end', marginBottom: '1.25rem' }}>
-              <button
-                className="btn btn-secondary"
+              <Button
+                variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12"
                 onClick={() => setSelectedSession(null)}
                 style={{ borderColor: 'var(--accent-coral)', color: 'var(--accent-coral)', fontWeight: 900, fontSize: '0.8rem', padding: '0.5rem 1.25rem' }}
               >
                 ❌ CLOSE LOG
-              </button>
+              </Button>
             </div>
             
             <div style={{ width: '100%', maxWidth: '800px', backgroundColor: '#000000', border: '4px solid #ffffff', padding: '1.5rem', boxShadow: '8px 8px 0px 0px #ffffff' }}>

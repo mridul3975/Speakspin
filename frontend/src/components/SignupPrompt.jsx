@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function SignupPrompt({ onLoginSuccess, onLoginError, onSkip }) {
   const containerVariants = {
@@ -25,22 +27,17 @@ export function SignupPrompt({ onLoginSuccess, onLoginError, onSkip }) {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        style={{
-          border: '3px solid #ffffff',
-          backgroundColor: '#0a0101',
-          padding: '2.5rem 2rem',
-          boxShadow: '8px 8px 0px 0px var(--accent-coral)',
-          textAlign: 'center',
-          borderRadius: '0px'
-        }}
+        className="w-full max-w-[600px] mx-auto mt-6"
       >
-        <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🏆</span>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.6rem', textTransform: 'uppercase', color: 'var(--accent-coral)', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-          Claim Your permanent Profile
-        </h2>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '2.5rem' }}>
-          Don't lose your progress! Sign up now to save your ratings and unlock competitive public speaking features.
-        </p>
+        <Card className="bg-[#0a0101] border-4 border-white rounded-none shadow-[8px_8px_0px_0px_#ff5555] p-10 text-center">
+          <CardContent className="p-0">
+            <span style={{ fontSize: '3rem', display: 'block', marginBottom: '1rem' }}>🏆</span>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: '1.6rem', textTransform: 'uppercase', color: 'var(--accent-coral)', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+              Claim Your permanent Profile
+            </h2>
+            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '2.5rem' }}>
+              Don't lose your progress! Sign up now to save your ratings and unlock competitive public speaking features.
+            </p>
 
         {/* Benefits Grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.25rem', textAlign: 'left', marginBottom: '2.5rem' }}>
@@ -74,23 +71,15 @@ export function SignupPrompt({ onLoginSuccess, onLoginError, onSkip }) {
         </div>
 
         {/* Skip button */}
-        <button
+        <Button
+          variant="link"
           onClick={onSkip}
-          style={{
-            border: 'none',
-            background: 'none',
-            color: '#888888',
-            fontSize: '0.75rem',
-            fontWeight: 800,
-            textTransform: 'uppercase',
-            cursor: 'pointer',
-            letterSpacing: '0.05em'
-          }}
-          onMouseEnter={(e) => e.currentTarget.style.color = '#ffffff'}
-          onMouseLeave={(e) => e.currentTarget.style.color = '#888888'}
+          className="text-[#888888] text-xs font-black uppercase tracking-widest hover:text-white no-underline hover:no-underline"
         >
           Skip & Lose Progress
-        </button>
+        </Button>
+          </CardContent>
+        </Card>
       </motion.div>
     </div>
   );
