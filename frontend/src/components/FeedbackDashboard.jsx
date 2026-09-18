@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ScoreCircle from './ScoreCircle';
 import CategoryCard from './CategoryCard';
 import { translateTopic } from '../utils/api';
+import { Button } from "@/components/ui/button";
 
 export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome, selectedLanguage }) {
   const [activeTab, setActiveTab] = useState('overview');
@@ -91,13 +92,13 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome, 
       {/* Header */}
       <div className="dashboard-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {onGoHome && (
-          <button 
-            className="btn-back-ghost" 
+          <Button 
+            variant="ghost" 
             onClick={onGoHome}
-            style={{ marginBottom: '0.75rem', paddingLeft: 0 }}
+            className="text-white hover:text-white hover:bg-[#1a1a1a] rounded-none px-2 font-black mb-3 -ml-2"
           >
-            <span className="material-symbols-outlined text-sm">arrow_back</span> BACK
-          </button>
+            <span className="material-symbols-outlined text-sm mr-1">arrow_back</span> BACK
+          </Button>
         )}
         <span className="dashboard-label">YOUR SPEECH ANALYSIS</span>
         <h2 className="dashboard-topic" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
@@ -311,10 +312,10 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome, 
               <div className="exemplar-card">
                 <div className="exemplar-card-header">
                   <h3>🏆 Perfect 100/100 Speech</h3>
-                  <button className="btn btn-secondary btn-copy-exemplar" onClick={handleCopy}>
-                    <span className="material-symbols-outlined text-sm">{copied ? 'check' : 'content_copy'}</span>
+                  <Button variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] h-10 px-4" onClick={handleCopy}>
+                    <span className="material-symbols-outlined text-sm mr-2">{copied ? 'check' : 'content_copy'}</span>
                     <span>{copied ? 'Copied!' : 'Copy Speech'}</span>
-                  </button>
+                  </Button>
                 </div>
                 <div className="exemplar-text-container">
                   <p className="exemplar-text">
@@ -329,13 +330,13 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome, 
 
       {/* Navigation Buttons */}
       <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', marginTop: '1rem' }}>
-        <button className="btn btn-primary" onClick={onPracticeAgain}>
-          <span className="material-symbols-outlined text-sm">replay</span> Practice Again
-        </button>
+        <Button onClick={onPracticeAgain} className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12">
+          <span className="material-symbols-outlined text-sm mr-2">replay</span> Practice Again
+        </Button>
 
-        <button className="btn btn-secondary" onClick={onGoHome}>
-          <span className="material-symbols-outlined text-sm">home</span> Home
-        </button>
+        <Button variant="outline" onClick={onGoHome} className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12">
+          <span className="material-symbols-outlined text-sm mr-2">home</span> Home
+        </Button>
       </div>
     </div>
   );
