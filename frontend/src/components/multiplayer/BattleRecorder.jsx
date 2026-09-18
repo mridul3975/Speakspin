@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Button } from "@/components/ui/button";
 import { motion } from 'framer-motion';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../../hooks/useAudioLevel';
@@ -8,12 +9,15 @@ import { transcribeAudio, translateTopic } from '../../utils/api';
 export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaking, onFinishSpeech, selectedLanguage }) {
   const [hasStarted, setHasStarted] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(duration);
+  const targetDuration = Number(duration) || 60;
+  const [timeLeft, setTimeLeft] = useState(targetDuration);
   const [actualDuration, setActualDuration] = useState(0);
   const [editableTranscript, setEditableTranscript] = useState('');
   const [translatedTopic, setTranslatedTopic] = useState(topic);
   const hasSubmittedRef = useRef(false);
   const actualDurationRef = useRef(0);
+  const isDeliberatelyStoppingRef = useRef(false);
+  const hasStartedRecordingRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -31,6 +35,12 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     };
   }, [topic, selectedLanguage]);
 
+  const timerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const localStreamRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const latestTranscriptRef = useRef('');
+
   const {
     transcript,
     isSupported,
@@ -38,16 +48,12 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     stopListening,
   } = useSpeechRecognition();
 
-  const { audioLevels } = useAudioLevel(true);
-
-  const timerRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const localStreamRef = useRef(null);
-  const audioChunksRef = useRef([]);
+  const { audioLevels } = useAudioLevel(hasStarted, localStreamRef.current);
 
   // Sync transcription live
   useEffect(() => {
     if (transcript) {
+      latestTranscriptRef.current = transcript;
       setEditableTranscript(transcript);
     }
   }, [transcript]);
@@ -62,69 +68,114 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
     }
   }, [timeLeft]);
 
-  // Start recording on mount
+  // Component mount cleanup
   useEffect(() => {
+    // Reset refs on mount to handle React StrictMode re-mounting cleanly
+    hasSubmittedRef.current = false;
+    isDeliberatelyStoppingRef.current = false;
+    audioChunksRef.current = [];
+    hasStartedRecordingRef.current = false;
+
     return () => {
-      stopRecordingSession();
+      if (timerRef.current) clearInterval(timerRef.current);
+      try {
+        stopListening();
+      } catch (e) {}
+      if (mediaRecorderRef.current) {
+        try {
+          mediaRecorderRef.current.onstop = null; // Prevent onstop from firing during cleanup
+          if (mediaRecorderRef.current.state !== 'inactive') {
+            mediaRecorderRef.current.stop();
+          }
+        } catch (e) {}
+      }
+      stopLocalStream();
     };
   }, []);
 
-  const startRecordingSession = async () => {
+  const startRecordingSession = () => {
+    if (hasSubmittedRef.current || isDeliberatelyStoppingRef.current || hasStartedRecordingRef.current) return;
+    hasStartedRecordingRef.current = true;
+    setHasStarted(true);
     setEditableTranscript('');
+    latestTranscriptRef.current = '';
     audioChunksRef.current = [];
-    hasSubmittedRef.current = false;
 
-    try {
-      startListening(selectedLanguage);
-    } catch (e) {
-      console.warn('Speech recognition warning:', e);
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      localStreamRef.current = stream;
-
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
-        ? 'audio/webm' 
-        : 'audio/mp4';
-
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = mediaRecorder;
-
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data && event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(audioChunksRef.current, { type: mimeType });
-        stopLocalStream();
-        handleAutoSubmit(blob);
-      };
-
-      mediaRecorder.start(250);
-    } catch (err) {
-      console.warn('Microphone hardware denied, falling back to Web Speech/Textarea only:', err);
-    }
-
-    // Set duration countdown timer
-    setTimeLeft(duration);
+    // Set duration countdown timer immediately - do not block on mic access!
+    setTimeLeft(targetDuration);
     setActualDuration(0);
     actualDurationRef.current = 0;
 
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       actualDurationRef.current += 1;
       setActualDuration(actualDurationRef.current);
-      if (actualDurationRef.current >= duration) {
+      if (actualDurationRef.current >= targetDuration) {
         clearInterval(timerRef.current);
         stopRecordingSession();
       }
       setTimeLeft(prev => Math.max(0, prev - 1));
     }, 1000);
+
+    // Initialize MediaRecorder stream and Web Speech recognition cleanly
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        if (hasSubmittedRef.current || isDeliberatelyStoppingRef.current) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
+        localStreamRef.current = stream;
+
+        const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
+          ? 'audio/webm' 
+          : 'audio/mp4';
+
+        const mediaRecorder = new MediaRecorder(stream, { mimeType });
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = (event) => {
+          if (event.data && event.data.size > 0) {
+            audioChunksRef.current.push(event.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunksRef.current, { type: mimeType });
+          stopLocalStream();
+          if (isDeliberatelyStoppingRef.current) {
+            handleAutoSubmit(blob);
+          }
+        };
+
+        mediaRecorder.start(250);
+        try {
+          startListening(selectedLanguage);
+        } catch (e) {
+          console.warn('Speech recognition warning:', e);
+        }
+      }).catch((err) => {
+        console.warn('Microphone stream access warning, falling back to Web Speech only:', err);
+        try {
+          startListening(selectedLanguage);
+        } catch (e) {
+          console.warn('Speech recognition warning:', e);
+        }
+      });
+    } else {
+      try {
+        startListening(selectedLanguage);
+      } catch (e) {
+        console.warn('Speech recognition warning:', e);
+      }
+    }
   };
 
   const stopRecordingSession = () => {
+    if (hasSubmittedRef.current || isDeliberatelyStoppingRef.current) return;
+    isDeliberatelyStoppingRef.current = true;
+
+    if (timerRef.current) clearInterval(timerRef.current);
+
     try {
       stopListening();
     } catch (e) {}
@@ -138,14 +189,12 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
         console.error(e);
       }
     }
-    if (timerRef.current) clearInterval(timerRef.current);
 
     if (!hasMediaRecorder) {
       handleAutoSubmit(null);
     } else {
       setTimeout(() => {
         if (!hasSubmittedRef.current) {
-          console.warn('Timeout fallback triggered: submitting battle score via transcript.');
           handleAutoSubmit(null);
         }
       }, 1500);
@@ -160,27 +209,33 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
   };
 
   const handleAutoSubmit = async (blob) => {
+    console.log('[DEBUG-RECORDER] handleAutoSubmit called! blob:', blob);
     if (hasSubmittedRef.current) return;
     hasSubmittedRef.current = true;
 
-    let finalTranscript = editableTranscript.trim();
+    let finalTranscript = '';
     setIsTranscribing(true);
 
     try {
-      if (blob && blob.size > 8000 && actualDurationRef.current >= 2) {
+      if (blob && blob.size > 2000 && actualDurationRef.current >= 2) {
         const whisperHint = selectedLanguage ? selectedLanguage.split('-')[0] : '';
         const response = await transcribeAudio(blob, whisperHint);
-        if (response && response.text) {
-          finalTranscript = response.text;
+        if (response && response.text && response.text.trim()) {
+          finalTranscript = response.text.trim();
         }
       }
     } catch (err) {
-      console.warn('Whisper transcription failed, falling back to Web Speech:', err);
+      console.warn('Whisper transcription note (falling back to Web Speech):', err.message);
     } finally {
       setIsTranscribing(false);
     }
 
-    const finalCleanText = finalTranscript.trim();
+    // Fallback to live Web Speech transcript if Whisper had no text
+    if (!finalTranscript) {
+      finalTranscript = latestTranscriptRef.current || editableTranscript;
+    }
+
+    const finalCleanText = (finalTranscript || '').trim();
     const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
 
     onFinishSpeech({
@@ -213,12 +268,12 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4', marginBottom: '2rem' }}>
             Tap the button below to initialize your microphone stream and start speaking on your topic!
           </p>
-          <button
+          <Button
             onClick={() => {
               setHasStarted(true);
               startRecordingSession();
             }}
-            className="btn btn-primary"
+            className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12"
             style={{
               width: '100%',
               padding: '1.1rem',
@@ -230,7 +285,7 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
             }}
           >
             🔥 START SPEAKING!
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -373,13 +428,13 @@ export function BattleRecorder({ user, opponent, topic, duration, opponentSpeaki
 
       {/* Stop early panel */}
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
-        <button
+        <Button
           onClick={stopRecordingSession}
-          className="btn btn-secondary"
+          variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12"
           style={{ borderColor: 'var(--accent-coral)', color: 'var(--accent-coral)' }}
         >
           <span className="material-symbols-outlined text-sm">stop</span> SUBMIT EARLY
-        </button>
+        </Button>
       </div>
 
       {/* Responsive mobile media queries */}
