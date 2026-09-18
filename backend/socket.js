@@ -43,11 +43,7 @@ export function initSocket(httpServer) {
   const io = new Server(httpServer, {
     cors: {
       origin: (origin, callback) => {
-        const allowed = [
-          'http://localhost:5173',
-          'https://speakspin-nine.vercel.app'
-        ];
-        if (!origin || allowed.includes(origin) || origin.endsWith('.vercel.app')) {
+        if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:') || origin.endsWith('.vercel.app') || origin === 'https://speakspin-nine.vercel.app') {
           callback(null, true);
         } else {
           callback(new Error('Not allowed by CORS'));
@@ -374,6 +370,9 @@ function createBotRoom(player, botProfile, io) {
 }
 
 function startBattle(room, io) {
+  if (!room || room.status !== 'waiting_ready') {
+    return;
+  }
   room.status = 'topic_reveal';
 
   io.to(room.roomId).emit('battle_starting', {
@@ -388,6 +387,7 @@ function startBattle(room, io) {
     count--;
     if (count < 0) {
       clearInterval(interval);
+      if (room.status !== 'topic_reveal') return;
       room.status = 'recording';
       io.to(room.roomId).emit('start_recording', { startAt: Date.now() });
 
@@ -416,7 +416,7 @@ The speaker should sound like: ${botPlayer.botProfile.personality}.
 Return ONLY the transcript text itself. Length: ~90-130 words.`;
 
         const response = await client.chat.completions.create({
-          model: "llama-3.3-70b-versatile",
+          model: "openai/gpt-oss-20b",
           messages: [{ role: "user", content: prompt }],
           temperature: 0.7,
         });
@@ -577,7 +577,7 @@ WPM: ${wpm}
 Return JSON with "overallScore" (1-100), "categories" (confidence, fluency, relevance, vocabulary, structure, clarity, engagement, timeManagement with score/feedback), "strengths" (string[]), "improvements" (string[]), and "overallFeedback" (string).`;
 
       const response = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
