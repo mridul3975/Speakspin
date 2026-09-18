@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;700;800;900&display=swap');
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --bg-app: #000000;
@@ -61,67 +67,25 @@ body {
   border: var(--border-thin) !important;
 }
 
-/* --- BUTTONS --- */
-.btn {
-  display: inline-flex;
+.google-signin-top-right {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-family: var(--font-heading);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-size: 0.8rem;
-  padding: 0.75rem 1.5rem;
-  cursor: pointer;
-  transition: all 0.1s ease-in-out;
-  border: var(--border) !important;
-  box-shadow: var(--shadow);
+  justify-content: flex-end;
 }
 
-.btn-primary {
-  background-color: var(--text-primary);
-  color: var(--bg-card);
+.google-signin-top-right > div {
+  border: 2px solid #ffffff;
+  box-shadow: 3px 3px 0px #ffffff;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.btn-primary:hover {
-  transform: translate(4px, 4px);
-  box-shadow: none;
-  background-color: var(--text-primary);
-  color: var(--bg-card);
+.google-signin-top-right > div:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px #ffffff;
 }
 
-.btn-secondary {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-}
 
-.btn-secondary:hover {
-  transform: translate(4px, 4px);
-  box-shadow: none;
-  background-color: var(--bg-card-alt);
-}
-
-.btn-back-ghost {
-  font-family: var(--font-heading);
-  font-weight: 800;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  color: var(--text-primary);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  transition: opacity 0.2s ease;
-}
-
-.btn-back-ghost:hover {
-  opacity: 0.8;
-  text-decoration: underline;
-}
 
 /* --- LANDING SCREEN --- */
 .landing-container {
@@ -182,18 +146,7 @@ body {
   }
 }
 
-.landing-card {
-  background-color: var(--bg-card);
-  border: var(--border) !important;
-  padding: 1.5rem 1.25rem;
-  text-align: center;
-  transition: all 0.15s ease-in-out;
-}
 
-.landing-card:hover {
-  background-color: var(--text-primary);
-  color: var(--bg-card);
-}
 
 .landing-card-icon {
   font-size: 2.25rem;
@@ -706,40 +659,7 @@ body {
   }
 }
 
-/* Category Card */
-.category-card {
-  border: var(--border-thin) !important;
-  padding: 1rem;
-  background-color: var(--bg-card);
-}
 
-.category-card h4 {
-  font-family: var(--font-heading);
-  font-size: 0.8rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-}
-
-.category-bar-container {
-  height: 6px;
-  background-color: var(--bg-card-alt);
-  width: 100%;
-  margin-bottom: 0.75rem;
-  overflow: hidden;
-  border: 1px solid var(--text-primary);
-}
-
-.category-bar-fill {
-  height: 100%;
-  background-color: var(--text-primary);
-}
-
-.category-desc {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-}
 
 /* Overview Tab layout */
 .tab-view-overview {
@@ -1331,5 +1251,88 @@ body {
     font-size: 1.5rem;
     padding: 0.6rem 0.8rem;
     border-width: 2px;
+  }
+}
+
+@layer base {
+  .theme {
+    --font-heading: var(--font-sans);
+    --font-sans: 'Geist Variable', sans-serif;
+  }
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.205 0 0);
+    --primary-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.97 0 0);
+    --secondary-foreground: oklch(0.205 0 0);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-primary: oklch(0.205 0 0);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --sidebar-ring: oklch(0.708 0 0);
+  }
+  .dark {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.922 0 0);
+    --primary-foreground: oklch(0.205 0 0);
+    --secondary: oklch(0.269 0 0);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.556 0 0);
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
   }
 }
