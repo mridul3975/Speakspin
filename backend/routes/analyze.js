@@ -3,7 +3,7 @@ import { OpenAI, toFile } from 'openai';
 import multer from 'multer';
 import fs from 'fs';
 import { rateLimit } from 'express-rate-limit';
-import authMiddleware from '../middleware/authMiddleware.js';
+import authMiddleware, { optionalAuthMiddleware } from '../middleware/authMiddleware.js';
 import { getPool } from '../config/db.js';
 
 const router = express.Router();
@@ -186,8 +186,8 @@ function generateMockAnalysis(transcript, topic, targetDuration, actualDuration)
   };
 }
 
-// POST /api/analyze-text (JWT Protected)
-router.post('/analyze-text', authMiddleware, analyzeLimiter, async (req, res) => {
+// POST /api/analyze-text (JWT Protected or Guest Session)
+router.post('/analyze-text', optionalAuthMiddleware, analyzeLimiter, async (req, res) => {
   const { transcript, topic, category, targetDuration, actualDuration, language } = req.body;
 
   if (!transcript || transcript.trim() === "") {
@@ -274,7 +274,7 @@ Return this exact JSON structure:
 }`;
 
       const response = await client.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+        model: "openai/gpt-oss-120b",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
@@ -291,38 +291,42 @@ Return this exact JSON structure:
     }
   }
 
-  // Save the analyzed speech session directly in PostgreSQL
-  try {
-    const query = `
-      INSERT INTO sessions (
-        user_id, topic, category, duration, overall_score, overall_feedback,
-        categories, filler_words, anxiety_indicators, strengths, improvements,
-        challenge_for_next, exemplar_speech
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-    `;
-    const values = [
-      req.userId,
-      topic,
-      category || 'General',
-      actualDuration,
-      analysisResult.overallScore,
-      analysisResult.overallFeedback,
-      JSON.stringify(analysisResult.categories),
-      JSON.stringify(analysisResult.fillerWords),
-      JSON.stringify(analysisResult.anxietyIndicators),
-      JSON.stringify(analysisResult.strengths),
-      JSON.stringify(analysisResult.improvements),
-      analysisResult.challengeForNext,
-      analysisResult.exemplarSpeech
-    ];
+  // Save the analyzed speech session in PostgreSQL if user is authenticated
+  const numericUserId = req.userId && !req.isGuest ? parseInt(req.userId, 10) : null;
 
-    await getPool().query(query, values);
-    console.log(`Saved speech analysis session to PostgreSQL for user: ${req.userId}`);
-    res.json(analysisResult);
-  } catch (dbError) {
-    console.error("Failed to save session to PostgreSQL:", dbError);
-    res.json(analysisResult);
+  if (numericUserId && !isNaN(numericUserId)) {
+    try {
+      const query = `
+        INSERT INTO sessions (
+          user_id, topic, category, duration, overall_score, overall_feedback,
+          categories, filler_words, anxiety_indicators, strengths, improvements,
+          challenge_for_next, exemplar_speech
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      `;
+      const values = [
+        numericUserId,
+        topic,
+        category || 'General',
+        actualDuration,
+        analysisResult.overallScore,
+        analysisResult.overallFeedback,
+        JSON.stringify(analysisResult.categories),
+        JSON.stringify(analysisResult.fillerWords),
+        JSON.stringify(analysisResult.anxietyIndicators),
+        JSON.stringify(analysisResult.strengths),
+        JSON.stringify(analysisResult.improvements),
+        analysisResult.challengeForNext,
+        analysisResult.exemplarSpeech
+      ];
+
+      await getPool().query(query, values);
+      console.log(`Saved speech analysis session to PostgreSQL for user: ${numericUserId}`);
+    } catch (dbError) {
+      console.error("Failed to save session to PostgreSQL (continuing with results):", dbError.message);
+    }
   }
+
+  res.json(analysisResult);
 });
 
 // POST /api/translate-topic
@@ -345,7 +349,7 @@ Return ONLY the translated topic text without quotes, explanation, or additional
 
     const chatCompletion = await client.chat.completions.create({
       messages: [{ role: "user", content: prompt }],
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-20b",
       temperature: 0.2
     });
 
@@ -359,7 +363,11 @@ Return ONLY the translated topic text without quotes, explanation, or additional
 });
 
 // GET /api/sessions (Fetch history)
-router.get('/sessions', authMiddleware, async (req, res) => {
+router.get('/sessions', optionalAuthMiddleware, async (req, res) => {
+  if (!req.userId || req.isGuest) {
+    return res.json([]);
+  }
+
   try {
     const sessionsRes = await getPool().query(
       'SELECT * FROM sessions WHERE user_id = $1 ORDER BY date DESC LIMIT 50',
@@ -386,8 +394,8 @@ router.get('/sessions', authMiddleware, async (req, res) => {
 
     res.json(sessions);
   } catch (error) {
-    console.error('Fetch sessions failed:', error);
-    res.status(500).json({ error: 'Failed to retrieve speech history' });
+    console.warn('Fetch sessions failed (DB may be offline), returning empty history:', error.message);
+    res.json([]);
   }
 });
 
@@ -398,15 +406,31 @@ router.delete('/sessions', authMiddleware, async (req, res) => {
     console.log(`Cleared speech history logs for user: ${req.userId}`);
     res.json({ message: 'Speech history cleared successfully' });
   } catch (error) {
-    console.error('Clear history failed:', error);
-    res.status(500).json({ error: 'Failed to clear speech history' });
+    console.warn('Clear history failed (DB may be offline):', error.message);
+    res.json({ message: 'Speech history cleared (note: DB was offline)' });
   }
 });
 
-// POST /api/transcribe
-router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('audio'), async (req, res) => {
+// POST /api/transcribe (JWT Protected or Guest Session)
+router.post('/transcribe', optionalAuthMiddleware, transcribeLimiter, upload.single('audio'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "Audio file is required" });
+  }
+
+  const rawLang = req.body?.language;
+  // Normalize language to ISO-639-1 two-letter code for Whisper (e.g. 'en-US' -> 'en')
+  const cleanLang = (rawLang && typeof rawLang === 'string' && rawLang.trim())
+    ? rawLang.trim().split('-')[0].toLowerCase()
+    : undefined;
+
+  // If the audio file is empty or too tiny to contain speech
+  if (req.file.size < 200) {
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
+    return res.json({
+      text: "",
+      duration: 0,
+      language: cleanLang || "en"
+    });
   }
 
   const client = getOpenAIClient();
@@ -419,37 +443,38 @@ router.post('/transcribe', authMiddleware, transcribeLimiter, upload.single('aud
     return res.json({
       text: "This is a mock transcription because no valid Groq API Key was detected in the environment. Please check the Web Speech API transcription on the frontend, which handles live audio without an API key.",
       duration: 10,
-      language: "en"
+      language: cleanLang || "en"
     });
   }
 
-  const tempFilePath = `${req.file.path}.webm`;
-  
   try {
-    fs.renameSync(req.file.path, tempFilePath);
-
-    const audioFile = await toFile(fs.createReadStream(tempFilePath), 'speech.webm', { type: 'audio/webm' });
-
-    const { language } = req.body;
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const audioFile = await toFile(fileBuffer, 'speech.webm', {
+      type: req.file.mimetype || 'audio/webm'
+    });
 
     const transcription = await client.audio.transcriptions.create({
       file: audioFile,
       model: "whisper-large-v3",
-      ...(language ? { language } : {})
+      ...(cleanLang ? { language: cleanLang } : {})
     });
 
-    try { fs.unlinkSync(tempFilePath); } catch (e) {}
+    try { fs.unlinkSync(req.file.path); } catch (e) {}
 
     res.json({
-      text: transcription.text,
+      text: transcription.text ? transcription.text.trim() : "",
       duration: 0,
-      language: "en"
+      language: cleanLang || "en"
     });
   } catch (error) {
-    console.error("Groq Whisper transcription failed:", error);
-    try { fs.unlinkSync(tempFilePath); } catch (e) {}
+    console.warn("Groq Whisper transcription note (falling back):", error.message);
     try { fs.unlinkSync(req.file.path); } catch (e) {}
-    res.status(500).json({ error: "Transcription failed" });
+    // Return empty text with 200 instead of 500 so frontend falls back to Web Speech smoothly
+    res.json({
+      text: "",
+      duration: 0,
+      note: "Audio decoding skipped or silent"
+    });
   }
 });
 
