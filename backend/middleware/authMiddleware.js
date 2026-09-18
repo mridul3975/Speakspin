@@ -22,4 +22,29 @@ export function authMiddleware(req, res, next) {
   }
 }
 
+export function optionalAuthMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    req.userId = null;
+    req.isGuest = true;
+    return next();
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const secret = process.env.JWT_SECRET || 'speakspin-jwt-fallback-secret-key';
+    const decoded = jwt.verify(token, secret);
+    req.userId = decoded.userId;
+    req.isGuest = false;
+    next();
+  } catch (error) {
+    // If token is expired or invalid, still allow guest session for practice
+    req.userId = null;
+    req.isGuest = true;
+    next();
+  }
+}
+
 export default authMiddleware;
