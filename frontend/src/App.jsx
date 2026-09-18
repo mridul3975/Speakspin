@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { GoogleLogin } from '@react-oauth/google';
 import LandingScreen from './components/LandingScreen';
 import TimerSelector from './components/TimerSelector';
 import SpinWheel from './components/SpinWheel';
@@ -179,7 +180,7 @@ export function App() {
     const currentSocket = connect(API_URL);
     if (isGuestSession) {
       currentSocket.emit('find_match', {
-        playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+        playerName: localStorage.getItem('speakspin-player-name') || user?.name || 'Guest Speaker',
         avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
         rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000,
         language: selectedLanguage
@@ -259,7 +260,17 @@ export function App() {
   const handleSignOut = () => {
     localStorage.removeItem('speakspin-token');
     setAuthToken(null);
-    setUser(null);
+    const guestName = localStorage.getItem('speakspin-player-name') || 'SPEAKER_' + Math.floor(1000 + Math.random() * 9000);
+    const guestAvatar = localStorage.getItem('speakspin-player-avatar') || '🦁';
+    const guestRating = localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000;
+    setUser({
+      id: 'guest',
+      name: guestName,
+      playerName: guestName,
+      avatar: guestAvatar,
+      rating: guestRating,
+      isGuest: true
+    });
     setHistory([]);
     navigateTo(SCREENS.LANDING);
   };
@@ -285,8 +296,14 @@ export function App() {
 
       setAnalysisResults(result);
 
-      const sessions = await fetchHistory();
-      setHistory(sessions);
+      if (!isGuestSession) {
+        try {
+          const sessions = await fetchHistory();
+          setHistory(sessions);
+        } catch (histErr) {
+          console.warn('History sync note:', histErr.message);
+        }
+      }
 
       navigateTo(SCREENS.FEEDBACK);
     } catch (error) {
@@ -332,26 +349,64 @@ export function App() {
     );
   }
 
+  // Determine if on an intensive active battle / speech recording screen where top header should be hidden
+  const isGameplayScreen = [
+    SCREENS.RECORDER,
+    SCREENS.ANALYZING,
+    SCREENS.BATTLE_MATCHMAKING,
+    SCREENS.BATTLE_OPPONENT_FOUND,
+    SCREENS.BATTLE_TOPIC_REVEAL,
+    SCREENS.BATTLE_RECORDING,
+    SCREENS.BATTLE_ANALYZING
+  ].includes(screen);
+
   return (
     <div className="app-container">
-      {/* User Session Profile Header */}
-      {user && !isGuestSession && (
+      {/* Top Header Bar */}
+      {!isGameplayScreen && (
         <div className="app-user-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {user.picture ? (
-              <img src={user.picture} alt={user.name} style={{ width: '32px', height: '32px', border: '1px solid #000000' }} />
-            ) : (
-              <div style={{ width: '32px', height: '32px', border: '1px solid #000000', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800 }}>SP</div>
-            )}
-            <div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', display: 'block', lineHeight: 1.2, fontWeight: 700, textTransform: 'uppercase' }}>Welcome,</span>
-              <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>{user.name}</span>
-            </div>
-          </div>
-          
-          <button onClick={handleSignOut} className="btn-back-ghost" style={{ fontSize: '0.8rem', color: 'var(--accent-coral)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}>
-            <span className="material-symbols-outlined text-sm">logout</span> LOG OUT
-          </button>
+          {user && !isGuestSession ? (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                {user.picture ? (
+                  <img src={user.picture} alt={user.name} style={{ width: '34px', height: '34px', border: '2px solid #ffffff', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '34px', height: '34px', border: '2px solid #ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.85rem', fontWeight: 800, background: '#111111' }}>SP</div>
+                )}
+                <div>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', display: 'block', lineHeight: 1.2, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Logged in as</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>{user.name}</span>
+                </div>
+              </div>
+              
+              <button onClick={handleSignOut} className="btn-back-ghost" style={{ fontSize: '0.8rem', color: 'var(--accent-coral)', display: 'flex', alignItems: 'center', gap: '0.25rem', fontWeight: 700 }}>
+                <span className="material-symbols-outlined text-sm">logout</span> LOG OUT
+              </button>
+            </>
+          ) : (
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                <div style={{ width: '34px', height: '34px', border: '2px solid #333333', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', background: '#111111' }}>
+                  {user?.avatar || '🦁'}
+                </div>
+                <div>
+                  <span style={{ fontSize: '0.65rem', color: '#888888', display: 'block', lineHeight: 1.2, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Playing as</span>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>{user?.name || 'Guest'}</span>
+                </div>
+              </div>
+
+              <div className="google-signin-top-right">
+                <GoogleLogin
+                  onSuccess={handleLoginSuccess}
+                  onError={handleLoginError}
+                  theme="filled_black"
+                  shape="rectangular"
+                  size="medium"
+                  text="signin_with"
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
 
@@ -519,6 +574,7 @@ export function App() {
             style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
           >
             <Matchmaking
+              isConnected={isConnected}
               rating={localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000}
               onCancel={() => {
                 socket.emit('cancel_search');
@@ -550,7 +606,7 @@ export function App() {
           >
             <OpponentFound
               user={{
-                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                playerName: localStorage.getItem('speakspin-player-name') || user?.name || 'Guest Speaker',
                 avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
                 rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
               }}
@@ -592,7 +648,7 @@ export function App() {
           >
             <BattleRecorder
               user={{
-                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                playerName: localStorage.getItem('speakspin-player-name') || user?.name || 'Guest Speaker',
                 avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
               }}
               opponent={battleOpponent}
@@ -637,7 +693,7 @@ export function App() {
           >
             <BattleResults
               user={{
-                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                playerName: localStorage.getItem('speakspin-player-name') || user?.name || 'Guest Speaker',
                 avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
                 rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
               }}
@@ -655,7 +711,7 @@ export function App() {
                   navigateTo(SCREENS.SIGNUP_PROMPT);
                 } else {
                   socket.emit('find_match', {
-                    playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                    playerName: localStorage.getItem('speakspin-player-name') || user?.name || 'Guest Speaker',
                     avatar: localStorage.getItem('speakspin-player-avatar') || '🦁',
                     rating: localStorage.getItem('speakspin-rating') ? Number(localStorage.getItem('speakspin-rating')) : 1000
                   });
@@ -685,7 +741,7 @@ export function App() {
           >
             <BattleProfile
               user={{
-                playerName: localStorage.getItem('speakspin-player-name') || user.name || 'Guest Speaker',
+                playerName: localStorage.getItem('speakspin-player-name') || user?.name || 'Guest Speaker',
                 avatar: localStorage.getItem('speakspin-player-avatar') || '🦁'
               }}
               onBack={() => navigateTo(SCREENS.BATTLE_LOBBY)}

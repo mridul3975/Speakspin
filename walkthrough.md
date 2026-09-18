@@ -119,3 +119,102 @@ This document breaks down the internal mechanics of the **SpeakSpin** codebase, 
    Single-player endpoints run asynchronously via standard HTTP fetch wrappers inside [utils/api.js](file:///c:/MRIDUL/Code/Speakspin/frontend/src/utils/api.js). Battle mode runs over persistent TCP sockets to achieve real-time synchronization. Both loops terminate at the same LLM judge gateway (Groq/OpenAI Llama models) and log records in a shared PostgreSQL store.
 3. **Aesthetic Consistency**:
    The entire application enforces high-contrast, black-and-white flat brutalist borders and offset offset-shadow card blocks, utilizing `Montserrat` typography to maintain a premium gaming identity.
+
+---
+
+## 5. Battle Premature Auto-Submission Resolution
+
+### The Symptom
+When starting a 1v1 battle, the player's speech was immediately submitted with 0 seconds duration, an empty transcript, and a score of 0, transitioning directly to the waiting/analyzing screen without giving the user time to speak.
+
+### Root Causes
+1. **Unmount-Triggered Submission in `BattleRecorder.jsx`**:
+   The component's unmount cleanup previously invoked `stopRecordingSession()`, which treated missing/inactive MediaRecorder instances as an automatic speech completion, firing `handleAutoSubmit(null)` and emitting `submit_transcript` with 0 words on any fast remount (such as React StrictMode or socket state re-renders).
+2. **Duplicate `startBattle` Invocations in `backend/socket.js`**:
+   `player_ready` lacked room state guards, allowing the battle countdown (`speaking_countdown`) and `start_recording` events to be emitted multiple times concurrently. This caused `BattleRecorder` in the client to mount, unmount, and immediately submit.
+3. **Async `getUserMedia` Blocking Countdown Timers**:
+   `startRecordingSession()` was awaiting `navigator.mediaDevices.getUserMedia` before starting `setInterval()`. If microphone hardware took time to prompt or initialize, the countdown timer was blocked from ticking.
+4. **Vite Watch Polling in WSL**:
+   Vite in WSL was not picking up Windows-side file edits because `usePolling: true` was missing, causing stale ES modules to be served until forcibly reloaded.
+
+### Key Changes
+- **[BattleRecorder.jsx](file:///c:/MRIDUL/Code/Speakspin/frontend/src/components/multiplayer/BattleRecorder.jsx)**:
+  - Immediate, synchronous countdown timer on mount defaulting safely to `Number(duration) || 60`.
+  - Background asynchronous acquisition of microphone streams and MediaRecorder without blocking UI timers.
+  - Component unmount cleanup strictly clears timers and stops tracks—it never submits speech.
+- **[socket.js](file:///c:/MRIDUL/Code/Speakspin/backend/socket.js)**:
+  - Guarded `startBattle()` with `if (!room || room.status !== 'waiting_ready') return;`.
+  - Guarded `start_recording` transition with `if (room.status !== 'topic_reveal') return;`.
+- **[OpponentFound.jsx](file:///c:/MRIDUL/Code/Speakspin/frontend/src/components/multiplayer/OpponentFound.jsx)**:
+  - Guarded `handleReady` with `hasSentReadyRef` to prevent double readiness events.
+- **[vite.config.js](file:///c:/MRIDUL/Code/Speakspin/frontend/vite.config.js)**:
+  - Configured `server.watch.usePolling = true` with a 100ms interval for reliable file syncing across Windows/WSL.
+
+### Verification Results
+1. **Matchmaking**: Shadow-bot matches automatically within 4s.
+2. **Opponent Reveal**: Countdown and ready triggers fire exactly once.
+3. **Topic Countdown**: 5s reveal countdown ticks smoothly to 0.
+4. **Battle Recorder**: Full 60s recording countdown ticks down (60s -> 51s -> 38s...) without premature auto-submission.
+5. **Speech Submission**: Submission occurs only upon timer expiration or when the user explicitly clicks "SUBMIT EARLY".
+---
+
+## 6. PostgreSQL WSL IPv6 Resolution & Graceful Degradation
+
+### The Symptom
+Running `nodemon server.js` in WSL resulted in:
+`AggregateError [ETIMEDOUT]` and `Error: connect ENETUNREACH 2600:1f16:1c2b:...:5432 - Local (:::0)`, causing nodemon to repeatedly crash.
+
+### Root Cause
+1. **Node 20+ Happy Eyeballs in WSL2**: Node's built-in `autoSelectFamily` and DNS lookup prioritized IPv6 addresses returned by Neon's AWS DNS names. Because WSL2 environments typically do not have outbound IPv6 routing configured through the Windows host, the connection attempts failed with `ENETUNREACH`, causing `AggregateError [ETIMEDOUT]`.
+2. **Fatal Exit**: `connectDB()` had a hardcoded `process.exit(1)`, crashing the entire Express/Socket.io gateway when the database had a connection timeout.
+
+### Resolution
+- In **[db.js](file:///c:/MRIDUL/Code/Speakspin/backend/config/db.js)**:
+  - Enforced `dns.setDefaultResultOrder('ipv4first')` and `net.setDefaultAutoSelectFamily(false)`.
+  - Added custom IPv4 DNS lookup to `pg.Pool` (`lookup: (hostname, options, cb) => dns.lookup(hostname, { family: 4, all: false }, cb)`).
+  - Replaced `process.exit(1)` with a warning log so that Multiplayer Battle Mode, Solo Practice, and AI analysis remain fully online and resilient even if the database is temporarily unreachable.
+- Added **[nodemon.json](file:///c:/MRIDUL/Code/Speakspin/backend/nodemon.json)** with `legacyWatch: true` for polling file changes across Windows/WSL boundaries.
+
+---
+
+## 7. WebSocket Host Binding & CORS Gateway Resolution
+
+### The Symptom
+The frontend browser console reported:
+`WebSocket connection to 'ws://localhost:3001/socket.io/?EIO=4&transport=websocket' failed:`
+
+### Root Causes
+1. **IPv6-Only Listener on WSL**:
+   `httpServer.listen(PORT)` in Node.js on Linux defaults to IPv6 `::1`. In WSL2, `wslrelay.exe` forwards this only to Windows `[::1]:3001`, leaving `127.0.0.1:3001` unmapped. When the browser or frontend attempted to connect via IPv4 loopback (`127.0.0.1` or `localhost`), connection attempts were refused.
+2. **Strict Origin Match in Socket.io CORS**:
+   `backend/socket.js` only whitelisted `http://localhost:5173`. When Vite ran on another port (e.g. `5174`) or when the browser accessed `http://127.0.0.1:5173`, CORS rejected the WebSocket handshake.
+3. **Missing Polling Fallback**:
+   `frontend/src/hooks/useSocket.js` had `transports: ['websocket']` hardcoded without fallback to polling.
+
+### Resolution
+- **[server.js](file:///c:/MRIDUL/Code/Speakspin/backend/server.js)**:
+  - Explicitly bound server to `0.0.0.0` (`httpServer.listen(PORT, '0.0.0.0', ...)`), ensuring both `127.0.0.1:3001` and `localhost:3001` receive connections.
+  - Updated CORS validator to permit all `localhost:` and `127.0.0.1:` dev ports.
+- **[socket.js](file:///c:/MRIDUL/Code/Speakspin/backend/socket.js)**:
+  - Updated Socket.IO CORS configuration to accept any localhost / 127.0.0.1 port.
+- **[useSocket.js](file:///c:/MRIDUL/Code/Speakspin/frontend/src/hooks/useSocket.js)**:
+  - Enabled `transports: ['websocket', 'polling']` with auto-reconnection.
+
+---
+
+## 8. Google Sign-In Top-Right Integration & Origin Validation
+
+### Overview
+Integrated a persistent "Sign in with Google" button in the top-right header corner of the app, allowing users in Guest Mode to authenticate and sync their history and ratings.
+
+### Changes Implemented
+1. **Top Header Bar ([App.jsx](file:///c:/MRIDUL/Code/Speakspin/frontend/src/App.jsx))**:
+   - Added persistent header bar visible on all navigation and dashboard screens (`LANDING`, `SETUP`, `FEEDBACK`, `HISTORY`, `BATTLE_LOBBY`, `BATTLE_RESULTS`, `BATTLE_PROFILE`), while gracefully hiding during active speech recording to avoid distraction.
+   - For **Guest Users**: Shows guest indicator (`🦁 PLAYING AS SPEAKER_XXXX`) on the left and the official `<GoogleLogin>` button in the top-right corner.
+   - For **Authenticated Users**: Shows user profile picture, name, and a "LOG OUT" button.
+   - Enhanced `handleSignOut` to cleanly revert to guest mode without breaking the view.
+2. **Brutalist Theme Styling ([App.css](file:///c:/MRIDUL/Code/Speakspin/frontend/src/App.css))**:
+   - Added `.google-signin-top-right` with high-contrast 2px solid white borders and 3px brutalist box-shadows.
+3. **Localhost Origin Verification**:
+   - Verified that `http://localhost:5173` in Google Cloud Console's "Authorized JavaScript origins" works directly with the Google OAuth Client ID (`415823888328-vt1htjut9g5287t15tn7gagf4msed4mb.apps.googleusercontent.com`).
+   - Verified end-to-end popup launch connecting to `accounts.google.com` using Playwright.
