@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 import { getTier } from './RatingBadge';
 import { playWinnerFanfare, playLoserSound, playReactionPop, playRatingUp, playRatingDown } from '../../utils/battleAudio';
@@ -333,9 +334,9 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
           )}
 
           {!rematchRequested ? (
-            <button
+            <Button
               onClick={triggerRematch}
-              className="btn btn-primary"
+              className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12"
               style={{
                 flex: 1,
                 minWidth: '150px',
@@ -346,19 +347,19 @@ export function BattleResults({ user, results, myPosition, onSendReaction, onRem
               }}
             >
               🔄 REMATCH
-            </button>
+            </Button>
           ) : (
             <div style={{ border: '2px dashed #ffffff', padding: '0.75rem', flex: 1, textAlign: 'center', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.9rem' }}>
               ⌛ Requesting Rematch...
             </div>
           )}
 
-          <button className="btn btn-secondary" onClick={onNewOpponent} style={{ flex: 1, minWidth: '150px' }}>
+          <Button variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12" onClick={onNewOpponent} style={{ flex: 1, minWidth: '150px' }}>
             🔍 NEW OPPONENT
-          </button>
-          <button className="btn btn-secondary" onClick={onLeave} style={{ flex: 1, minWidth: '150px' }}>
+          </Button>
+          <Button variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12" onClick={onLeave} style={{ flex: 1, minWidth: '150px' }}>
             🏠 EXIT BATTLE
-          </button>
+          </Button>
         </div>
 
       </div>
