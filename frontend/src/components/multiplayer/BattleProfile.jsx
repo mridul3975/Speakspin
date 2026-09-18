@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from "@/components/ui/button";
 import { motion } from 'framer-motion';
 import { RatingBadge, getTier } from './RatingBadge';
 
@@ -87,9 +88,9 @@ export function BattleProfile({ user, onBack }) {
           </div>
         </div>
 
-        <button
+        <Button
           onClick={onBack}
-          className="btn btn-secondary"
+          variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12"
           style={{
             fontFamily: 'var(--font-heading)',
             fontWeight: 800,
@@ -102,7 +103,7 @@ export function BattleProfile({ user, onBack }) {
           }}
         >
           ⬅️ Back to Lobby
-        </button>
+        </Button>
       </div>
 
       {/* Grid: Stats Blocks */}
