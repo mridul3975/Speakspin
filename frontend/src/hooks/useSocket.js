@@ -9,13 +9,20 @@ export function useSocket() {
     if (socket) return socket;
 
     const newSocket = io(url, {
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
     });
 
     newSocket.on('connect', () => {
       setIsConnected(true);
       console.log('Battle socket connected successfully');
+    });
+
+    newSocket.on('connect_error', (err) => {
+      console.warn('Battle socket connect error (retrying):', err.message || err);
     });
 
     newSocket.on('disconnect', () => {
