@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
 import { motion } from 'framer-motion';
 
 export function OpponentFound({ user, opponent, onReady }) {
   const [isReady, setIsReady] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(10);
   const [opponentReady, setOpponentReady] = useState(false);
+  const hasSentReadyRef = React.useRef(false);
+
+  const handleReady = () => {
+    if (hasSentReadyRef.current) return;
+    hasSentReadyRef.current = true;
+    setIsReady(true);
+    onReady();
+  };
 
   // Auto-ready countdown
   useEffect(() => {
@@ -12,21 +21,14 @@ export function OpponentFound({ user, opponent, onReady }) {
       setSecondsLeft(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          if (!isReady) {
-            handleReady();
-          }
+          handleReady();
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isReady]);
-
-  const handleReady = () => {
-    setIsReady(true);
-    onReady();
-  };
+  }, []);
 
   const ratingDiff = user.rating - opponent.rating;
   const getRatingMessage = () => {
@@ -120,8 +122,8 @@ export function OpponentFound({ user, opponent, onReady }) {
       {/* Ready Button and countdown */}
       <div style={{ marginTop: '2rem' }}>
         {!isReady ? (
-          <button
-            className="btn btn-primary"
+          <Button
+            className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12"
             onClick={handleReady}
             style={{
               width: '100%',
@@ -134,7 +136,7 @@ export function OpponentFound({ user, opponent, onReady }) {
             }}
           >
             ✅ I'M READY! ({secondsLeft}s)
-          </button>
+          </Button>
         ) : (
           <div style={{ border: '2px dashed #ffffff', padding: '1rem', fontWeight: 800, textTransform: 'uppercase' }}>
             ⏳ Waiting for opponent to ready...

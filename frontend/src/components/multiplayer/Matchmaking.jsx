@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from 'framer-motion';
 
 const TIPS = [
@@ -11,7 +12,7 @@ const TIPS = [
 
 
 
-export function Matchmaking({ rating, onCancel, onFightBot }) {
+export function Matchmaking({ isConnected, rating, onCancel, onFightBot }) {
   const [seconds, setSeconds] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
 
@@ -37,8 +38,6 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-
-
   return (
     <div className="setup-container" style={{ margin: '2rem auto 0', maxWidth: '500px', position: 'relative', textAlign: 'center', overflow: 'hidden' }}>
       
@@ -49,6 +48,12 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         Queue Time: {formatTimer(seconds)}
       </p>
+
+      {!isConnected && seconds > 2 && (
+        <div style={{ border: '2px solid #ff3333', backgroundColor: 'rgba(255, 51, 51, 0.1)', color: '#ff5555', padding: '0.75rem', marginTop: '1rem', fontWeight: 800, fontSize: '0.8rem' }}>
+          ⚠️ Backend server unreachable at http://localhost:3001. Please ensure <code>node server.js</code> is running in <code>backend/</code>.
+        </div>
+      )}
 
       {/* Radar Animation (CSS Expanding Circles) */}
       <div style={{ display: 'flex', justifyContent: 'center', margin: '3rem 0' }}>
@@ -124,9 +129,9 @@ export function Matchmaking({ rating, onCancel, onFightBot }) {
       </div>
 
       {/* Cancel Search Button */}
-      <button className="btn btn-secondary" onClick={onCancel} style={{ width: '100%' }}>
+      <Button variant="outline" className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12" onClick={onCancel} style={{ width: '100%' }}>
         <span className="material-symbols-outlined text-sm">close</span> CANCEL SEARCH
-      </button>
+      </Button>
 
 
 
