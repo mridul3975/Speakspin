@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export function useAudioLevel(isActive) {
+export function useAudioLevel(isActive, customStream = null) {
   const [audioLevels, setAudioLevels] = useState(new Array(20).fill(0));
   const audioContextRef = useRef(null);
   const analyserRef = useRef(null);
@@ -15,7 +15,7 @@ export function useAudioLevel(isActive) {
 
     async function initAudio() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = customStream || (await navigator.mediaDevices.getUserMedia({ audio: true }));
         streamRef.current = stream;
 
         // Initialize Web Audio API
@@ -52,7 +52,7 @@ export function useAudioLevel(isActive) {
 
         updateLevel();
       } catch (err) {
-        console.error('Failed to get audio stream for visualizer', err);
+        console.warn('Audio level visualizer note:', err.message);
       }
     }
 
@@ -61,7 +61,7 @@ export function useAudioLevel(isActive) {
     return () => {
       cleanup();
     };
-  }, [isActive]);
+  }, [isActive, customStream]);
 
   const cleanup = () => {
     if (animationFrameRef.current) {
@@ -72,7 +72,8 @@ export function useAudioLevel(isActive) {
       audioContextRef.current.close().catch(e => console.error(e));
       audioContextRef.current = null;
     }
-    if (streamRef.current) {
+    // Only stop tracks if this hook opened the stream itself
+    if (streamRef.current && !customStream) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
