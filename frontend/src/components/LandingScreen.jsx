@@ -1,167 +1,62 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import React from 'react';
+import { ArrowRight, AudioLines, CircleHelp, Clock3, Mic, RotateCw, Swords, Target, Trophy } from 'lucide-react';
+import { GameButton, Metric, PlayerAvatar } from './game/GameUI';
+import RatingBadge from './multiplayer/RatingBadge';
 
-const SUPPORTED_LANGUAGES = [
-  { code: 'en-US', name: 'EN-US (ENGLISH)' },
-  { code: 'en-GB', name: 'EN-GB (ENGLISH)' },
-  { code: 'es-ES', name: 'ES-ES (SPANISH)' },
-  { code: 'es-MX', name: 'ES-MX (SPANISH)' },
-  { code: 'fr-FR', name: 'FR-FR (FRENCH)' },
-  { code: 'de-DE', name: 'DE-DE (GERMAN)' },
-  { code: 'hi-IN', name: 'HI-IN (HINDI)' },
-  { code: 'it-IT', name: 'IT-IT (ITALIAN)' },
-  { code: 'ja-JP', name: 'JA-JP (JAPANESE)' },
-  { code: 'pt-BR', name: 'PT-BR (PORTUGUESE)' },
-  { code: 'zh-CN', name: 'ZH-CN (CHINESE)' },
-  { code: 'ar-SA', name: 'AR-SA (ARABIC)' }
+const LANGUAGES = [
+  ['en-US', 'English (US)'], ['en-GB', 'English (UK)'], ['es-ES', 'Español (Spain)'],
+  ['es-MX', 'Español (Mexico)'], ['fr-FR', 'Français'], ['de-DE', 'Deutsch'],
+  ['hi-IN', 'हिन्दी (Hindi)'], ['it-IT', 'Italiano'], ['ja-JP', '日本語'],
+  ['pt-BR', 'Português (Brazil)'], ['zh-CN', '中文'], ['ar-SA', 'العربية'],
 ];
 
-export function LandingScreen({ onStart, onStartBattle, selectedLanguage, setSelectedLanguage }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: 'easeOut' },
-    },
-  };
-
+export function LandingScreen({ onStart, onStartBattle, onViewProgress, onViewProfile, selectedLanguage, setSelectedLanguage, user }) {
+  const rating = Number(localStorage.getItem('speakspin-rating')) || 1000;
+  const wins = Number(localStorage.getItem('speakspin-wins')) || 0;
+  const losses = Number(localStorage.getItem('speakspin-losses')) || 0;
+  const draws = Number(localStorage.getItem('speakspin-draws')) || 0;
+  const rounds = wins + losses + draws;
+  const playerName = localStorage.getItem('speakspin-player-name') || user?.name || 'Guest speaker';
   return (
-    <motion.div
-      className="landing-container"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Animated Logo */}
-      <motion.div
-        className="landing-logo"
-        animate={{ y: [0, -6, 0] }}
-        transition={{
-          repeat: Infinity,
-          duration: 3,
-          ease: 'easeInOut',
-        }}
-      >
-        <span className="material-symbols-outlined text-5xl" style={{ fontVariationSettings: "'FILL' 1" }}>track_changes</span>
-      </motion.div>
-
-      {/* Title */}
-      <motion.h1 className="landing-title" variants={itemVariants}>
-        Speak<span className="text-teal">Spin</span>
-      </motion.h1>
-
-      {/* Tagline */}
-      <motion.p className="landing-tagline" variants={itemVariants}>
-        Master public speaking with AI-powered coaching
-      </motion.p>
-
-      {/* Large Intimidating Battle Mode Featured Card matching the reference design */}
-      <motion.div
-        className="landing-battle-card"
-        variants={itemVariants}
-      >
-        {/* Crossed Swords with Red Glow */}
-        <span 
-          className="material-symbols-outlined" 
-          style={{ 
-            fontSize: '5rem', 
-            display: 'block', 
-            margin: '0 auto 1.5rem', 
-            color: '#c0c0c0',
-            filter: 'drop-shadow(0 0 15px rgba(255, 0, 0, 0.95))',
-            fontVariationSettings: "'FILL' 1"
-          }}
-        >
-          swords
-        </span>
-
-        {/* Start Battle Solid Red Banner Button */}
-        <Button
-          className="w-full bg-[#ff5555] hover:bg-[#ff3333] text-white font-black rounded-none border-2 border-white mb-5 uppercase tracking-widest h-12"
-          onClick={onStartBattle}
-        >
-          START BATTLE
-        </Button>
-
-        {/* Choose Language Selector Dropdown (Shadcn style popover) */}
-        <div className="w-full text-left mb-10">
-          <span className="text-[0.7rem] font-black text-[#888888] block mb-1.5 uppercase tracking-widest font-heading">
-            Choose a Language
-          </span>
-          <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-            <SelectTrigger className="w-full bg-black text-white border-2 border-white rounded-none font-black text-[0.85rem] uppercase tracking-widest font-heading h-11">
-              <SelectValue placeholder="Select Language" />
-            </SelectTrigger>
-            <SelectContent className="bg-black text-white border-2 border-white rounded-none font-heading shadow-[4px_4px_0px_0px_#ffffff]">
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <SelectItem 
-                  key={lang.code} 
-                  value={lang.code}
-                  className="font-black hover:bg-[#111111] focus:bg-[#111111] focus:text-white rounded-none"
-                >
-                  {lang.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+    <div className="lobby-layout">
+      <aside className="lobby-player-rail" aria-label="Your player profile">
+        <div className="lobby-player-identity">
+          <PlayerAvatar avatar={localStorage.getItem('speakspin-player-avatar') || user?.avatar} name={playerName} size="large" />
+          <h2>{playerName}</h2>
+          <p>{user?.isGuest ? 'Guest player' : 'Ready for your next round'}</p>
+          <RatingBadge rating={rating} />
         </div>
-
-        {/* Capitalized Description Text */}
-        <p style={{ 
-          fontSize: '0.9rem', 
-          color: '#ffffff', 
-          lineHeight: '1.6', 
-          margin: 0, 
-          textTransform: 'uppercase', 
-          fontWeight: 900, 
-          letterSpacing: '0.08em',
-          fontFamily: 'var(--font-heading)'
-        }}>
-          DUEL REAL SPEAKERS LIVE. CLIMB THE ELO LADDER.<br />
-          PROVE YOUR SPEECH DOMINANCE.
-        </p>
-      </motion.div>
-
-      {/* Action buttons */}
-      <motion.div className="flex flex-col gap-4 w-full max-w-[350px] mx-auto mt-6" variants={itemVariants}>
-        <Button
-          variant="outline"
-          className="w-full p-3 text-xs border-[#333333] text-[#888888] bg-transparent shadow-none rounded-none hover:bg-[#111111] hover:text-white"
-          onClick={onStart}
-        >
-          <span className="material-symbols-outlined text-xs mr-2">rocket_launch</span>
-          Practice Solo (Training Mode)
-        </Button>
-      </motion.div>
-    </motion.div>
+        <div className="lobby-record"><Metric value={rounds} label="Battles played" /><Metric value={wins} label="Wins" /></div>
+        <GameButton variant="secondary" onClick={onViewProfile}><Trophy size={17} />Player profile<ArrowRight size={16} /></GameButton>
+        <div className="lobby-practice-note"><AudioLines size={22} /><p>A little practice.<br /><strong>A stronger voice.</strong></p><button className="text-link" onClick={onViewProgress}>View your progress <ArrowRight size={14} /></button></div>
+        <p className="lobby-storage-note">{user?.isGuest ? 'Battle stats stay in this browser. Sign in to save your solo practice history.' : 'Solo practice history is saved to your account. Battle stats stay in this browser.'}</p>
+      </aside>
+      <div className="lobby-main">
+        <section className="lobby-arena" aria-labelledby="arena-title">
+          <img className="arena-key-art" src="/images/voice-arena.png" alt="" width="1536" height="1024" fetchPriority="high" />
+          <div className="arena-copy">
+            <h1 id="arena-title">The mic<br />is <em>yours.</em></h1>
+            <p>One topic. Two speakers.<br />Make your words count.</p>
+            <GameButton onClick={onStartBattle} className="arena-play"><Swords size={21} />Play a 1v1<ArrowRight size={19} /></GameButton>
+            <label className="arena-language"><span>Speaking language</span><select className="game-select" value={selectedLanguage} onChange={event => setSelectedLanguage(event.target.value)}>{LANGUAGES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}</select></label>
+          </div>
+          <div className="arena-format"><span><Mic size={14} />Live speech battle</span><span><Target size={14} />Same topic. Your take.</span></div>
+        </section>
+        <section className="training-entry" aria-labelledby="training-title">
+          <div className="training-symbol"><Mic size={26} /></div>
+          <div><h2 id="training-title">Warm up your voice.</h2><p>Spin a topic. Set your pace. Find your flow in solo training.</p></div>
+          <GameButton variant="secondary" onClick={onStart}>Train solo<ArrowRight size={17} /></GameButton>
+        </section>
+        <section className="lobby-how-to" aria-labelledby="how-to-title">
+          <h2 id="how-to-title"><CircleHelp size={17} />Your next round, in three moves</h2>
+          <ol>
+            <li><RotateCw size={19} /><span><strong>Get a topic</strong>A fresh prompt for both players.</span></li>
+            <li><Clock3 size={19} /><span><strong>Take the mic</strong>Make your point before time runs out.</span></li>
+            <li><Trophy size={19} /><span><strong>See how you did</strong>Compare scores. Learn. Go again.</span></li>
+          </ol>
+        </section>
+      </div>
+    </div>
   );
 }
-
 export default LandingScreen;
