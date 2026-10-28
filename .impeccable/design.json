@@ -1,0 +1,513 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-28T07:07:02Z",
+  "title": "Design System: SpeakSpin",
+  "extensions": {
+    "colorMeta": {
+      "background": {
+        "role": "neutral",
+        "displayName": "Deep ink",
+        "canonical": "#0b1018",
+        "tonalRamp": [
+          "oklch(15% 0.0056 259.7)",
+          "oklch(26% 0.0111 259.7)",
+          "oklch(38% 0.0158 259.7)",
+          "oklch(50% 0.0186 259.7)",
+          "oklch(62% 0.0186 259.7)",
+          "oklch(74% 0.0158 259.7)",
+          "oklch(86% 0.0093 259.7)",
+          "oklch(95% 0.0037 259.7)"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Ice text",
+        "canonical": "#edf4fc",
+        "tonalRamp": [
+          "oklch(15% 0.0039 251.6)",
+          "oklch(26% 0.0079 251.6)",
+          "oklch(38% 0.0111 251.6)",
+          "oklch(50% 0.0131 251.6)",
+          "oklch(62% 0.0131 251.6)",
+          "oklch(74% 0.0111 251.6)",
+          "oklch(86% 0.0065 251.6)",
+          "oklch(95% 0.0026 251.6)"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Arena slate",
+        "canonical": "#131d2b",
+        "tonalRamp": [
+          "oklch(15% 0.0093 256.9)",
+          "oklch(26% 0.0186 256.9)",
+          "oklch(38% 0.0264 256.9)",
+          "oklch(50% 0.0310 256.9)",
+          "oklch(62% 0.0310 256.9)",
+          "oklch(74% 0.0264 256.9)",
+          "oklch(86% 0.0155 256.9)",
+          "oklch(95% 0.0062 256.9)"
+        ]
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Raised slate",
+        "canonical": "#1b293b",
+        "tonalRamp": [
+          "oklch(15% 0.0116 255.1)",
+          "oklch(26% 0.0232 255.1)",
+          "oklch(38% 0.0329 255.1)",
+          "oklch(50% 0.0387 255.1)",
+          "oklch(62% 0.0387 255.1)",
+          "oklch(74% 0.0329 255.1)",
+          "oklch(86% 0.0193 255.1)",
+          "oklch(95% 0.0077 255.1)"
+        ]
+      },
+      "text-secondary": {
+        "role": "neutral",
+        "displayName": "Muted steel",
+        "canonical": "#a5b6ca",
+        "tonalRamp": [
+          "oklch(15% 0.0103 252.5)",
+          "oklch(26% 0.0206 252.5)",
+          "oklch(38% 0.0292 252.5)",
+          "oklch(50% 0.0343 252.5)",
+          "oklch(62% 0.0343 252.5)",
+          "oklch(74% 0.0292 252.5)",
+          "oklch(86% 0.0172 252.5)",
+          "oklch(95% 0.0069 252.5)"
+        ]
+      },
+      "accent": {
+        "role": "primary",
+        "displayName": "Electric cyan",
+        "canonical": "#63e8e1",
+        "tonalRamp": [
+          "oklch(15% 0.0350 190.4)",
+          "oklch(26% 0.0700 190.4)",
+          "oklch(38% 0.0992 190.4)",
+          "oklch(50% 0.1167 190.4)",
+          "oklch(62% 0.1167 190.4)",
+          "oklch(74% 0.0992 190.4)",
+          "oklch(86% 0.0583 190.4)",
+          "oklch(95% 0.0233 190.4)"
+        ]
+      },
+      "accent-foreground": {
+        "role": "neutral",
+        "displayName": "Cyan ink",
+        "canonical": "#092524",
+        "tonalRamp": [
+          "oklch(15% 0.0100 191.9)",
+          "oklch(26% 0.0200 191.9)",
+          "oklch(38% 0.0284 191.9)",
+          "oklch(50% 0.0334 191.9)",
+          "oklch(62% 0.0334 191.9)",
+          "oklch(74% 0.0284 191.9)",
+          "oklch(86% 0.0167 191.9)",
+          "oklch(95% 0.0067 191.9)"
+        ]
+      },
+      "accent-hover": {
+        "role": "primary",
+        "displayName": "Cyan hover",
+        "canonical": "#8ff5ef",
+        "tonalRamp": [
+          "oklch(15% 0.0289 190.7)",
+          "oklch(26% 0.0578 190.7)",
+          "oklch(38% 0.0818 190.7)",
+          "oklch(50% 0.0963 190.7)",
+          "oklch(62% 0.0963 190.7)",
+          "oklch(74% 0.0818 190.7)",
+          "oklch(86% 0.0481 190.7)",
+          "oklch(95% 0.0193 190.7)"
+        ]
+      },
+      "accent-coral": {
+        "role": "secondary",
+        "displayName": "Warm coral",
+        "canonical": "#ff9a88",
+        "tonalRamp": [
+          "oklch(15% 0.0374 30.9)",
+          "oklch(26% 0.0748 30.9)",
+          "oklch(38% 0.1060 30.9)",
+          "oklch(50% 0.1247 30.9)",
+          "oklch(62% 0.1247 30.9)",
+          "oklch(74% 0.1060 30.9)",
+          "oklch(86% 0.0623 30.9)",
+          "oklch(95% 0.0249 30.9)"
+        ]
+      },
+      "gold": {
+        "role": "tertiary",
+        "displayName": "Victory gold",
+        "canonical": "#e8c47c",
+        "tonalRamp": [
+          "oklch(15% 0.0298 83.8)",
+          "oklch(26% 0.0596 83.8)",
+          "oklch(38% 0.0845 83.8)",
+          "oklch(50% 0.0994 83.8)",
+          "oklch(62% 0.0994 83.8)",
+          "oklch(74% 0.0845 83.8)",
+          "oklch(86% 0.0497 83.8)",
+          "oklch(95% 0.0199 83.8)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Quiet edge",
+        "canonical": "#2c3a4d",
+        "tonalRamp": [
+          "oklch(15% 0.0115 256.2)",
+          "oklch(26% 0.0230 256.2)",
+          "oklch(38% 0.0326 256.2)",
+          "oklch(50% 0.0383 256.2)",
+          "oklch(62% 0.0383 256.2)",
+          "oklch(74% 0.0326 256.2)",
+          "oklch(86% 0.0192 256.2)",
+          "oklch(95% 0.0077 256.2)"
+        ]
+      },
+      "secondary-button": {
+        "role": "neutral",
+        "displayName": "Secondary button",
+        "canonical": "#1c2b3e",
+        "tonalRamp": [
+          "oklch(15% 0.0122 254.8)",
+          "oklch(26% 0.0244 254.8)",
+          "oklch(38% 0.0345 254.8)",
+          "oklch(50% 0.0406 254.8)",
+          "oklch(62% 0.0406 254.8)",
+          "oklch(74% 0.0345 254.8)",
+          "oklch(86% 0.0203 254.8)",
+          "oklch(95% 0.0081 254.8)"
+        ]
+      },
+      "secondary-button-hover": {
+        "role": "neutral",
+        "displayName": "Secondary hover",
+        "canonical": "#2b3e56",
+        "tonalRamp": [
+          "oklch(15% 0.0146 254.7)",
+          "oklch(26% 0.0291 254.7)",
+          "oklch(38% 0.0413 254.7)",
+          "oklch(50% 0.0485 254.7)",
+          "oklch(62% 0.0485 254.7)",
+          "oklch(74% 0.0413 254.7)",
+          "oklch(86% 0.0243 254.7)",
+          "oklch(95% 0.0097 254.7)"
+        ]
+      },
+      "control-background": {
+        "role": "neutral",
+        "displayName": "Control ink",
+        "canonical": "#0d1622",
+        "tonalRamp": [
+          "oklch(15% 0.0083 255.9)",
+          "oklch(26% 0.0167 255.9)",
+          "oklch(38% 0.0236 255.9)",
+          "oklch(50% 0.0278 255.9)",
+          "oklch(62% 0.0278 255.9)",
+          "oklch(74% 0.0236 255.9)",
+          "oklch(86% 0.0139 255.9)",
+          "oklch(95% 0.0056 255.9)"
+        ]
+      },
+      "control-border": {
+        "role": "neutral",
+        "displayName": "Control edge",
+        "canonical": "#405169",
+        "tonalRamp": [
+          "oklch(15% 0.0136 257.0)",
+          "oklch(26% 0.0272 257.0)",
+          "oklch(38% 0.0386 257.0)",
+          "oklch(50% 0.0454 257.0)",
+          "oklch(62% 0.0454 257.0)",
+          "oklch(74% 0.0386 257.0)",
+          "oklch(86% 0.0227 257.0)",
+          "oklch(95% 0.0091 257.0)"
+        ]
+      },
+      "danger-background": {
+        "role": "secondary",
+        "displayName": "Dark coral control",
+        "canonical": "#422c2b",
+        "tonalRamp": [
+          "oklch(15% 0.0099 22.0)",
+          "oklch(26% 0.0197 22.0)",
+          "oklch(38% 0.0280 22.0)",
+          "oklch(50% 0.0329 22.0)",
+          "oklch(62% 0.0329 22.0)",
+          "oklch(74% 0.0280 22.0)",
+          "oklch(86% 0.0164 22.0)",
+          "oklch(95% 0.0066 22.0)"
+        ]
+      },
+      "danger-text": {
+        "role": "secondary",
+        "displayName": "Coral control text",
+        "canonical": "#ffb3a4",
+        "tonalRamp": [
+          "oklch(15% 0.0276 31.5)",
+          "oklch(26% 0.0552 31.5)",
+          "oklch(38% 0.0782 31.5)",
+          "oklch(50% 0.0920 31.5)",
+          "oklch(62% 0.0920 31.5)",
+          "oklch(74% 0.0782 31.5)",
+          "oklch(86% 0.0460 31.5)",
+          "oklch(95% 0.0184 31.5)"
+        ]
+      },
+      "danger-hover": {
+        "role": "secondary",
+        "displayName": "Coral control hover",
+        "canonical": "#593834",
+        "tonalRamp": [
+          "oklch(15% 0.0144 27.1)",
+          "oklch(26% 0.0289 27.1)",
+          "oklch(38% 0.0409 27.1)",
+          "oklch(50% 0.0481 27.1)",
+          "oklch(62% 0.0481 27.1)",
+          "oklch(74% 0.0409 27.1)",
+          "oklch(86% 0.0240 27.1)",
+          "oklch(95% 0.0096 27.1)"
+        ]
+      },
+      "rank-background": {
+        "role": "tertiary",
+        "displayName": "Rank ink",
+        "canonical": "#342e24",
+        "tonalRamp": [
+          "oklch(15% 0.0058 80.5)",
+          "oklch(26% 0.0116 80.5)",
+          "oklch(38% 0.0164 80.5)",
+          "oklch(50% 0.0193 80.5)",
+          "oklch(62% 0.0193 80.5)",
+          "oklch(74% 0.0164 80.5)",
+          "oklch(86% 0.0096 80.5)",
+          "oklch(95% 0.0039 80.5)"
+        ]
+      },
+      "selected-background": {
+        "role": "primary",
+        "displayName": "Selected cyan surface",
+        "canonical": "#153b3f",
+        "tonalRamp": [
+          "oklch(15% 0.0129 204.7)",
+          "oklch(26% 0.0259 204.7)",
+          "oklch(38% 0.0367 204.7)",
+          "oklch(50% 0.0431 204.7)",
+          "oklch(62% 0.0431 204.7)",
+          "oklch(74% 0.0367 204.7)",
+          "oklch(86% 0.0216 204.7)",
+          "oklch(95% 0.0086 204.7)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Arena display",
+        "purpose": "Lobby declaration, uppercase; the mobile rule supplies its own fixed size."
+      },
+      "headline": {
+        "displayName": "Page headline",
+        "purpose": "Primary page title."
+      },
+      "title": {
+        "displayName": "Section title",
+        "purpose": "Condensed section headings; utility section titles use Geist."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Sentence-case instructions and supporting copy, up to 70ch."
+      },
+      "label": {
+        "displayName": "Field label",
+        "purpose": "Native control labels."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Shared action labels."
+      },
+      "score": {
+        "displayName": "Battle score",
+        "purpose": "Large tabular result numerals; mobile reduces to 48px."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": "180ms",
+        "purpose": "Background, border-color, and transform on enabled shared buttons."
+      },
+      {
+        "name": "input-level-transition",
+        "value": "100ms",
+        "purpose": "Height changes of real local microphone level bars."
+      },
+      {
+        "name": "wheel-spin-duration",
+        "value": "3200ms",
+        "purpose": "Finite topic wheel spin; reduced motion settles immediately."
+      },
+      {
+        "name": "wheel-ease-out",
+        "value": "1 - (1 - t)^4",
+        "purpose": "The wheel's implemented quartic ease-out, with t from zero to one."
+      },
+      {
+        "name": "loading-spin",
+        "value": "1.7s linear infinite",
+        "purpose": "Loading icon only; rotation is disabled with reduced motion."
+      },
+      {
+        "name": "reduced-motion-duration",
+        "value": "0.01ms",
+        "purpose": "CSS animation/transition duration under prefers-reduced-motion; one animation iteration, automatic scrolling."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide-shell-min",
+        "value": "1450px"
+      },
+      {
+        "name": "compact-desktop-max",
+        "value": "1100px"
+      },
+      {
+        "name": "stacked-layout-max",
+        "value": "800px"
+      },
+      {
+        "name": "phone-max",
+        "value": "520px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The current round's primary action. Includes enabled, hover, active, focus, and disabled styles.",
+      "html": "<button class=\"ds-button-primary\">Take the mic<svg aria-hidden=\"true\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-button-primary{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border:1px solid transparent;border-radius:9px;font:600 14px/1.4 var(--font-body,'Geist Variable',sans-serif);text-decoration:none;cursor:pointer;transition:background .18s,border-color .18s,transform .18s;}.ds-button-primary:not(:disabled):active{transform:translateY(1px);}.ds-button-primary:disabled{cursor:not-allowed;opacity:.5;}.ds-button-primary:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}@media(prefers-reduced-motion:reduce){.ds-button-primary{transition-duration:.01ms;}}.ds-button-primary{background:var(--accent,#63e8e1);color:var(--accent-foreground,#092524);}.ds-button-primary:hover:not(:disabled){background:#8ff5ef;}"
+    },
+    {
+      "name": "Secondary button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "A clearly available alternative such as training or a new opponent.",
+      "html": "<button class=\"ds-button-secondary\">Train solo<svg aria-hidden=\"true\" width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></button>",
+      "css": ".ds-button-secondary{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border:1px solid transparent;border-radius:9px;font:600 14px/1.4 var(--font-body,'Geist Variable',sans-serif);text-decoration:none;cursor:pointer;transition:background .18s,border-color .18s,transform .18s;}.ds-button-secondary:not(:disabled):active{transform:translateY(1px);}.ds-button-secondary:disabled{cursor:not-allowed;opacity:.5;}.ds-button-secondary:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}@media(prefers-reduced-motion:reduce){.ds-button-secondary{transition-duration:.01ms;}}.ds-button-secondary{background:#1c2b3e;color:var(--foreground,#edf4fc);border-color:#35465d;}.ds-button-secondary:hover:not(:disabled){background:#2b3e56;}"
+    },
+    {
+      "name": "Ghost button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Quiet back or leave action, with the same keyboard focus treatment.",
+      "html": "<button class=\"ds-button-ghost\">Back to lobby</button>",
+      "css": ".ds-button-ghost{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border:1px solid transparent;border-radius:9px;font:600 14px/1.4 var(--font-body,'Geist Variable',sans-serif);text-decoration:none;cursor:pointer;transition:background .18s,border-color .18s,transform .18s;}.ds-button-ghost:not(:disabled):active{transform:translateY(1px);}.ds-button-ghost:disabled{cursor:not-allowed;opacity:.5;}.ds-button-ghost:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}@media(prefers-reduced-motion:reduce){.ds-button-ghost{transition-duration:.01ms;}}.ds-button-ghost{background:transparent;color:var(--text-secondary,#a5b6ca);padding:10px 6px;}.ds-button-ghost:hover:not(:disabled){color:var(--foreground,#edf4fc);}"
+    },
+    {
+      "name": "Danger / rival button",
+      "kind": "button",
+      "refersTo": "button-danger",
+      "description": "Shared warm-coral variant for danger or rival-related actions.",
+      "html": "<button class=\"ds-button-danger\">Finish speaking</button>",
+      "css": ".ds-button-danger{min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 20px;border:1px solid transparent;border-radius:9px;font:600 14px/1.4 var(--font-body,'Geist Variable',sans-serif);text-decoration:none;cursor:pointer;transition:background .18s,border-color .18s,transform .18s;}.ds-button-danger:not(:disabled):active{transform:translateY(1px);}.ds-button-danger:disabled{cursor:not-allowed;opacity:.5;}.ds-button-danger:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}@media(prefers-reduced-motion:reduce){.ds-button-danger{transition-duration:.01ms;}}.ds-button-danger{background:#422c2b;color:#ffb3a4;border-color:#78504a;}.ds-button-danger:hover:not(:disabled){background:#593834;}"
+    },
+    {
+      "name": "Native fields",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Labeled native text input and select. Match the browser's normal keyboard behavior.",
+      "html": "<div class=\"ds-fields\"><label class=\"ds-field-label\">Player name<input class=\"ds-input\" placeholder=\"Your player name\" maxlength=\"15\"/></label><label class=\"ds-field-label\">Speaking language<select class=\"ds-select\"><option>English (US)</option><option>हिन्दी (Hindi)</option></select></label></div>",
+      "css": ".ds-fields{display:flex;flex-direction:column;gap:20px;max-width:340px;}.ds-field-label{display:flex;flex-direction:column;gap:9px;font:500 13px/1.6 var(--font-body,'Geist Variable',sans-serif);color:#c5d3e2;}.ds-input,.ds-select{width:100%;min-height:46px;background:#0d1622;border:1px solid #405169;border-radius:8px;color:var(--foreground,#edf4fc);padding:10px 13px;font:400 15px/1.6 var(--font-body,'Geist Variable',sans-serif);color-scheme:dark;}.ds-input{caret-color:var(--accent,#63e8e1);}.ds-input::placeholder{color:#9aacc2;opacity:1;}.ds-select{cursor:pointer;}.ds-input:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}.ds-select:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}"
+    },
+    {
+      "name": "Application navigation",
+      "kind": "nav",
+      "description": "Current-page text and cyan underline identify the active destination. Buttons preview the actual native control treatment.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main navigation\"><button aria-current=\"page\">Arena</button><button>Training</button><button>Progress</button></nav>",
+      "css": ".ds-nav{display:flex;gap:23px;align-items:center;}.ds-nav button{border:0;background:none;font:400 13px/1.6 var(--font-body,'Geist Variable',sans-serif);color:var(--text-secondary,#a5b6ca);padding:12px 0;position:relative;cursor:pointer;}.ds-nav button:hover,.ds-nav button[aria-current='page']{color:var(--foreground,#edf4fc);}.ds-nav button[aria-current='page']::after{content:'';position:absolute;bottom:3px;left:0;right:0;height:2px;background:var(--accent,#63e8e1);}.ds-nav button:focus-visible{outline:2px solid var(--ring,#63e8e1);outline-offset:5px;}@media(max-width:520px){.ds-nav{justify-content:space-between;gap:10px;}.ds-nav button{font-size:12px;min-height:40px;}}"
+    },
+    {
+      "name": "Rank badge",
+      "kind": "chip",
+      "refersTo": "rank-badge",
+      "description": "Compact emblem, rank name, and ELO. The preview shows the initial local rating.",
+      "html": "<span class=\"ds-rank\"><svg aria-hidden=\"true\" width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"8\" r=\"6\"/><path d=\"m8.2 13-1 9 4.8-3 4.8 3-1-9\"/></svg><span>Gold</span><span>1000 ELO</span></span>",
+      "css": ".ds-rank{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:400 12px/1.6 var(--font-body,'Geist Variable',sans-serif);color:var(--gold,#e8c47c);background:#342e24;padding:7px 10px;border-radius:6px;width:fit-content;flex-wrap:wrap;}.ds-rank>span:last-child{color:#cdbf9e;}"
+    },
+    {
+      "name": "Arena panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "A flat tonal surface for setup, status, or feedback. Cards have no decorative hover elevation.",
+      "html": "<section class=\"ds-panel\"><h2>Set your challenge.</h2><p>Pick your pace. The wheel takes care of the topic.</p></section>",
+      "css": ".ds-panel{background:var(--surface,#131d2b);color:var(--foreground,#edf4fc);border-radius:16px;padding:30px;max-width:500px;}.ds-panel h2{margin:0;font:700 32px/1.05 var(--font-heading,'Barlow Condensed',sans-serif);text-wrap:balance;}.ds-panel p{margin:14px 0 0;font:400 14px/1.6 var(--font-body,'Geist Variable',sans-serif);color:var(--text-secondary,#a5b6ca);max-width:70ch;}@media(max-width:520px){.ds-panel{padding:22px 18px;border-radius:13px;}}"
+    },
+    {
+      "name": "Duration choice",
+      "kind": "custom",
+      "refersTo": "duration-choice",
+      "description": "A real radio input inside the tile; checked state and keyboard focus remain distinct.",
+      "html": "<fieldset class=\"ds-durations\"><legend>Round duration</legend><label class=\"ds-duration\"><input type=\"radio\" name=\"ds-duration\" value=\"30\"/><span class=\"ds-duration-value\">30<small>sec</small></span><span class=\"ds-duration-caption\">Quick warm-up</span></label><label class=\"ds-duration\"><input type=\"radio\" name=\"ds-duration\" value=\"60\" checked/><span class=\"ds-duration-value\">1<small>min</small></span><span class=\"ds-duration-caption\">The classic</span></label></fieldset>",
+      "css": ".ds-durations{border:0;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:350px;color:var(--foreground,#edf4fc);font:500 13px/1.6 var(--font-body,'Geist Variable',sans-serif);}.ds-durations legend{margin-bottom:13px;}.ds-duration{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:18px 16px;background:#0f1825;border:1px solid #36475d;border-radius:11px;cursor:pointer;}.ds-duration:has(input:checked){background:#153b3f;border-color:var(--accent,#63e8e1);color:var(--accent,#63e8e1);}.ds-duration:focus-within{outline:2px solid var(--accent,#63e8e1);outline-offset:4px;}.ds-duration input{position:absolute;opacity:0;width:1px;height:1px;}.ds-duration-value{font:600 28px/1.1 var(--font-heading,'Barlow Condensed',sans-serif);}.ds-duration-value small{font:500 14px/1 var(--font-body,'Geist Variable',sans-serif);margin-left:6px;}.ds-duration-caption{font:400 11px/1.6 var(--font-body,'Geist Variable',sans-serif);color:var(--text-secondary,#a5b6ca);}"
+    },
+    {
+      "name": "Player comparison",
+      "kind": "custom",
+      "description": "Signature paired local/rival identity, with condensed single-line names, full title text, and readable readiness.",
+      "html": "<div class=\"ds-versus\"><div class=\"ds-player\"><span class=\"ds-avatar\"><svg aria-hidden=\"true\" width=\"25\" height=\"25\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"9\" y=\"2\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8\"/></svg></span><h2 title=\"You\">You</h2><span class=\"ds-ready\">Ready to speak</span></div><span class=\"ds-versus-mark\">VS</span><div class=\"ds-player ds-player-rival\"><span class=\"ds-avatar ds-avatar-rival\"><svg aria-hidden=\"true\" width=\"25\" height=\"25\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"9\" y=\"2\" width=\"6\" height=\"12\" rx=\"3\"/><path d=\"M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8\"/></svg></span><h2 title=\"Challenger\">Challenger</h2><span class=\"ds-ready ds-ready-waiting\">Preparing</span></div></div>",
+      "css": ".ds-versus{display:grid;grid-template-columns:minmax(0,1fr) 55px minmax(0,1fr);align-items:center;gap:18px;max-width:700px;}.ds-player{display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;padding:25px 16px;background:#142c34;border-radius:14px;min-width:0;}.ds-player-rival{background:#30232d;}.ds-player h2{margin:0;color:var(--foreground,#edf4fc);font:600 22px/1.4 var(--font-heading,'Barlow Condensed',sans-serif);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}.ds-avatar{display:inline-flex;align-items:center;justify-content:center;color:var(--accent,#63e8e1);background:#193e43;border-radius:22px;width:84px;height:84px;}.ds-avatar svg{width:55%;height:55%;}.ds-avatar-rival{color:#ffac9a;background:#452d33;}.ds-versus-mark{color:var(--gold,#e8c47c);font:700 32px/1 var(--font-heading,'Barlow Condensed',sans-serif);text-align:center;}.ds-ready{font:400 12px/1.6 var(--font-body,'Geist Variable',sans-serif);color:var(--accent,#63e8e1);}.ds-ready-waiting{color:var(--text-secondary,#a5b6ca);}@media(max-width:520px){.ds-versus{grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr);gap:8px;}.ds-player{padding:18px 8px;gap:12px;}.ds-player h2{font-size:14px;line-height:1.3;}.ds-avatar{width:60px;height:60px;border-radius:16px;}.ds-versus-mark{font-size:23px;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Voice Arena",
+    "overview": "SpeakSpin brings competitive arcade energy to spontaneous speaking. The topic wheel, microphone, paired player introductions, and large round numbers make the game legible. Deep ink surfaces keep attention on the complete topic, the current phase, and the next action. Competition stays encouraging; results provide a useful next attempt.\n\nThe world was selected by the user and implemented from the approved redesign plan. This document records the implemented system in frontend/src/App.css and the shared game components; it does not imply approval of an image composition. The lobby's generated microphone artwork supplies spectacle, while controls, recording, and coaching stay calm.",
+    "keyCharacteristics": [
+      "Condensed display type for game moments; readable sentence-case instructions.",
+      "Cyan local-player actions, coral rival signals, and gold rank or victory details.",
+      "Tonal dark panels, modest corners, and quiet separators.",
+      "Complete topics, real round state, and replay actions before detailed analysis.",
+      "Native controls, visible keyboard focus, reduced motion, and optional sound."
+    ],
+    "rules": [
+      {
+        "name": "The Player Signal Rule",
+        "body": "Keep cyan attached to the local player and primary action, coral to the rival or caution, and gold to rank, versus, or outcome. Always pair state color with text or an icon.",
+        "section": "colors"
+      },
+      {
+        "name": "The Game Moment Rule",
+        "body": "Reserve uppercase condensed display treatment for the lobby declaration and major outcomes. Instructions, controls, and feedback use ordinary sentence case.",
+        "section": "typography"
+      },
+      {
+        "name": "The Calm Surface Rule",
+        "body": "Keep ordinary panels flat. Use the shared surface, spacing, and separator patterns before adding another enclosing frame.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** reuse the shared native game controls, visible cyan focus, and readable selected states.",
+      "**Do** preserve full topics, full player-name text behind compact fitting, tabular scores, and replay before detailed analysis.",
+      "**Do** keep cyan local, coral rival or caution, and gold rank, versus, or outcome.",
+      "**Do** reuse the original microphone artwork at frontend/public/images/voice-arena.png with a crop that protects copy; its ImageGen prompt and provenance are stored beside it.",
+      "**Do** keep feedback constructive and distinguish saved account history from browser-local battle statistics.",
+      "**Do** preserve reduced-motion behavior and sound off by default."
+    ],
+    "donts": [
+      "**Don't** invent XP, currencies, quests, achievements, leaderboards, or progress to decorate the arena.",
+      "**Don't** imply acoustic or psychological measurements from transcript and timing data.",
+      "**Don't** add fake waveforms, random judging percentages, terminal filler, or blanket glow.",
+      "**Don't** replace native controls with click-only tiles or remove their keyboard focus.",
+      "**Don't** force uppercase body copy, pixel body text, repeated heavy frames, or a universal radius reset."
+    ]
+  }
+}
