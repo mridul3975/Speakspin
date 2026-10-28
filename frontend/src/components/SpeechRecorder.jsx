@@ -1,476 +1,271 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
+import { Check, ChevronDown, Mic, RotateCcw, Square, ArrowRight } from 'lucide-react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioLevel } from '../hooks/useAudioLevel';
 import { transcribeAudio, translateTopic } from '../utils/api';
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
-export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selectedLanguage }) {
-  const [recorderState, setRecorderState] = useState('idle'); // idle | countdown | recording | completed
+import { BackButton, GameButton, StatusNotice } from './game/GameUI';
+
+export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selectedLanguage, initialTranscript = '', initialDuration = 0 }) {
+  const duration = Math.max(1, Number(targetDuration) || 60);
+  const [phase, setPhase] = useState(initialTranscript ? 'completed' : 'idle');
   const [countdown, setCountdown] = useState(3);
-  const [timeLeft, setTimeLeft] = useState(targetDuration);
-  const [actualDuration, setActualDuration] = useState(0);
-  const [editableTranscript, setEditableTranscript] = useState('');
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [audioBlob, setAudioBlob] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(duration);
+  const [actualDuration, setActualDuration] = useState(initialDuration);
+  const [editableTranscript, setEditableTranscript] = useState(initialTranscript);
   const [translatedTopic, setTranslatedTopic] = useState(topic.topic);
+  const [error, setError] = useState('');
+  const [stream, setStream] = useState(null);
+  const mountedRef = useRef(true);
+  const streamRef = useRef(null);
+  const recorderRef = useRef(null);
+  const chunksRef = useRef([]);
+  const transcriptRef = useRef(initialTranscript);
+  const actualDurationRef = useRef(initialDuration);
+  const startedAtRef = useRef(0);
+  const stopRef = useRef(null);
+  const sessionRef = useRef(0);
+  const recordingRef = useRef(false);
+  const transcribingSessionRef = useRef(null);
+  const stopTimeoutRef = useRef(null);
+  const { transcript, error: speechError, isSupported, startListening, stopListening, resetTranscript } = useSpeechRecognition();
+  const { audioLevels } = useAudioLevel(phase === 'recording', stream);
+
+  const releaseStream = () => {
+    streamRef.current?.getTracks().forEach(track => track.stop());
+    streamRef.current = null;
+    if (mountedRef.current) setStream(null);
+  };
 
   useEffect(() => {
-    let active = true;
-    if (selectedLanguage && !selectedLanguage.startsWith('en')) {
-      translateTopic(topic.topic, selectedLanguage).then((res) => {
-        if (active && res && res.translated) {
-          setTranslatedTopic(res.translated);
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      sessionRef.current += 1;
+      recordingRef.current = false;
+      clearTimeout(stopTimeoutRef.current);
+      if (recorderRef.current) {
+        recorderRef.current.onstop = null;
+        try {
+          if (recorderRef.current.state !== 'inactive') recorderRef.current.stop();
+        } catch {
+          // Tracks are still released below if the recorder already became unavailable.
         }
-      });
-    } else {
-      setTranslatedTopic(topic.topic);
-    }
-    return () => {
-      active = false;
-    };
-  }, [topic, selectedLanguage]);
-
-  const timerRef = useRef(null);
-  const actualDurationRef = useRef(0);
-  const mediaRecorderRef = useRef(null);
-  const localStreamRef = useRef(null);
-  const audioChunksRef = useRef([]);
-  const latestTranscriptRef = useRef('');
-
-  const {
-    isListening,
-    transcript,
-    interimTranscript,
-    error: speechError,
-    isSupported,
-    startListening,
-    stopListening,
-    resetTranscript,
-  } = useSpeechRecognition();
-
-  const { audioLevels } = useAudioLevel(recorderState === 'recording', localStreamRef.current);
-
-  useEffect(() => {
-    if (transcript) {
-      latestTranscriptRef.current = transcript;
-      setEditableTranscript(transcript);
-    }
-  }, [transcript]);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-      stopLocalStream();
+      }
+      streamRef.current?.getTracks().forEach(track => track.stop());
     };
   }, []);
 
-  const stopLocalStream = () => {
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => track.stop());
-      localStreamRef.current = null;
+  useEffect(() => {
+    let active = true;
+    setTranslatedTopic(topic.topic);
+    if (selectedLanguage && !selectedLanguage.startsWith('en')) {
+      translateTopic(topic.topic, selectedLanguage).then(result => {
+        if (active && result?.translated) setTranslatedTopic(result.translated);
+      }).catch(() => {});
     }
-  };
+    return () => { active = false; };
+  }, [topic.topic, selectedLanguage]);
 
-  const hasStartedRecordingRef = useRef(false);
-  const hasStoppedRecordingRef = useRef(false);
-
-  // Safely trigger startRecording when countdown reaches 0
   useEffect(() => {
-    if (recorderState === 'countdown' && countdown === 0) {
-      if (!hasStartedRecordingRef.current) {
-        hasStartedRecordingRef.current = true;
-        startRecording();
-      }
+    if (transcript && (phase === 'recording' || phase === 'transcribing')) {
+      transcriptRef.current = transcript;
+      if (phase === 'recording') setEditableTranscript(transcript);
     }
-  }, [recorderState, countdown]);
+  }, [transcript, phase]);
 
-  // Manage countdown interval
-  useEffect(() => {
-    if (recorderState !== 'countdown') return;
-
-    setCountdown(3);
-    hasStartedRecordingRef.current = false;
-    
-    const interval = setInterval(() => {
-      setCountdown((prev) => Math.max(0, prev - 1));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [recorderState]);
-
-  // Safely trigger stopRecording when timeLeft reaches 0
-  useEffect(() => {
-    if (recorderState === 'recording' && timeLeft === 0) {
-      if (!hasStoppedRecordingRef.current) {
-        hasStoppedRecordingRef.current = true;
-        stopRecording();
-      }
-    }
-  }, [recorderState, timeLeft]);
-
-  // Manage recording timer interval
-  useEffect(() => {
-    if (recorderState !== 'recording') return;
-
-    setTimeLeft(targetDuration);
-    hasStoppedRecordingRef.current = false;
-    actualDurationRef.current = 0;
-    setActualDuration(0);
-
-    timerRef.current = setInterval(() => {
-      actualDurationRef.current += 1;
-      setActualDuration(actualDurationRef.current);
-      setTimeLeft((prev) => Math.max(0, prev - 1));
-    }, 1000);
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [recorderState, targetDuration]);
-
-  const startCountdown = () => {
-    setRecorderState('countdown');
-  };
-
-  const startRecording = async () => {
-    setRecorderState('recording');
-    setEditableTranscript('');
-    latestTranscriptRef.current = '';
-    setAudioBlob(null);
-    audioChunksRef.current = [];
-
+  const finishTranscription = async (blob, session) => {
+    if (!mountedRef.current || session !== sessionRef.current || transcribingSessionRef.current === session) return;
+    transcribingSessionRef.current = session;
+    setPhase('transcribing');
+    let finalTranscript = '';
+    let transcriptionFailed = false;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      localStreamRef.current = stream;
+      if (blob && blob.size > 1000) {
+        let timeout;
+        const result = await Promise.race([
+          transcribeAudio(blob, selectedLanguage?.split('-')[0] || ''),
+          new Promise((_, reject) => { timeout = setTimeout(() => reject(new Error('transcription-timeout')), 25000); }),
+        ]).finally(() => clearTimeout(timeout));
+        finalTranscript = result?.text?.trim() || '';
+      }
+    } catch {
+      transcriptionFailed = true;
+    }
+    if (!mountedRef.current || session !== sessionRef.current) return;
+    finalTranscript = finalTranscript || transcriptRef.current.trim();
+    transcriptRef.current = finalTranscript;
+    setEditableTranscript(finalTranscript);
+    setPhase('completed');
+    if (!finalTranscript) setError('We couldn’t capture a transcript. Check your microphone and try another take, or enter the words you spoke below.');
+    else if (transcriptionFailed) setError('Audio transcription was unavailable. Your live captions are saved below; check them before scoring.');
+  };
 
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
-        ? 'audio/webm' 
-        : 'audio/mp4';
+  const beginRecording = () => {
+    if (recordingRef.current) return;
+    recordingRef.current = true;
+    const session = sessionRef.current;
+    chunksRef.current = [];
+    try {
+      if (typeof MediaRecorder !== 'undefined') {
+        const mimeType = ['audio/webm', 'audio/mp4'].find(type => MediaRecorder.isTypeSupported(type));
+        const recorder = new MediaRecorder(streamRef.current, mimeType ? { mimeType } : undefined);
+        recorderRef.current = recorder;
+        recorder.ondataavailable = event => { if (event.data?.size) chunksRef.current.push(event.data); };
+        recorder.onstop = () => {
+          clearTimeout(stopTimeoutRef.current);
+          if (!mountedRef.current || session !== sessionRef.current || transcribingSessionRef.current === session) return;
+          if (recordingRef.current) actualDurationRef.current = Math.min(duration, Math.max(1, Math.round((performance.now() - startedAtRef.current) / 1000)));
+          recordingRef.current = false;
+          if (mountedRef.current && session === sessionRef.current) setActualDuration(actualDurationRef.current);
+          stopListening();
+          const blob = new Blob(chunksRef.current, { type: recorder.mimeType });
+          releaseStream();
+          finishTranscription(blob, session);
+        };
+        recorder.onerror = () => {
+          if (mountedRef.current && session === sessionRef.current) setError('Recording was interrupted. We’ll keep any words already captured so you can review them.');
+          stopRef.current?.();
+        };
+        recorder.start(250);
+      } else if (!isSupported) throw new Error('unsupported');
+      if (isSupported) startListening(selectedLanguage);
+      actualDurationRef.current = 0;
+      setActualDuration(0);
+      startedAtRef.current = performance.now();
+      setPhase('recording');
+    } catch {
+      recordingRef.current = false;
+      releaseStream();
+      setPhase('idle');
+      setError('Recording is unavailable in this browser. Try a recent version of Chrome, Edge, or Safari.');
+    }
+  };
 
-      const mediaRecorder = new MediaRecorder(stream, { mimeType });
-      mediaRecorderRef.current = mediaRecorder;
+  useEffect(() => {
+    if (phase !== 'countdown') return;
+    if (countdown === 0) { beginRecording(); return; }
+    const timeout = setTimeout(() => setCountdown(value => value - 1), 1000);
+    return () => clearTimeout(timeout);
+  }, [phase, countdown]);
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data && event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
-      };
+  useEffect(() => {
+    if (phase !== 'recording') return;
+    const timer = setInterval(() => {
+      const elapsed = Math.min(duration, Math.floor((performance.now() - startedAtRef.current) / 1000));
+      actualDurationRef.current = elapsed;
+      setActualDuration(elapsed);
+      setTimeLeft(Math.max(0, duration - elapsed));
+      if (elapsed >= duration) stopRef.current?.();
+    }, 200);
+    return () => clearInterval(timer);
+  }, [phase, duration]);
 
-      mediaRecorder.onstop = async () => {
-        const blob = new Blob(audioChunksRef.current, { type: mimeType });
-        setAudioBlob(blob);
-        stopLocalStream();
-
-        // Automate transcription and submit immediately
-        await autoTranscribeAndSubmit(blob);
-      };
-
-      mediaRecorder.start(250);
-      startListening(selectedLanguage);
-    } catch (err) {
-      console.warn('Microphone stream access warning, falling back to Web Speech only:', err);
-      startListening(selectedLanguage);
+  const prepareRound = async () => {
+    setError('');
+    setPhase('preparing');
+    resetTranscript();
+    transcriptRef.current = '';
+    setEditableTranscript('');
+    const session = ++sessionRef.current;
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error('unsupported');
+      const nextStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      if (!mountedRef.current || session !== sessionRef.current) { nextStream.getTracks().forEach(track => track.stop()); return; }
+      streamRef.current = nextStream;
+      setStream(nextStream);
+      setTimeLeft(duration);
+      setCountdown(3);
+      setPhase('countdown');
+    } catch (reason) {
+      if (!mountedRef.current || session !== sessionRef.current) return;
+      setPhase('idle');
+      setError(reason.name === 'NotAllowedError' ? 'Microphone access is blocked. Allow the microphone in your browser’s site settings, then try again.' : 'We couldn’t connect to a microphone. Check that one is available, then try again.');
     }
   };
 
   const stopRecording = () => {
+    if (!recordingRef.current) return;
+    recordingRef.current = false;
+    actualDurationRef.current = Math.min(duration, Math.max(1, Math.round((performance.now() - startedAtRef.current) / 1000)));
+    setActualDuration(actualDurationRef.current);
     stopListening();
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+    setPhase('transcribing');
+    const session = sessionRef.current;
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
+      stopTimeoutRef.current = setTimeout(() => {
+        if (session !== sessionRef.current || !mountedRef.current) return;
+        releaseStream();
+        finishTranscription(null, session);
+      }, 2500);
       try {
-        mediaRecorderRef.current.stop();
-      } catch (e) {
-        console.error(e);
+        recorderRef.current.stop();
+      } catch {
+        clearTimeout(stopTimeoutRef.current);
+        releaseStream();
+        finishTranscription(null, session);
       }
     } else {
-      // If mediaRecorder was never active, trigger auto submit directly
-      autoTranscribeAndSubmit(null);
+      releaseStream();
+      finishTranscription(null, session);
     }
-    if (timerRef.current) clearInterval(timerRef.current);
   };
+  stopRef.current = stopRecording;
 
-  const autoTranscribeAndSubmit = async (blob) => {
-    setIsTranscribing(true);
-    setRecorderState('completed');
-    let finalTranscript = '';
-    
-    try {
-      if (blob && blob.size > 1000) {
-        const whisperHint = selectedLanguage ? selectedLanguage.split('-')[0] : '';
-        const response = await transcribeAudio(blob, whisperHint);
-        if (response && response.text && response.text.trim()) {
-          finalTranscript = response.text.trim();
-        }
-      }
-    } catch (err) {
-      console.warn('Whisper auto-transcription note (falling back to Web Speech API):', err.message);
-    } finally {
-      setIsTranscribing(false);
-    }
-
-    // If Whisper didn't return text, use Web Speech transcript from ref
-    if (!finalTranscript) {
-      finalTranscript = latestTranscriptRef.current || transcript || editableTranscript;
-    }
-
-    const finalCleanText = (finalTranscript || '').trim();
-    setEditableTranscript(finalCleanText);
-    latestTranscriptRef.current = finalCleanText;
-    const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
-    
-    if (wordCount < 10) {
-      alert('⚠️ Speech too short or no audio detected. You can edit/retry or type manually.');
-      return;
-    }
-
-    onAnalyze({
-      transcript: finalCleanText,
-      actualDuration: actualDurationRef.current || 1,
-    });
-  };
-
-  const tryAgain = () => {
-    resetTranscript();
-    latestTranscriptRef.current = '';
+  const retry = () => {
+    sessionRef.current += 1;
+    recordingRef.current = false;
+    setError('');
     setEditableTranscript('');
-    setAudioBlob(null);
-    setIsTranscribing(false);
-    setTimeLeft(targetDuration);
+    transcriptRef.current = '';
+    resetTranscript();
+    setTimeLeft(duration);
     setActualDuration(0);
     actualDurationRef.current = 0;
-    setRecorderState('idle');
-  };
-
-  const handleAnalyzeClick = () => {
-    const finalCleanText = editableTranscript.trim();
-    const wordCount = finalCleanText.split(/\s+/).filter(Boolean).length;
-    
-    if (wordCount === 0) {
-      alert('⚠️ No speech detected. Please record and speak to generate a transcript.');
-      return;
-    }
-    if (wordCount < 10) {
-      alert('⚠️ Speech too short! Please record and speak a longer response (at least 10 words).');
-      return;
-    }
-    
-    onAnalyze({
-      transcript: finalCleanText,
-      actualDuration: actualDurationRef.current || 1,
-    });
-  };
-
-  const size = 130;
-  const strokeWidth = 4;
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const progressRatio = timeLeft / targetDuration;
-  const strokeDashoffset = circumference - progressRatio * circumference;
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    recorderRef.current = null;
+    setPhase('idle');
   };
 
   const wordCount = editableTranscript.trim().split(/\s+/).filter(Boolean).length;
-  const wpm = actualDuration > 0 ? Math.round((wordCount / actualDuration) * 60) : 0;
+  const analyze = () => {
+    if (wordCount < 10) { setError('Give the judge at least 10 words to work with. Review the transcript or try another take.'); return; }
+    setError('');
+    onAnalyze({ transcript: editableTranscript.trim(), actualDuration: actualDurationRef.current || 1 });
+  };
+  const formatTime = seconds => `${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')}`;
+  const canLeave = phase === 'idle' || phase === 'preparing' || phase === 'completed';
+  const status = phase === 'idle' ? 'Your mic check comes first' : phase === 'preparing' ? 'Connecting your microphone…' : phase === 'countdown' ? 'Microphone ready' : phase === 'recording' ? 'You’re on the mic' : phase === 'transcribing' ? 'Preparing your transcript…' : 'Round complete';
 
   return (
-    <Card className="w-full max-w-[600px] border-4 border-white bg-black rounded-none shadow-[8px_8px_0px_0px_#ffffff] p-6 text-white font-body relative overflow-hidden">
-      <CardContent className="p-0 flex flex-col gap-6">
-      <AnimatePresence>
-        {recorderState === 'countdown' && (
-          <motion.div
-            style={{
-              position: 'fixed',
-              inset: 0,
-              backgroundColor: '#000000',
-              zIndex: 99,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '2rem',
-              textAlign: 'center'
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <div style={{ border: '4px solid #ffffff', padding: '3rem 2rem', backgroundColor: '#000000', width: '100%', maxWidth: '600px', boxShadow: '8px 8px 0px 0px #ffffff' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Get ready to speak about:</span>
-              <h2 className="recorder-topic-title" style={{ margin: '1rem 0 2rem 0' }}>
-                {translatedTopic === topic.topic ? `"${topic.topic}"` : `"${translatedTopic}"`}
-                {translatedTopic !== topic.topic && (
-                  <div style={{ fontSize: '1rem', fontWeight: 'normal', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                    (English: "{topic.topic}")
-                  </div>
-                )}
-              </h2>
-              <motion.div
-                key={countdown}
-                style={{ fontSize: '6rem', fontWeight: 900, fontFamily: 'var(--font-heading)' }}
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 1.2, opacity: 0 }}
-                transition={{ duration: 0.85 }}
-              >
-                {countdown}
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Top Details */}
-      <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
-        {recorderState === 'idle' && (
-          <Button variant="ghost" onClick={onBack} className="text-white hover:text-white hover:bg-[#1a1a1a] rounded-none px-2 font-black">
-            <span className="material-symbols-outlined text-sm mr-1">arrow_back</span> BACK
-          </Button>
-        )}
-        <div style={{ flexGrow: recorderState === 'idle' ? 0 : 1, textAlign: recorderState === 'idle' ? 'right' : 'center' }}>
-          <span className="winner-category-tag">{topic.category}</span>
+    <section className="screen-stack solo-recorder">
+      <div className="recorder-topline">{canLeave && <BackButton onClick={onBack}>Leave practice</BackButton>}<span className="topic-category">{topic.category}</span></div>
+      <div className="game-panel recording-stage">
+        <h1 className="topic-title" dir="auto">{translatedTopic}</h1>
+        {translatedTopic !== topic.topic && <p className="translation-original">Original: {topic.topic}</p>}
+        <div className={`recording-status${phase === 'recording' ? ' is-live' : ''}`} role="status">{phase === 'completed' ? <Check size={16} /> : <Mic size={16} />}{status}</div>
+        {phase === 'countdown' ? <div className="round-countdown" role="status" aria-label={`Speak in ${countdown}`}>{countdown || 'Go'}</div> : <div className="recording-timer">
+          <span className="recording-time">{phase === 'completed' ? formatTime(actualDuration) : formatTime(timeLeft)}</span>
+          <span>{phase === 'completed' ? 'spoken' : phase === 'recording' ? 'remaining' : 'round time'}</span>
+        </div>}
+        <progress className="recording-progress" max={duration} value={phase === 'completed' ? actualDuration : duration - timeLeft} aria-label="Round time elapsed" />
+        {phase === 'recording' && <div className="input-level" aria-label="Microphone input level">{audioLevels.map((level, index) => <span key={index} className="input-level-bar" style={{ height: `${Math.max(3, level * 44)}px` }} />)}</div>}
+        <div className="game-actions">
+          {(phase === 'idle' || phase === 'preparing') && <GameButton onClick={prepareRound} disabled={phase === 'preparing'}><Mic size={18} />{phase === 'preparing' ? 'Checking microphone…' : 'Check mic & start'}</GameButton>}
+          {phase === 'recording' && <GameButton variant="danger" onClick={stopRecording}><Square size={16} />Finish speaking</GameButton>}
+          {phase === 'completed' && <><GameButton onClick={analyze}>Score this round <ArrowRight size={18} /></GameButton><GameButton variant="secondary" onClick={retry}><RotateCcw size={17} />Try another take</GameButton></>}
         </div>
+        {phase === 'idle' && <p className="recording-help">We’ll check microphone access, count you in, then start the clock.</p>}
+        {phase === 'completed' && <p className="recording-help">Check your transcript below, then send it to the judge.</p>}
+        {phase === 'transcribing' && <p className="recording-help" role="status">Your round is saved in this session. Stay here while we turn it into text.</p>}
       </div>
-
-      <h1 className="recorder-topic-title" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.25rem' }}>
-        <span>{translatedTopic === topic.topic ? `"${topic.topic}"` : `"${translatedTopic}"`}</span>
-        {translatedTopic !== topic.topic && (
-          <span style={{ fontSize: '0.9rem', fontWeight: 'normal', opacity: 0.6 }}>
-            (English: "{topic.topic}")
-          </span>
-        )}
-      </h1>
-
-      {/* Dynamic visualizer */}
-      {recorderState === 'recording' && (
-        <div className="audio-visualizer-container">
-          {audioLevels.map((lvl, index) => (
-            <div
-              key={index}
-              className="visualizer-bar"
-              style={{
-                height: `${Math.max(4, lvl * 50)}px`,
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Timer */}
-      <div className="timer-container">
-        <svg className="timer-circle-svg" width={size} height={size}>
-          <circle
-            className="timer-circle-track"
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-          />
-          <motion.circle
-            className="timer-circle-fill"
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            strokeDasharray={circumference}
-            animate={{ strokeDashoffset }}
-            transition={{ duration: 0.5, ease: 'linear' }}
-          />
-        </svg>
-        <div className="timer-time-display">
-          <span className="timer-val">{formatTime(timeLeft)}</span>
-          <span className="timer-label">
-            {recorderState === 'idle' && 'READY'}
-            {recorderState === 'recording' && 'REMAINING'}
-            {recorderState === 'completed' && 'DONE!'}
-          </span>
-        </div>
-      </div>
-
-      {/* Transcript Box */}
-      <div className="transcript-wrapper">
-        <div className="transcript-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>TRANSCRIPT BOX</span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-            {recorderState === 'completed' ? (
-              <><span className="material-symbols-outlined text-xs">edit</span> EDITABLE</>
-            ) : (
-              <><span className="material-symbols-outlined text-xs">lock</span> READ ONLY</>
-            )}
-          </span>
-        </div>
-        <Textarea
-          className="w-full min-h-[150px] bg-transparent border-none outline-none text-white resize-none font-body text-base placeholder:text-[#666666] focus-visible:ring-0 px-0"
-          readOnly={recorderState !== 'completed'}
-          value={isTranscribing ? 'Transcribing audio via Groq Whisper... Please wait.' : editableTranscript}
-          onChange={(e) => {
-            setEditableTranscript(e.target.value);
-            latestTranscriptRef.current = e.target.value;
-          }}
-          placeholder={
-            recorderState === 'recording'
-              ? 'Listening... Start speaking into your mic now!'
-              : 'Recorded speech will appear here automatically once recording ends. You can also edit or type manually.'
-          }
-        />
-        {interimTranscript && (
-          <p style={{ fontStyle: 'italic', opacity: 0.6, fontSize: '0.9rem', marginTop: '0.25rem' }}>
-            {interimTranscript}
-          </p>
-        )}
-        <div className="transcript-meta">
-          <span>WORDS: <strong style={{ color: 'var(--text-primary)' }}>{wordCount}</strong></span>
-          <span>WPM: <strong style={{ color: 'var(--text-primary)' }}>{wpm}</strong></span>
-        </div>
-      </div>
-
-      {/* Error warnings */}
-      {!isSupported && <div style={{ color: 'var(--accent-coral)', fontWeight: 700, fontSize: '0.85rem' }}>⚠️ {speechError}</div>}
-      {isSupported && speechError && (
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', border: '2px solid #ffffff', padding: '0.75rem', width: '100%', textAlign: 'left' }}>
-          ⚠️ {speechError}
-        </div>
-      )}
-
-      {/* Controls */}
-      <div style={{ display: 'flex', gap: '1rem', width: '100%', justifyContent: 'center', flexWrap: 'wrap' }}>
-        {recorderState === 'idle' && (
-          <Button onClick={startCountdown} disabled={!isSupported} className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12">
-            <span className="material-symbols-outlined text-sm mr-2">mic</span> START RECORDING
-          </Button>
-        )}
-
-        {recorderState === 'recording' && (
-          <Button onClick={stopRecording} className="bg-transparent hover:bg-[#111111] text-[#ff5555] font-black uppercase tracking-widest rounded-none border-2 border-[#ff5555] px-6 h-12">
-            <span className="material-symbols-outlined text-sm mr-2">stop</span> STOP RECORDING
-          </Button>
-        )}
-
-        {recorderState === 'completed' && (
-          <>
-            {isTranscribing && (
-              <div style={{ width: '100%', padding: '1rem', textAlign: 'center', fontWeight: 800, textTransform: 'uppercase', fontSize: '0.85rem' }}>
-                ⚡ Auto-transcribing speech audio...
-              </div>
-            )}
-            {!isTranscribing && (
-              <>
-                <Button onClick={handleAnalyzeClick} className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12">
-                  <span className="material-symbols-outlined text-sm mr-2" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span> 
-                  ANALYZE MY SPEECH
-                </Button>
-                <Button variant="outline" onClick={tryAgain} className="bg-transparent hover:bg-[#111111] text-[#888888] font-black uppercase tracking-widest rounded-none border-2 border-[#333333] px-6 h-12">
-                  <span className="material-symbols-outlined text-sm mr-2">rotate_left</span> TRY AGAIN
-                </Button>
-              </>
-            )}
-          </>
-        )}
-      </div>
-      </CardContent>
-    </Card>
+      {error && <StatusNotice tone="error">{error}</StatusNotice>}
+      {phase === 'recording' && speechError && <StatusNotice>Live captions are unavailable. Your recorded audio will still be transcribed after the round.</StatusNotice>}
+      {(phase === 'recording' || phase === 'completed') && <details className="feedback-details transcript-detail" open={phase === 'completed'}>
+        <summary><span>{phase === 'completed' ? 'Review your transcript' : 'Live transcript'}</span><ChevronDown size={17} /></summary>
+        <label className="sr-only" htmlFor="solo-transcript">Your speech transcript</label>
+        <textarea id="solo-transcript" className="transcript-editor" dir="auto" readOnly={phase !== 'completed'} value={editableTranscript} onChange={event => { setEditableTranscript(event.target.value); transcriptRef.current = event.target.value; }} placeholder={phase === 'recording' ? 'Your words will appear here as you speak.' : 'Enter or correct the words you spoke.'} />
+        <div className="transcript-meta"><span>{wordCount} words</span>{actualDuration > 0 && <span>{Math.round(wordCount / actualDuration * 60)} words/min</span>}</div>
+      </details>}
+    </section>
   );
 }
 
