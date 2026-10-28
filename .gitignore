@@ -28,3 +28,11 @@ Thumbs.db
 
 # Playwright MCP artifacts
 .playwright-mcp/
+
+# Local visual verification (isolated browser profile and captures)
+.impeccable/chrome-profile/
+.impeccable/review/
+.impeccable/ui-review-profile/
+.impeccable/questions/
+frontend/.visual-review.html
+frontend/.visual-review.jsx
