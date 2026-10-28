@@ -1,183 +1,119 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowRight, ChevronDown, RotateCw } from 'lucide-react';
 import { TOPIC_BANK } from '../data/topics';
-import { Button } from "@/components/ui/button";
+import { getWheelSegment } from '../utils/wheel';
+import { BackButton, GameButton, PageHeading } from './game/GameUI';
 
-export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory, onBack }) {
+export function SpinWheel({ selectedDuration, onTopicSelected, selectedCategory = 'General', onBack }) {
   const canvasRef = useRef(null);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [selectedTopic, setSelectedTopic] = useState(null);
+  const frameRef = useRef(null);
+  const resultRef = useRef(null);
   const [rotation, setRotation] = useState(0);
-  const [wheelTopics, setWheelTopics] = useState([]);
-  
-  const segments = 10;
-  const colors = [
-    '#000000', '#ffffff', '#eeeeee', '#000000', '#ffffff',
-    '#dadada', '#000000', '#ffffff', '#f5f3f3', '#000000'
-  ];
-
-  useEffect(() => {
-    const categoryName = selectedCategory || "General";
-    const subtopics = TOPIC_BANK[categoryName] || TOPIC_BANK["General"] || [];
-    
-    // Convert 10 subtopics into segments array structure
-    const selected = subtopics.map(topic => ({ category: categoryName, topic }));
-    setWheelTopics(selected);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    if (wheelTopics.length === 0) return;
-    
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const size = canvas.width;
-    const center = size / 2;
-    const radius = center - 8;
-
-    ctx.clearRect(0, 0, size, size);
-
-    ctx.save();
-    ctx.translate(center, center);
-    ctx.rotate((rotation * Math.PI) / 180);
-
-    const arcSize = (2 * Math.PI) / segments;
-
-    for (let i = 0; i < segments; i++) {
-      const angle = i * arcSize;
-      const bgColor = colors[i % colors.length];
-      
-      ctx.beginPath();
-      ctx.fillStyle = bgColor;
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, radius, angle, angle + arcSize);
-      ctx.lineTo(0, 0);
-      ctx.fill();
-      ctx.strokeStyle = '#000000';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.save();
-      ctx.rotate(angle + arcSize / 2);
-      
-      ctx.fillStyle = bgColor === '#000000' ? '#ffffff' : '#000000';
-      ctx.font = 'bold 9px Montserrat';
-      ctx.textAlign = 'right';
-      
-      const text = wheelTopics[i].topic;
-      const displayName = text.length > 18 ? text.substring(0, 15) + '...' : text;
-      
-      ctx.fillText(displayName.toUpperCase(), radius - 12, 3);
-      ctx.restore();
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const wheelTopics = useMemo(() => {
+    const pool = [...(TOPIC_BANK[selectedCategory] || TOPIC_BANK.General || [])];
+    for (let index = pool.length - 1; index > 0; index -= 1) {
+      const other = Math.floor(Math.random() * (index + 1));
+      [pool[index], pool[other]] = [pool[other], pool[index]];
     }
+    return pool.slice(0, 10).map(topic => ({ topic, category: selectedCategory }));
+  }, [selectedCategory]);
+  const selectedTopic = selectedIndex === null ? null : wheelTopics[selectedIndex];
 
-    ctx.restore();
-    ctx.beginPath();
-    ctx.fillStyle = '#000000';
-    ctx.arc(center, center, 20, 0, 2 * Math.PI);
-    ctx.fill();
+  useEffect(() => () => cancelAnimationFrame(frameRef.current), []);
 
-    ctx.beginPath();
-    ctx.fillStyle = '#ffffff';
-    ctx.arc(center, center, 16, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    ctx.fillStyle = '#000000';
-    ctx.font = '900 8px Montserrat';
-    ctx.textAlign = 'center';
-    ctx.fillText('SPIN', center, center + 3);
-  }, [rotation, wheelTopics]);
+  useEffect(() => {
+    const context = canvasRef.current?.getContext('2d');
+    if (!context || !wheelTopics.length) return;
+    const size = 640;
+    const center = size / 2;
+    const arc = Math.PI * 2 / wheelTopics.length;
+    context.clearRect(0, 0, size, size);
+    context.save();
+    context.translate(center, center);
+    context.rotate(rotation * Math.PI / 180);
+    wheelTopics.forEach((_, index) => {
+      context.beginPath();
+      context.moveTo(0, 0);
+      context.arc(0, 0, 298, index * arc, (index + 1) * arc);
+      context.closePath();
+      context.fillStyle = index === selectedIndex ? '#63e8e1' : index % 2 ? '#1c3040' : '#142432';
+      context.fill();
+      context.strokeStyle = '#0b1018';
+      context.lineWidth = 5;
+      context.stroke();
+      context.save();
+      context.rotate((index + 0.5) * arc);
+      context.translate(234, 0);
+      context.rotate(Math.PI / 2);
+      context.fillStyle = index === selectedIndex ? '#0b1018' : '#d9f1f4';
+      context.font = '600 38px "Barlow Condensed", sans-serif';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(String(index + 1).padStart(2, '0'), 0, 0);
+      context.restore();
+    });
+    context.restore();
+  }, [rotation, wheelTopics, selectedIndex]);
+
+  useEffect(() => {
+    if (selectedTopic) resultRef.current?.focus();
+  }, [selectedTopic]);
 
   const spin = () => {
-    if (isSpinning || wheelTopics.length === 0) return;
+    if (isSpinning || !wheelTopics.length) return;
     setIsSpinning(true);
-    setSelectedTopic(null);
-
-    const spinDuration = 4000;
-    const startRotation = rotation % 360;
-    const additionalSpins = 5 + Math.floor(Math.random() * 5);
-    const targetAngle = Math.floor(Math.random() * 360);
-    const finalRotation = startRotation + additionalSpins * 360 + targetAngle;
-
+    setSelectedIndex(null);
+    const start = rotation % 360;
+    const end = start + 360 * 5 + Math.random() * 360;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reducedMotion) {
+      setRotation(end);
+      setSelectedIndex(getWheelSegment(end, wheelTopics.length));
+      setIsSpinning(false);
+      return;
+    }
     const startTime = performance.now();
-
-    const animateSpin = (time) => {
-      const elapsed = time - startTime;
-      const progress = Math.min(elapsed / spinDuration, 1);
-      
-      const ease = 1 - Math.pow(1 - progress, 3);
-      const currentRot = startRotation + (finalRotation - startRotation) * ease;
-      
-      setRotation(currentRot);
-
-      if (progress < 1) {
-        requestAnimationFrame(animateSpin);
-      } else {
-        const endAngle = currentRot % 360;
-        const normalizedAngle = (360 - (endAngle % 360) + 90) % 360;
-        const segmentAngle = 360 / segments;
-        const winnerIndex = Math.floor(normalizedAngle / segmentAngle) % segments;
-
-        const winner = wheelTopics[winnerIndex];
-        setSelectedTopic(winner);
+    const animate = now => {
+      const progress = Math.min((now - startTime) / 3200, 1);
+      setRotation(start + (end - start) * (1 - Math.pow(1 - progress, 4)));
+      if (progress < 1) frameRef.current = requestAnimationFrame(animate);
+      else {
+        setSelectedIndex(getWheelSegment(end, wheelTopics.length));
         setIsSpinning(false);
-
-        setTimeout(() => {
-          onTopicSelected(winner);
-        }, 2500);
       }
     };
-
-    requestAnimationFrame(animateSpin);
+    frameRef.current = requestAnimationFrame(animate);
   };
 
   return (
-    <div className="spinning-container" style={{ position: 'relative' }}>
-      {!isSpinning && !selectedTopic && onBack && (
-        <Button 
-          variant="ghost" 
-          onClick={onBack}
-          className="text-white hover:text-white hover:bg-[#1a1a1a] rounded-none px-2 font-black absolute top-0 left-0"
-        >
-          <span className="material-symbols-outlined text-sm mr-1">arrow_back</span> BACK
-        </Button>
-      )}
-      <h2 className="spin-title" style={{ marginTop: (!isSpinning && !selectedTopic && onBack) ? '2.5rem' : '0' }}>🎰 Spin to Decide Your Topic</h2>
-      
-      <div className="wheel-wrapper">
-        <div className="wheel-pointer"></div>
-        <canvas
-          ref={canvasRef}
-          className="wheel-canvas"
-          width={254}
-          height={254}
-          onClick={spin}
-          style={{ cursor: isSpinning ? 'default' : 'pointer' }}
-        />
+    <section className="screen-stack wheel-screen">
+      {!isSpinning && <BackButton onClick={onBack}>Change challenge</BackButton>}
+      <PageHeading title="Let the wheel decide." description={`${selectedCategory} · ${selectedDuration} second round`} />
+      <div className="game-panel wheel-layout">
+        <div className="topic-wheel">
+          <div className="wheel-pointer" aria-hidden="true" />
+          <canvas ref={canvasRef} width={640} height={640} className="wheel-canvas" aria-label={`${wheelTopics.length} numbered topic slots. Use the spin button to select a topic.`} role="img" />
+          <div className="wheel-hub" aria-hidden="true"><RotateCw size={31} /></div>
+        </div>
+        <div className="wheel-result">
+          {selectedTopic ? <>
+            <span className="topic-number">Topic {String(selectedIndex + 1).padStart(2, '0')}</span>
+            <h2 ref={resultRef} tabIndex={-1} className="topic-title">{selectedTopic.topic}</h2>
+            <p>Take a moment to think. Your microphone check comes next.</p>
+            <GameButton onClick={() => onTopicSelected(selectedTopic)}>Take the mic <ArrowRight size={18} /></GameButton>
+            <GameButton variant="ghost" onClick={spin}><RotateCw size={16} /> Spin again</GameButton>
+          </> : <>
+            <h2 className="topic-title">One spin.<br />A fresh challenge.</h2>
+            <p>Your topic will appear here in full. The round starts when you’re ready.</p>
+            <GameButton onClick={spin} disabled={isSpinning || !wheelTopics.length}><RotateCw size={18} />{isSpinning ? 'Finding your topic…' : 'Spin the wheel'}</GameButton>
+          </>}
+          <span className="sr-only" role="status">{isSpinning ? 'The wheel is spinning.' : selectedTopic ? `Selected topic: ${selectedTopic.topic}` : ''}</span>
+        </div>
       </div>
-
-      {!isSpinning && !selectedTopic && (
-        <Button onClick={spin} className="bg-white hover:bg-[#e0e0e0] text-black font-black uppercase tracking-widest rounded-none border-2 border-white px-6 h-12 mt-4">
-          <span className="material-symbols-outlined text-sm mr-2" style={{ fontVariationSettings: "'FILL' 1" }}>casino</span>
-          Spin Wheel!
-        </Button>
-      )}
-
-      {selectedTopic && (
-        <motion.div
-          className="topic-announcement"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.2 }}
-        >
-          <span className="winner-category-tag">{selectedTopic.category}</span>
-          <p className="winner-topic-text">"{selectedTopic.topic}"</p>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'uppercase', fontWeight: 700, marginTop: '0.5rem' }}>
-            Duration: {selectedDuration}s | Preparing recorder...
-          </p>
-        </motion.div>
-      )}
-    </div>
+      <details className="feedback-details"><summary><span>Topics on this wheel</span><ChevronDown size={17} /></summary><ol className="wheel-topic-list">{wheelTopics.map((item, index) => <li key={item.topic} aria-current={index === selectedIndex ? 'true' : undefined}>{item.topic}</li>)}</ol></details>
+    </section>
   );
 }
 
