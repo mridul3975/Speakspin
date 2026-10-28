@@ -1,16 +1,28 @@
 let audioCtx = null;
 
+export function isSoundEnabled() {
+  try { return localStorage.getItem('speakspin-sound-enabled') === 'true'; }
+  catch { return false; }
+}
+
+export function setSoundEnabled(enabled) {
+  try { localStorage.setItem('speakspin-sound-enabled', String(!!enabled)); }
+  catch { /* Sound remains optional when browser storage is unavailable. */ }
+  if (!enabled && audioCtx?.state === 'running') audioCtx.suspend().catch(() => {});
+}
+
 function getAudioContext() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   }
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
+    audioCtx.resume().catch(() => {});
   }
   return audioCtx;
 }
 
 export function playTick() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const osc = ctx.createOscillator();
@@ -30,6 +42,7 @@ export function playTick() {
 }
 
 export function playMatchFound() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
@@ -55,6 +68,7 @@ export function playMatchFound() {
 }
 
 export function playHorn() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
@@ -87,6 +101,7 @@ export function playHorn() {
 }
 
 export function playWinnerFanfare() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
@@ -112,6 +127,7 @@ export function playWinnerFanfare() {
 }
 
 export function playLoserSound() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
@@ -135,6 +151,7 @@ export function playLoserSound() {
 }
 
 export function playReactionPop() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const osc = ctx.createOscillator();
@@ -156,6 +173,7 @@ export function playReactionPop() {
 }
 
 export function playRatingUp() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
@@ -180,6 +198,7 @@ export function playRatingUp() {
 }
 
 export function playRatingDown() {
+  if (!isSoundEnabled()) return;
   try {
     const ctx = getAudioContext();
     const now = ctx.currentTime;
