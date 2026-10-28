@@ -11,15 +11,8 @@ const BOT_ROSTER = [
   { id: "bot_legend", name: "OmegaSpeaker", avatar: "👑", rating: 1700, tier: "Legend", skillLevel: "legendary", personality: "masterful, compelling, inspiring" }
 ];
 
-const RANDOM_GUEST_NAMES = [
-  "Aaron", "Chloe", "Devin", "Elena", "Marcus", "Sienna", "Tristan", "Maya", "Julian", "Clara",
-  "Nolan", "Fiona", "Derrick", "Paige", "Gavin", "Giselle", "Justin", "Leah", "Victor", "Naomi",
-  "Rohan", "Priya", "Hiroshi", "Yuki", "Hans", "Ingrid", "Sven", "Freya", "Diego", "Sofia",
-  "Arthur", "Beatrice", "Connor", "Diana", "Ethan", "Flora", "Gabriel", "Helena", "Ian", "Julia"
-];
-
-const RANDOM_GUEST_AVATARS = ["🦁", "🐼", "🦊", "🐯", "🐨", "🦉", "🦄", "🦅", "🐝", "🐙", "🐢", "🦈", "🐬", "🦎", "🐒"];
-
+const BOT_MATCH_DELAY_MS = 5000;
+const botMatchTimers = new Map();
 let waitingQueue = [];
 const activeRooms = new Map();
 const playerSockets = new Map();
@@ -84,35 +77,22 @@ export function initSocket(httpServer) {
       io.emit('queue_update', { waitingCount: waitingQueue.length });
       tryMatchmaking(io);
 
-      // Auto-bot matchmaking after 3 seconds if still in queue
-      setTimeout(() => {
-        const inQueue = waitingQueue.find(p => p.socketId === socket.id);
-        if (inQueue) {
-          console.log(`Auto-matching player ${socket.id} with a shadow bot after 3 seconds`);
+      if (waitingQueue.includes(player)) {
+        const timer = setTimeout(() => {
+          // Give any waiting compatible player one final chance before the fallback.
+          tryMatchmaking(io);
+          if (!socket.connected || !waitingQueue.includes(player)) return;
+
           removeFromQueue(socket.id);
-          const pObj = playerSockets.get(socket.id);
-          if (pObj) {
-            const targetRating = pObj.rating + 50;
-            const bestBot = BOT_ROSTER.reduce((closest, bot) => {
-              const closestDiff = Math.abs(closest.rating - targetRating);
-              const botDiff = Math.abs(bot.rating - targetRating);
-              return botDiff < closestDiff ? bot : closest;
-            });
-
-            // Deep copy and randomize visual identity of the bot
-            const botProfile = { ...bestBot };
-            const randName = RANDOM_GUEST_NAMES[Math.floor(Math.random() * RANDOM_GUEST_NAMES.length)];
-            const randAvatar = RANDOM_GUEST_AVATARS[Math.floor(Math.random() * RANDOM_GUEST_AVATARS.length)];
-            const ratingOffset = Math.floor(Math.random() * 100) - 50;
-
-            botProfile.name = randName;
-            botProfile.avatar = randAvatar;
-            botProfile.rating = Math.max(700, pObj.rating + ratingOffset);
-
-            createBotRoom(pObj, botProfile, io);
-          }
-        }
-      }, 4000);
+          const botProfile = BOT_ROSTER.reduce((closest, bot) =>
+            Math.abs(bot.rating - player.rating) < Math.abs(closest.rating - player.rating) ? bot : closest
+          );
+          createBotRoom(player, botProfile, io);
+          io.emit('queue_update', { waitingCount: waitingQueue.length });
+        }, BOT_MATCH_DELAY_MS);
+        timer.unref();
+        botMatchTimers.set(socket.id, timer);
+      }
     });
 
     // CLIENT -> SERVER: cancel_search
@@ -124,9 +104,10 @@ export function initSocket(httpServer) {
     // CLIENT -> SERVER: player_ready
     socket.on('player_ready', ({ roomId }) => {
       const room = activeRooms.get(roomId);
-      if (!room) return;
+      if (!room || room.status !== 'waiting_ready') return;
 
       const player = room.players.find(p => p.socketId === socket.id);
+      if (!player || player.ready) return;
       if (player) {
         player.ready = true;
       }
@@ -146,9 +127,10 @@ export function initSocket(httpServer) {
     // CLIENT -> SERVER: submit_transcript
     socket.on('submit_transcript', async ({ roomId, transcript, actualDuration, wordCount }) => {
       const room = activeRooms.get(roomId);
-      if (!room) return;
+      if (!room || room.status !== 'recording') return;
 
       const player = room.players.find(p => p.socketId === socket.id);
+      if (!player || player.submitted) return;
       if (player) {
         player.transcript = transcript || '';
         player.actualDuration = Number(actualDuration) || 1;
@@ -193,7 +175,7 @@ export function initSocket(httpServer) {
       }
 
       // If both accepted rematch
-      if (room.players.every(p => p.wantsRematch)) {
+      if (room.players.every(p => p.isBot || p.wantsRematch)) {
         resetRoomForRematch(room, io);
       }
     });
@@ -206,7 +188,7 @@ export function initSocket(httpServer) {
       const player = room.players.find(p => p.socketId === socket.id);
       if (player) player.wantsRematch = true;
 
-      if (room.players.every(p => p.wantsRematch)) {
+      if (room.players.every(p => p.isBot || p.wantsRematch)) {
         resetRoomForRematch(room, io);
       }
     });
@@ -224,21 +206,16 @@ export function initSocket(httpServer) {
     });
   });
 
-  // BOT matching triggers
-  io.on('connection', (socket) => {
-    socket.on('fight_bot', ({ botId, playerRating }) => {
-      removeFromQueue(socket.id);
-      const player = playerSockets.get(socket.id);
-      if (!player) return;
+  return io;
+}
 
-      // Choose bot
-      const botProfile = BOT_ROSTER.find(b => b.id === botId) || BOT_ROSTER[1];
-      createBotRoom(player, botProfile, io);
-    });
-  });
+function clearBotMatchTimer(socketId) {
+  clearTimeout(botMatchTimers.get(socketId));
+  botMatchTimers.delete(socketId);
 }
 
 function removeFromQueue(socketId) {
+  clearBotMatchTimer(socketId);
   waitingQueue = waitingQueue.filter(p => p.socketId !== socketId);
 }
 
@@ -286,7 +263,10 @@ function tryMatchmaking(io) {
 
       // Remove both from queue
       const idxs = [i, bestOpponentIdx].sort((a, b) => b - a);
-      idxs.forEach(idx => waitingQueue.splice(idx, 1));
+      idxs.forEach(idx => {
+        clearBotMatchTimer(waitingQueue[idx].socketId);
+        waitingQueue.splice(idx, 1);
+      });
 
       // Create room
       createRoom(player, opponent, io);
@@ -331,14 +311,15 @@ function createRoom(p1, p2, io) {
     yourPosition: 'player2'
   });
 
-  // Auto-ready countdown threshold (10 seconds)
+  // Never begin while a player is still granting microphone permission.
   setTimeout(() => {
     const currentRoom = activeRooms.get(roomId);
     if (currentRoom && currentRoom.status === 'waiting_ready') {
-      currentRoom.players.forEach(p => p.ready = true);
-      startBattle(currentRoom, io);
+      io.to(roomId).emit('error', { message: 'The match was not accepted in time. Find another opponent when you are ready.', code: 'READY_TIMEOUT' });
+      currentRoom.players.forEach(player => player.socket?.leave(roomId));
+      activeRooms.delete(roomId);
     }
-  }, 10000);
+  }, 60000).unref();
 }
 
 function createBotRoom(player, botProfile, io) {
@@ -364,7 +345,7 @@ function createBotRoom(player, botProfile, io) {
 
   player.socket.emit('match_found', {
     roomId,
-    opponent: { name: botProfile.name, avatar: botProfile.avatar, rating: botProfile.rating, tier: botProfile.tier },
+    opponent: { name: botProfile.name, avatar: botProfile.avatar, rating: botProfile.rating, tier: botProfile.tier, isBot: true },
     yourPosition: 'player1'
   });
 }
@@ -383,6 +364,10 @@ function startBattle(room, io) {
 
   let count = 5;
   const interval = setInterval(() => {
+    if (!activeRooms.has(room.roomId) || room.status !== 'topic_reveal') {
+      clearInterval(interval);
+      return;
+    }
     io.to(room.roomId).emit('speaking_countdown', { count });
     count--;
     if (count < 0) {
@@ -398,11 +383,13 @@ function startBattle(room, io) {
       }
     }
   }, 1000);
+  room.countdownTimer = interval;
 }
 
 async function simulateBotCompletion(room, botPlayer, io) {
   // Simulate bot waiting and transcribing
-  setTimeout(async () => {
+  room.botTimer = setTimeout(async () => {
+    if (!activeRooms.has(room.roomId) || room.status !== 'recording') return;
     let botTranscript = `Well, speaking about "${room.topic}", I believe it is a very interesting question. Actually, in my opinion, there are key factors we should look into. Um, first, we have to consider how people adapt. Like, this is basically the most crucial part. So, in conclusion, balance is everything.`;
 
     const client = getOpenAIClient();
@@ -428,6 +415,7 @@ Return ONLY the transcript text itself. Length: ~90-130 words.`;
       }
     }
 
+    if (!activeRooms.has(room.roomId) || room.status !== 'recording') return;
     botPlayer.transcript = botTranscript;
     botPlayer.actualDuration = 60;
     botPlayer.wordCount = botTranscript.split(/\s+/).filter(Boolean).length;
@@ -444,9 +432,11 @@ Return ONLY the transcript text itself. Length: ~90-130 words.`;
       analyzeAndRevealResults(room, io);
     }
   }, 30000); // Bot submits after 30s
+  room.botTimer.unref();
 }
 
 async function analyzeAndRevealResults(room, io) {
+  if (room.status !== 'recording') return;
   room.status = 'analyzing';
   io.to(room.roomId).emit('analyzing_speeches', { message: 'AI judge is deliberating...' });
 
@@ -475,21 +465,24 @@ async function analyzeAndRevealResults(room, io) {
       winner = 'player2';
     }
 
-    const { change1, change2 } = calculateELO(p1.rating, p2.rating, winner);
+    const ratingBefore1 = p1.rating;
+    const ratingBefore2 = p2.rating;
+    const { change1, change2 } = calculateELO(ratingBefore1, ratingBefore2, winner);
     
     // Update player rating values in socket room memory
     p1.rating = p1.rating + change1;
     p2.rating = p2.rating + change2;
 
     io.to(room.roomId).emit('battle_results', {
+      resultId: `${room.roomId}-${nanoid(8)}`,
       winner,
       topic: room.topic,
       category: room.category,
       player1: {
         name: p1.playerName,
         avatar: p1.avatar,
-        rating: p1.rating,
-        newRating: p1.rating + change1,
+        rating: ratingBefore1,
+        newRating: p1.rating,
         ratingChange: change1,
         overallScore: score1,
         categories: analysis1.categories,
@@ -501,8 +494,8 @@ async function analyzeAndRevealResults(room, io) {
       player2: {
         name: p2.playerName,
         avatar: p2.avatar,
-        rating: p2.rating,
-        newRating: p2.rating + change2,
+        rating: ratingBefore2,
+        newRating: p2.rating,
         ratingChange: change2,
         overallScore: score2,
         categories: analysis2.categories,
@@ -659,7 +652,11 @@ function handleLeaveRoom(socketId, roomId, io) {
   if (!room) return;
 
   const leavingPlayer = room.players.find(p => p.socketId === socketId);
+  if (!leavingPlayer) return;
   const remainingPlayer = room.players.find(p => p.socketId !== socketId);
+  room.status = 'closed';
+  clearInterval(room.countdownTimer);
+  clearTimeout(room.botTimer);
 
   if (remainingPlayer && remainingPlayer.socket) {
     remainingPlayer.socket.emit('opponent_disconnected');
