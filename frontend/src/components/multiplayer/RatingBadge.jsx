@@ -1,41 +1,41 @@
 import React from 'react';
-
+import { Award } from 'lucide-react';
 export function getTier(rating) {
-  if (rating < 800) return { name: 'Bronze', emoji: '🥉', color: '#cd7f32', title: 'Shy Whisperer' };
-  if (rating < 1000) return { name: 'Silver', emoji: '🥈', color: '#c0c0c0', title: 'Rising Voice' };
-  if (rating < 1200) return { name: 'Gold', emoji: '🥇', color: '#ffd700', title: 'Confident Speaker' };
-  if (rating < 1400) return { name: 'Diamond', emoji: '💎', color: '#00ffff', title: 'Eloquent Champion' };
-  if (rating < 1600) return { name: 'Master', emoji: '🔮', color: '#a020f0', title: 'Speech Master' };
-  return { name: 'Legend', emoji: '👑', color: '#ff4500', title: 'Grand Orator' };
+  if (rating < 800) return {
+    name: 'Bronze',
+    color: '#d9a472',
+    title: 'Finding Your Voice'
+  };
+  if (rating < 1000) return {
+    name: 'Silver',
+    color: '#bdcbdc',
+    title: 'Rising Voice'
+  };
+  if (rating < 1200) return {
+    name: 'Gold',
+    color: '#e8c47c',
+    title: 'Confident Speaker'
+  };
+  if (rating < 1400) return {
+    name: 'Diamond',
+    color: '#63e8e1',
+    title: 'Eloquent Champion'
+  };
+  if (rating < 1600) return {
+    name: 'Master',
+    color: '#c3b3f0',
+    title: 'Speech Master'
+  };
+  return {
+    name: 'Legend',
+    color: '#ffad88',
+    title: 'Grand Orator'
+  };
 }
-
-export function RatingBadge({ rating }) {
+export function RatingBadge({
+  rating = 1000
+}) {
   const tier = getTier(rating);
-
-  return (
-    <div
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '0.4rem',
-        padding: '0.35rem 0.75rem',
-        border: `2px solid ${tier.color}`,
-        borderRadius: '0px',
-        backgroundColor: 'rgba(0,0,0,0.4)',
-        boxShadow: `0 0 10px ${tier.color}44`,
-        fontFamily: 'var(--font-heading)',
-        fontWeight: 800,
-        fontSize: '0.8rem',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em'
-      }}
-    >
-      <span>{tier.emoji}</span>
-      <span style={{ color: tier.color }}>{tier.name}</span>
-      <span style={{ color: '#ffffff', opacity: 0.6 }}>|</span>
-      <span style={{ color: '#ffffff' }}>{rating} ELO</span>
-    </div>
-  );
+  return <span className={`rank-badge rank-badge--${tier.name.toLowerCase()}`}><Award size={16} aria-hidden="true" /><span>{tier.name}</span><strong>{rating} ELO</strong></span>;
 }
-
 export default RatingBadge;
