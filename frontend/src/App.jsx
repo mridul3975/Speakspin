@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MotionConfig } from 'framer-motion';
-import { AudioLines, LogOut, Volume2, VolumeX, X } from 'lucide-react';
+import { AudioLines, BookOpen, Gamepad2, History, LogOut, Mic, Volume2, VolumeX, X } from 'lucide-react';
 import { GoogleLogin } from '@react-oauth/google';
 import LandingScreen from './components/LandingScreen';
 import TimerSelector from './components/TimerSelector';
@@ -180,8 +180,8 @@ export function App() {
     language: selectedLanguage,
   });
 
-  const getBattleSocket = () => connect(import.meta.env.VITE_API_BASE_URL ||
-    (window.location.hostname === 'localhost' ? 'http://localhost:3001' : window.location.origin.replace('5173', '3001')));
+  // In development Vite proxies /socket.io to the backend, regardless of its port.
+  const getBattleSocket = () => connect(import.meta.env.VITE_API_BASE_URL || window.location.origin);
 
   const findMatch = (player = getPlayer()) => {
     releaseBattleMicrophone();
@@ -282,7 +282,7 @@ export function App() {
   else if (!user) content = <LoginScreen onLoginSuccess={handleLoginSuccess} onLoginError={handleLoginError} onContinueGuest={continueAsGuest} />;
   else switch (screen) {
     case SCREENS.LANDING:
-      content = <LandingScreen user={{ ...user, ...player }} onStart={startTraining} onViewProgress={openProgress} onViewProfile={openProfile} onStartBattle={handleStartBattleMode} selectedLanguage={selectedLanguage} setSelectedLanguage={changeLanguage} />;
+      content = <LandingScreen onStart={startTraining} onStartBattle={handleStartBattleMode} selectedLanguage={selectedLanguage} setSelectedLanguage={changeLanguage} />;
       break;
     case SCREENS.SETUP:
       content = <TimerSelector selectedDuration={selectedDuration} onChangeDuration={setSelectedDuration} selectedCategory={selectedCategory} onChangeCategory={setSelectedCategory} selectedLanguage={selectedLanguage} onChangeLanguage={changeLanguage} onNext={() => navigateTo(SCREENS.SPINNING)} onBack={() => navigateTo(SCREENS.LANDING)} />;
@@ -332,21 +332,27 @@ export function App() {
     default: content = null;
   }
 
-  return <MotionConfig reducedMotion="user"><div className={'app-shell' + (isGameplayScreen ? ' app-shell--playing' : '')}>
+  return <MotionConfig reducedMotion="user"><div className={'app-shell' + (isGameplayScreen ? ' app-shell--playing' : '') + (loadingUser || !user ? ' app-shell--account' : '')}>
     <a className="skip-link" href="#main-content">Skip to content</a>
-    {!loadingUser && user && !isGameplayScreen && <header className="app-header">
-      <button className="brand-lockup" onClick={openArena} aria-label="SpeakSpin home"><AudioLines aria-hidden="true" /><span>Speak<span>Spin</span></span></button>
+    {!loadingUser && user && !isGameplayScreen && <>
+    <aside className="game-rail">
+      <button className="brand-lockup" onClick={openArena} aria-label="SpeakSpin home"><span className="brand-symbol"><AudioLines aria-hidden="true" /></span><span>Speak<span>Spin</span></span></button>
       <nav className="app-nav" aria-label="Main navigation">
-        <button aria-current={screen === SCREENS.LANDING ? 'page' : undefined} onClick={openArena}>Arena</button>
-        <button aria-current={screen === SCREENS.SETUP || screen === SCREENS.SPINNING ? 'page' : undefined} onClick={startTraining}>Training</button>
-        <button aria-current={screen === SCREENS.HISTORY ? 'page' : undefined} onClick={openProgress}>Progress</button>
+        <button aria-label="Lobby" aria-current={screen === SCREENS.LANDING || screen === SCREENS.BATTLE_LOBBY ? 'page' : undefined} onClick={openArena}><Gamepad2 size={19} /><span>Lobby</span></button>
+        <button aria-label="Solo practice" aria-current={screen === SCREENS.SETUP || screen === SCREENS.SPINNING ? 'page' : undefined} onClick={startTraining}><Mic size={19} /><span>Solo practice</span></button>
+        <button aria-label="Player record" aria-current={screen === SCREENS.BATTLE_PROFILE ? 'page' : undefined} onClick={openProfile}><History size={19} /><span>Player record</span></button>
+        <button aria-label="Practice history" aria-current={screen === SCREENS.HISTORY ? 'page' : undefined} onClick={openProgress}><BookOpen size={19} /><span>Practice history</span></button>
       </nav>
+      <div className="rail-footer"><AudioLines size={22} aria-hidden="true" /><p>Find your voice.<br /><span>One round at a time.</span></p><small>SpeakSpin</small></div>
+    </aside>
+    <header className="app-header">
+      <div className="header-location"><Gamepad2 size={17} /><span className="desktop-location">{screen === SCREENS.LANDING ? 'Game lobby' : screen === SCREENS.BATTLE_LOBBY ? 'Battle arena' : screen === SCREENS.BATTLE_PROFILE ? 'Player record' : screen === SCREENS.HISTORY ? 'Practice history' : 'Solo practice'}</span><span className="mobile-brand">Speak<span>Spin</span></span></div>
       <div className="header-controls">
         <button className="sound-toggle" aria-label={sound ? 'Turn game sound off' : 'Turn game sound on'} aria-pressed={sound} onClick={() => { const enabled = !sound; setSound(enabled); setSoundEnabled(enabled); }}>{sound ? <Volume2 size={18} /> : <VolumeX size={18} />}</button>
         <button className="header-player" onClick={openProfile} aria-label={'View ' + player.playerName + ' profile'}><PlayerAvatar avatar={player.avatar} name={player.playerName} size="small" /><span>{player.playerName}</span></button>
         {isGuestSession ? <div className="google-signin"><GoogleLogin onSuccess={handleLoginSuccess} onError={handleLoginError} theme="filled_black" shape="rectangular" size="medium" text="signin" /></div> : <button className="sound-toggle" onClick={() => { disconnect(); continueAsGuest(); }} aria-label="Sign out"><LogOut size={18} /></button>}
       </div>
-    </header>}
+    </header></>}
     <main id="main-content" className={'app-main' + (isGameplayScreen ? ' app-main--playing' : '')} ref={mainRef} tabIndex={-1}>
       {notice && <StatusNotice tone={notice.tone} action={<div className="notice-actions">{notice.action && <GameButton variant="ghost" onClick={notice.action}>{notice.actionLabel}</GameButton>}<button className="notice-dismiss" aria-label="Dismiss message" onClick={() => setNotice(null)}><X size={18} /></button></div>}>{notice.text}</StatusNotice>}
       {content}
