@@ -211,16 +211,23 @@ export function BattleRecorder({
       wordCount: finalText ? finalText.split(/\s+/).length : 0
     });
   };
-  if (phase === 'transcribing') return <LoadingState title="Saving your words" description="Preparing your transcript for the judge. Keep this window open." />;
-  return <section className="game-panel battle-recorder">
-    <div className="round-hud"><div className="round-hud-player"><PlayerAvatar avatar={user?.avatar} /><div><strong>{user?.playerName || 'You'}</strong><span>You</span></div></div><span className="versus-mark">VS</span><div className="round-hud-player round-hud-player--rival"><div><strong>{opponent?.name || 'Challenger'}</strong><span>{opponentSubmitted ? 'Submitted' : opponentSpeaking ? 'In their round' : 'Preparing'}</span></div><PlayerAvatar avatar={opponent?.avatar} rival /></div></div>
-    <div className="recording-stage"><h1 dir="auto">{translatedTopic}</h1>{translatedTopic !== topic && <p className="subtle-copy">English: {topic}</p>}<div className={`round-timer${timeLeft <= 10 ? ' round-timer--urgent' : ''}`} aria-label={`${timeLeft} seconds remaining`}><strong>{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</strong><span>remaining</span></div><div className="audio-levels" aria-hidden="true">{audioLevels.map((level, index) => <span key={index} style={{
-          height: `${Math.max(4, level * 48)}px`
-        }} />)}</div><p className="round-status" role="status">{phase === 'recording' ? <><Mic size={17} />Microphone recording</> : phase === 'preparing' ? 'Starting your microphone…' : <><MicOff size={17} />Microphone stopped</>}</p></div>
+  if (phase === 'transcribing') return <div className="battle-scene battle-round-saving"><LoadingState title="Saving your words" description="Preparing your transcript for the judge. Keep this window open." /></div>;
+  return <section className="battle-scene battle-round">
+    <div className="battle-round-hud">
+      <div className="battle-hud-player"><PlayerAvatar avatar={user?.avatar} /><div><strong title={user?.playerName || 'You'}>{user?.playerName || 'You'}</strong><span>You</span></div></div>
+      <span className="battle-hud-versus">VS</span>
+      <div className="battle-hud-player battle-hud-player--rival"><div><strong title={opponent?.name || 'Challenger'}>{opponent?.name || 'Challenger'}</strong><span>{opponentSubmitted ? 'Submitted' : opponentSpeaking ? 'In their round' : 'Preparing'}</span></div><PlayerAvatar avatar={opponent?.avatar} rival /></div>
+    </div>
+    <div className="battle-speaking-stage"><h1 dir="auto">{translatedTopic}</h1>{translatedTopic !== topic && <p className="battle-small-copy">English: {topic}</p>}
+      <div className={`battle-round-clock${timeLeft <= 10 ? ' battle-round-clock--urgent' : ''}`} aria-label={`${timeLeft} seconds remaining`}><strong>{Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</strong><span>remaining</span></div>
+      <div className="battle-input-level" aria-hidden="true">{audioLevels.map((level, index) => <span key={index} style={{ height: `${Math.max(4, level * 48)}px` }} />)}</div>
+      <p className="battle-round-status" role="status">{phase === 'recording' ? <><Mic size={17} />Microphone recording</> : phase === 'preparing' ? 'Starting your microphone…' : <><MicOff size={17} />Microphone stopped</>}</p>
+      {phase === 'recording' && <GameButton variant="danger" onClick={finish}><Square size={17} />Finish speaking</GameButton>}
+    </div>
     {error && <StatusNotice tone="error">{error}</StatusNotice>}
     {phase === 'error' && <div className="game-actions"><GameButton onClick={begin}>Retry microphone</GameButton><GameButton variant="secondary" onClick={manualSubmit}>Submit without speech</GameButton></div>}
-    {phase === 'recording' && <><GameButton variant="danger" onClick={finish}><Square size={17} />Finish speaking</GameButton><details className="round-transcript"><summary>Live transcript <span>{wordCount} words</span></summary><p dir="auto">{transcript || (isSupported ? 'Your spoken words will appear here.' : 'A transcript will be prepared after the round.')}</p></details></>}
-    {phase === 'review' && <div className="round-transcript"><label className="field-label" htmlFor="battle-transcript-fallback">Words you spoke</label><textarea id="battle-transcript-fallback" className="game-textarea" value={transcriptFallback} onChange={event => setTranscriptFallback(event.target.value)} dir="auto" /><GameButton onClick={manualSubmit}><Check size={17} />Submit response</GameButton></div>}
+    {phase === 'recording' && <details className="battle-round-transcript"><summary>Live transcript <span>{wordCount} words</span></summary><p dir="auto">{transcript || (isSupported ? 'Your spoken words will appear here.' : 'A transcript will be prepared after the round.')}</p></details>}
+    {phase === 'review' && <div className="battle-round-transcript"><label className="field-label" htmlFor="battle-transcript-fallback">Words you spoke</label><textarea id="battle-transcript-fallback" className="game-textarea" value={transcriptFallback} onChange={event => setTranscriptFallback(event.target.value)} dir="auto" /><GameButton onClick={manualSubmit}><Check size={17} />Submit response</GameButton></div>}
   </section>;
 }
 export default BattleRecorder;
