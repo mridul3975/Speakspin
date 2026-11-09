@@ -25,7 +25,7 @@ People practicing spontaneous speaking through short game rounds. Exact age rang
 
 ## Brand Commitments
 
-The user selected a competitive arcade arena direction on 28 October 2026 and approved UI_REDESIGN_PLAN.md for implementation. Retain the SpeakSpin name, topic wheel, solo training, and multiplayer match loop.
+The user selected a competitive arcade arena direction on 28 October 2026. On 9 November they rejected the resulting dashboard-like presentation, supplied uixNinja's Game Dashboard Interface as the visual reference, and authorized the replacement plan in docs/redesign-2026-11-09/PLAN.md for building. The new system uses dimensional game objects, charcoal surfaces, violet/pink lighting, and illustrated mode destinations. Retain the SpeakSpin name, topic wheel, solo training, and multiplayer match loop.
 
 ## Product Principles
 
@@ -36,4 +36,4 @@ The user selected a competitive arcade arena direction on 28 October 2026 and ap
 
 ## Evidence on Hand
 
-Current source code and UI_REDESIGN_PLAN.md. Browser capture was unavailable in the planning session. No testimonials, user counts, global leaderboard, or achievement evidence is supplied.
+Current source code, the attributed Dribbble reference, and live captures of the incumbent lobby/setup/wheel in docs/redesign-2026-11-09. The replacement implementation has passed the production build, existing game tests, and static component rendering. Browser verification of the replacement is pending because a saved browser permission denies the local preview, including after chat approval. No testimonials, player counts, global leaderboard, or achievement evidence is supplied.
