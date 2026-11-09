@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft, AudioLines, LoaderCircle, Mic, Shield, Sparkles, Swords, Trophy, Zap } from 'lucide-react';
 
 export function GameButton({ children, variant = 'primary', className = '', ...props }) {
-  return <button className={`game-button game-button--${variant} ${className}`} {...props}>{children}</button>;
+  return <button type="button" className={`game-button game-button--${variant} ${className}`} {...props}>{children}</button>;
 }
 
 export function BackButton({ onClick, children = 'Back' }) {
@@ -18,7 +18,7 @@ export function PlayerAvatar({ avatar, name = 'Player', size = 'medium', rival =
   const value = String(avatar || name);
   const index = [...value].reduce((sum, character) => sum + character.codePointAt(0), 0) % avatarIcons.length;
   const Icon = avatarIcons[index];
-  return <span aria-hidden="true" className={`player-avatar player-avatar--${size}${rival ? ' player-avatar--rival' : ''}`}><Icon strokeWidth={1.7} /></span>;
+  return <span aria-hidden="true" data-crest={index} className={`player-avatar player-avatar--${size}${rival ? ' player-avatar--rival' : ''}`}><span className="player-avatar-face"><Icon strokeWidth={1.7} /></span></span>;
 }
 
 export function StatusNotice({ children, tone = 'info', action }) {
