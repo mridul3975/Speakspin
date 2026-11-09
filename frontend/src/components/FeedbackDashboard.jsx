@@ -42,11 +42,11 @@ export function FeedbackDashboard({ topic, analysis, onPracticeAgain, onGoHome, 
   };
   const disclosure = (title, children) => <details className="feedback-details"><summary><span>{title}</span><ChevronDown size={17} /></summary>{children}</details>;
 
-  return <section className="screen-stack solo-results">
-    <div className="game-panel result-hero">
-      <ScoreCircle score={data.overallScore} size={164} strokeWidth={7} />
+  return <section className="screen-stack solo-results solo-scene">
+    <div className="result-hero solo-result-scene">
+      <div className="solo-result-medal"><ScoreCircle score={data.overallScore} size={188} strokeWidth={7} /></div>
       <div className="result-summary">
-        <h1>{hasScore ? 'Round complete.' : 'Your round review.'}</h1>
+        <h1>{hasScore ? 'That’s your round.' : 'Your round review.'}</h1>
         <p className="result-topic" dir="auto">{translatedTopic}</p>
         {data.overallFeedback && <p>{data.overallFeedback}</p>}
         <div className="game-actions">
