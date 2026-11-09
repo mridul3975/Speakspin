@@ -1,0 +1,1096 @@
+/* Solo scenes share the game world's materials, not one repeated panel layout. */
+.solo-scene {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+}
+
+.solo-scene > .game-button--ghost {
+  align-self: flex-start;
+}
+
+.solo-prep-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, .85fr) minmax(0, 1.15fr);
+  gap: clamp(28px, 4vw, 64px);
+  align-items: center;
+  min-height: 580px;
+}
+
+.solo-prep-intro {
+  position: relative;
+  min-width: 0;
+  padding: 22px 0 0;
+}
+
+.solo-prep-intro h1 {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(40px, 4.8vw, 66px);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: -.035em;
+}
+
+.solo-prep-intro h1 span,
+.solo-scene .wheel-result h2 span {
+  color: #f2bad9;
+}
+
+.solo-prep-intro > p {
+  margin-top: 20px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.solo-prep-art {
+  display: block;
+  width: min(360px, 110%);
+  height: 300px;
+  object-fit: contain;
+  margin: -7px auto -6px;
+  filter: drop-shadow(0 24px 28px #0006);
+}
+
+.solo-prep-format {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.solo-prep-format svg {
+  color: #dfb5e7;
+}
+
+.solo-prep-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding: 32px;
+  background: linear-gradient(145deg, #27232f, #1b1921 65%);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 0 #ffffff0d, 0 18px 35px #0003;
+}
+
+.solo-prep-title h2 {
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -.025em;
+}
+
+.solo-prep-title p {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.solo-prep-controls fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+.solo-prep-controls .field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ded5e8;
+}
+
+.solo-prep-controls legend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 13px;
+}
+
+.solo-prep-controls .duration-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.solo-prep-controls .duration-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 21px 10px 14px;
+  min-width: 0;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(155deg, #35303e, #25212d);
+  box-shadow: inset 0 1px 0 #ffffff10, 0 4px 7px #0003;
+  cursor: pointer;
+  transition: background .18s, box-shadow .18s, transform .18s;
+}
+
+.solo-prep-controls .duration-option:hover {
+  transform: translateY(-2px);
+  background: #3b3349;
+}
+
+.solo-prep-controls .duration-option.is-selected {
+  color: #f9efff;
+  background: linear-gradient(145deg, #7351a5, #4e3673);
+  box-shadow: inset 0 1px 0 #e9caff66, inset 0 -3px 0 #2e1b4d, 0 6px 12px #0004;
+}
+
+.solo-prep-controls .duration-option:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.solo-prep-controls .duration-option input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.solo-prep-controls .duration-check {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  opacity: 0;
+}
+
+.solo-prep-controls .is-selected .duration-check {
+  opacity: 1;
+}
+
+.solo-prep-controls .duration-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font: 500 29px/1 var(--font-heading);
+  letter-spacing: -.025em;
+}
+
+.solo-prep-controls .duration-value small {
+  margin: 0;
+  font: 400 11px/1 var(--font-body);
+  letter-spacing: 0;
+}
+
+.solo-prep-controls .duration-caption {
+  min-height: 32px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #c5bbd4;
+}
+
+.solo-prep-controls .is-selected .duration-caption {
+  color: #eee0ff;
+}
+
+.solo-prep-controls .setup-selects {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.solo-prep-controls .setup-selects label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.solo-prep-controls .game-select {
+  width: 100%;
+  min-width: 0;
+  font-size: 12px;
+}
+
+.solo-prep-controls .round-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 0;
+  background: none;
+}
+
+.solo-prep-controls .round-summary svg {
+  margin-top: 3px;
+  color: #cba9ef;
+}
+
+.solo-prep-controls .round-summary p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.solo-prep-controls .round-summary strong {
+  color: #e8d9f8;
+  font-weight: 500;
+}
+
+.solo-prep-controls .solo-prep-play {
+  width: 100%;
+}
+
+.solo-prep-controls .solo-prep-footnote {
+  margin-top: -14px;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* The functional wheel is the object in this scene. */
+.solo-scene.wheel-screen {
+  gap: 24px;
+}
+
+.solo-wheel-scene {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 50px;
+  padding: 10px 25px 30px;
+  background: radial-gradient(ellipse at 25% 48%, #43275a45, transparent 57%);
+}
+
+.solo-wheel-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 20px 0 38px;
+  isolation: isolate;
+}
+
+.solo-wheel-stage .topic-wheel {
+  position: relative;
+  z-index: 1;
+  width: min(400px, 100%);
+  height: auto;
+  aspect-ratio: 1;
+  margin: 0;
+  border-radius: 50%;
+  padding: 8px;
+  background: linear-gradient(145deg, #ba8feb, #4d355f 36%, #201827 64%, #b48acb);
+  box-shadow: inset 0 2px 2px #f3d6ff88, inset 0 -5px 6px #110c19cc, 0 15px 1px #17121f, 0 27px 26px #0007;
+}
+
+.solo-wheel-stage .wheel-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  background: #1f172b;
+  box-shadow: inset 0 0 0 6px #35273e;
+}
+
+.solo-wheel-stage .wheel-pointer {
+  position: absolute;
+  z-index: 3;
+  top: -7px;
+  left: 50%;
+  width: 31px;
+  height: 43px;
+  transform: translateX(-50%);
+  clip-path: polygon(7% 0, 93% 0, 100% 26%, 50% 100%, 0 26%);
+  background: linear-gradient(100deg, #ffe2f0, #f1a9cf 45%, #a64e84 48%, #d382ae);
+}
+
+.solo-wheel-stage .wheel-hub {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  width: 25%;
+  height: 25%;
+  border-radius: 50%;
+  color: #f6dbff;
+  background: linear-gradient(145deg, #a174c9, #64408f 34%, #321d4d 75%);
+  box-shadow: inset 0 2px 2px #efd0ff77, inset 0 -5px 4px #21152f, 0 7px 14px #10091e99;
+}
+
+.solo-wheel-plinth {
+  position: absolute;
+  z-index: 0;
+  bottom: 1px;
+  left: 12%;
+  width: 76%;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(#34283e, #17121c 65%);
+  box-shadow: inset 0 2px 3px #bd88dc44, 0 12px 18px #0006;
+}
+
+.solo-scene .wheel-result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 19px;
+  min-width: 0;
+}
+
+.solo-scene .wheel-result h2 {
+  font-size: clamp(27px, 3.4vw, 43px);
+  font-weight: 500;
+  letter-spacing: -.03em;
+  line-height: 1.14;
+  overflow-wrap: anywhere;
+}
+
+.solo-scene .wheel-result p {
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.solo-scene .topic-number,
+.solo-scene .topic-category {
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: #31243c;
+  color: #e4c8f0;
+  font-size: 11px;
+}
+
+.solo-scene .wheel-topic-list {
+  margin: 0;
+  padding: 8px 0 0 23px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 30px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.solo-scene .wheel-topic-list li::marker,
+.solo-scene .wheel-topic-list [aria-current='true'] {
+  color: var(--accent);
+}
+
+/* The stage gets quieter once the player is speaking. */
+.solo-scene.solo-recorder {
+  max-width: 940px;
+}
+
+.solo-recorder .recorder-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.solo-recorder .solo-speaking-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 23px;
+  min-height: 590px;
+  padding: 48px 40px;
+  border-radius: 16px;
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 100%, #402b5440, transparent 65%), #19171f;
+  box-shadow: inset 0 1px 0 #ffffff0b, 0 22px 38px #0003;
+}
+
+.solo-recorder .solo-speaking-stage h1 {
+  max-width: 700px;
+  margin-inline: auto;
+  font-size: clamp(25px, 3.3vw, 38px);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+}
+
+.solo-recorder .recording-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #cdbbdc;
+  font-size: 12px;
+}
+
+.solo-recorder .recording-status.is-live {
+  color: #f4b4d5;
+}
+
+.solo-recorder .recording-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: auto;
+  height: auto;
+  min-height: 122px;
+}
+
+.solo-recorder .recording-time {
+  font: 500 clamp(60px, 8vw, 88px)/1 var(--font-heading);
+  color: #f7edfc;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.solo-recorder .recording-timer > span:last-child {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.solo-recorder .round-countdown {
+  font: 500 92px/1.3 var(--font-heading);
+  color: #e9c7f8;
+  min-height: 122px;
+}
+
+.solo-recorder .recording-progress {
+  display: block;
+  appearance: none;
+  width: min(320px, 100%);
+  height: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: #393040;
+  accent-color: #c4a0ee;
+}
+
+.solo-recorder .recording-progress::-webkit-progress-bar {
+  background: #393040;
+  border-radius: 8px;
+}
+
+.solo-recorder .recording-progress::-webkit-progress-value {
+  background: #c4a0ee;
+  border-radius: 8px;
+}
+
+.solo-recorder .recording-progress::-moz-progress-bar {
+  background: #c4a0ee;
+  border-radius: 8px;
+}
+
+.solo-recorder .recording-help,
+.solo-recorder .translation-original {
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.solo-recorder .input-level {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  height: 44px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.solo-recorder .input-level-bar {
+  width: 4px;
+  min-height: 3px;
+  background: #d5a8ea;
+  border-radius: 4px;
+  transition: height .1s;
+}
+
+.solo-recorder .transcript-editor {
+  display: block;
+  width: 100%;
+  min-height: 160px;
+  resize: vertical;
+  border: 1px solid #50435c;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--foreground);
+  background: #151219;
+}
+
+.solo-recorder .transcript-editor::placeholder {
+  color: #b3a3bf;
+}
+
+.solo-recorder .transcript-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A submitted round and a returned score are distinct moments. */
+.solo-scene.judging-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 740px;
+  padding: 65px 24px;
+  text-align: center;
+}
+
+.solo-judging-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  margin-bottom: 3px;
+  border-radius: 30px;
+  background: linear-gradient(140deg, #745298, #30223e);
+  color: #f2d9ff;
+  box-shadow: inset 0 1px 0 #edccff55, 0 15px 26px #0004;
+}
+
+.solo-judging-mark > span {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  border-radius: 50%;
+  background: #e5c2f6;
+  color: #352342;
+}
+
+.solo-scene.judging-screen .loading-state {
+  width: 100%;
+  margin: 0;
+  padding: 28px 0;
+  background: none;
+  box-shadow: none;
+}
+
+.solo-scene.judging-screen .loading-state h1 {
+  font-size: clamp(29px, 4vw, 43px);
+  font-weight: 500;
+}
+
+.solo-scene.judging-screen .loading-state > p {
+  max-width: 46ch;
+}
+
+.solo-scene .judging-submission {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  color: #dec1f3;
+  font-size: 12px;
+}
+
+.solo-scene .solo-result-scene {
+  position: relative;
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: center;
+  gap: 42px;
+  min-height: 350px;
+  padding: 48px 44px;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 15% 50%, #76529c44, transparent 58%), linear-gradient(130deg, #28222f, #1c1922);
+  box-shadow: inset 0 1px 0 #edc7ff14, 0 18px 36px #0003;
+}
+
+.solo-result-medal {
+  display: grid;
+  place-items: center;
+  padding: 20px 0;
+}
+
+.solo-results .score-medallion {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--medal-rim, 7px) * 2);
+  border-radius: 50%;
+  background: linear-gradient(140deg, #bc8bcb, #684779 32%, #3e2a4a 66%, #b286b8);
+  box-shadow: inset 0 2px 2px #f9d4ff88, inset 0 -5px 4px #25182d, 0 12px 24px #0005;
+}
+
+.solo-results .score-medallion .score-text-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #38263f, #241a2c);
+  box-shadow: inset 0 2px 6px #0a050f99, 0 1px 0 #d4a1df44;
+}
+
+.solo-results .score-num {
+  font: 500 66px/1 var(--font-heading);
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  color: #f7d4ef;
+}
+
+.solo-results .score-label {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #d9bedf;
+}
+
+.solo-results .result-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.solo-results .result-summary h1 {
+  font-size: clamp(30px, 4vw, 46px);
+  font-weight: 500;
+  letter-spacing: -.03em;
+  line-height: 1.1;
+}
+
+.solo-results .result-topic {
+  font-size: 15px;
+  color: #e8c8ec;
+  overflow-wrap: anywhere;
+}
+
+.solo-results .result-summary > p:not(.result-topic) {
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.solo-results .next-challenge {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 8px;
+}
+
+.solo-results .next-challenge > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.solo-results .next-challenge > svg {
+  margin-top: 2px;
+  color: #d5addf;
+}
+
+.solo-results .next-challenge h2 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-bottom: 9px;
+}
+
+.solo-results .next-challenge p {
+  font-size: 13px;
+}
+
+.solo-scene .feedback-details {
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: #211c28;
+  box-shadow: inset 0 1px 0 #ffffff0a;
+}
+
+.solo-scene .feedback-details > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  list-style: none;
+  cursor: pointer;
+  padding: 3px 0;
+  color: #e3d5ec;
+  font-size: 13px;
+}
+
+.solo-scene .feedback-details[open] > summary {
+  margin-bottom: 19px;
+}
+
+.solo-scene .feedback-details > summary:hover {
+  color: #f5d7ff;
+}
+
+.solo-scene .feedback-details summary::-webkit-details-marker {
+  display: none;
+}
+
+.solo-scene .feedback-details > summary svg {
+  transition: transform .2s;
+}
+
+.solo-scene .feedback-details[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.solo-results .filler-tag {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 5px;
+  background: #42314f;
+  color: #ecd6f4;
+  font-size: 12px;
+}
+
+.solo-results .feedback-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.solo-results .feedback-columns > div {
+  min-width: 0;
+}
+
+.solo-results .feedback-columns h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.solo-results .feedback-list {
+  list-style: disc;
+  padding-left: 19px;
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+.solo-results .feedback-list li + li {
+  margin-top: 10px;
+}
+
+.solo-results .feedback-list li::marker {
+  color: #ceacdf;
+}
+
+.solo-results .feedback-note {
+  font-size: 12px;
+  line-height: 1.75;
+}
+
+.solo-results .feedback-details p {
+  font-size: 13px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.solo-results .filler-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 13px 0;
+}
+
+.solo-results .category-score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.solo-results .category-score-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.solo-results .category-score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.solo-results .category-score-header h3 {
+  font-size: 14px;
+}
+
+.solo-results .category-score-header strong {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: #e6c8fb;
+}
+
+.solo-results .category-score-header small {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.solo-results .category-score-meter {
+  display: block;
+  appearance: none;
+  width: 100%;
+  height: 7px;
+  border: 0;
+  border-radius: 5px;
+  background: #42324f;
+  accent-color: #c8a4e9;
+}
+
+.solo-results .category-score-meter::-webkit-meter-bar {
+  height: 7px;
+  border: 0;
+  border-radius: 5px;
+  background: #42324f;
+}
+
+.solo-results .category-score-meter::-webkit-meter-optimum-value,
+.solo-results .category-score-meter::-webkit-meter-suboptimum-value,
+.solo-results .category-score-meter::-webkit-meter-even-less-good-value {
+  border-radius: 5px;
+  background: #c8a4e9;
+}
+
+.solo-results .category-score-meter::-moz-meter-bar {
+  border-radius: 5px;
+  background: #c8a4e9;
+}
+
+.solo-results .example-speech {
+  max-width: 70ch;
+}
+
+.solo-results .example-speech > p {
+  margin-top: 18px;
+  white-space: pre-wrap;
+}
+
+.solo-results .example-speech > .status-notice {
+  margin-top: 16px;
+}
+
+@media (max-width: 1050px) {
+  .solo-prep-layout {
+    grid-template-columns: minmax(190px, .8fr) minmax(0, 1.2fr);
+    gap: 28px;
+  }
+  .solo-prep-controls {
+    padding: 26px;
+  }
+  .solo-prep-controls .duration-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .solo-prep-controls .duration-option {
+    padding: 16px 12px 12px;
+  }
+  .solo-prep-controls .duration-caption {
+    min-height: 0;
+  }
+  .solo-wheel-scene {
+    gap: 25px;
+    padding-inline: 0;
+  }
+  .solo-scene .solo-result-scene {
+    grid-template-columns: 190px minmax(0, 1fr);
+    padding: 34px 28px;
+    gap: 25px;
+  }
+}
+
+@media (max-width: 700px) {
+  .solo-prep-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    gap: 22px;
+  }
+  .solo-prep-intro {
+    padding: 8px 140px 15px 0;
+    min-height: 180px;
+  }
+  .solo-prep-intro h1 {
+    font-size: 37px;
+  }
+  .solo-prep-intro > p {
+    font-size: 12px;
+    margin-top: 14px;
+  }
+  .solo-prep-art {
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 165px;
+    height: 170px;
+    margin: 0;
+    z-index: 0;
+  }
+  .solo-prep-format {
+    display: none;
+  }
+  .solo-prep-controls {
+    padding: 24px;
+    gap: 24px;
+  }
+  .solo-prep-controls .duration-options {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .solo-prep-controls .duration-option {
+    padding: 20px 8px 13px;
+  }
+  .solo-prep-controls .duration-value {
+    font-size: 25px;
+  }
+  .solo-prep-controls .duration-caption {
+    min-height: 32px;
+    font-size: 11px;
+  }
+  .solo-wheel-scene {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding-bottom: 4px;
+  }
+  .solo-wheel-stage {
+    width: min(355px, 100%);
+    margin-inline: auto;
+    padding-top: 10px;
+  }
+  .solo-wheel-stage .topic-wheel {
+    width: min(300px, 90%);
+  }
+  .solo-scene .wheel-result {
+    align-items: center;
+    text-align: center;
+  }
+  .solo-scene .wheel-result h2 {
+    font-size: 29px;
+  }
+  .solo-scene .wheel-result p {
+    max-width: 40ch;
+  }
+  .solo-scene .wheel-result > .game-button--primary {
+    width: min(320px, 100%);
+  }
+  .solo-scene .wheel-topic-list {
+    grid-template-columns: 1fr;
+  }
+  .solo-recorder .solo-speaking-stage {
+    min-height: 540px;
+    padding: 32px 22px;
+  }
+  .solo-recorder .solo-speaking-stage h1 {
+    font-size: 25px;
+  }
+  .solo-recorder .solo-speaking-stage .game-actions {
+    justify-content: center;
+  }
+  .solo-scene .solo-result-scene {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    text-align: center;
+    padding: 28px 24px 34px;
+  }
+  .solo-result-medal {
+    padding: 0;
+  }
+  .solo-results .result-summary {
+    align-items: center;
+  }
+  .solo-results .result-summary h1 {
+    font-size: 33px;
+  }
+  .solo-results .result-summary .game-actions {
+    justify-content: center;
+  }
+  .solo-results .feedback-columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .solo-scene.judging-screen {
+    padding: 35px 10px;
+  }
+}
+
+@media (max-width: 430px) {
+  .solo-prep-intro {
+    padding-right: 120px;
+    min-height: 175px;
+  }
+  .solo-prep-intro h1 {
+    font-size: 33px;
+  }
+  .solo-prep-intro > p {
+    max-width: 25ch;
+    font-size: 11px;
+  }
+  .solo-prep-art {
+    right: -10px;
+    top: 12px;
+    width: 145px;
+    height: 150px;
+  }
+  .solo-prep-controls {
+    padding: 23px 18px;
+  }
+  .solo-prep-title h2 {
+    font-size: 22px;
+  }
+  .solo-prep-controls .duration-options {
+    gap: 7px;
+  }
+  .solo-prep-controls .duration-value {
+    font-size: 23px;
+    gap: 3px;
+  }
+  .solo-prep-controls .duration-value small {
+    font-size: 11px;
+  }
+  .solo-prep-controls .setup-selects {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .solo-prep-controls .duration-caption {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .solo-recorder .solo-speaking-stage {
+    padding: 30px 18px;
+    gap: 22px;
+  }
+  .solo-recorder .solo-speaking-stage h1 {
+    font-size: 23px;
+  }
+  .solo-recorder .recording-time {
+    font-size: 66px;
+  }
+  .solo-recorder .recorder-topline {
+    gap: 8px;
+  }
+  .solo-recorder .topic-category {
+    max-width: 44%;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+  .solo-scene .feedback-details {
+    padding: 18px;
+  }
+  .solo-results .next-challenge {
+    padding-inline: 0;
+    gap: 10px;
+  }
+  .solo-results .next-challenge > .game-button {
+    padding-inline: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solo-prep-controls .duration-option,
+  .solo-recorder .input-level-bar,
+  .solo-scene .feedback-details > summary svg {
+    transition: none;
+  }
+  .solo-prep-controls .duration-option:hover {
+    transform: none;
+  }
+}
