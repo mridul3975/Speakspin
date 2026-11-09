@@ -236,9 +236,9 @@ export function SpeechRecorder({ topic, targetDuration, onBack, onAnalyze, selec
   const status = phase === 'idle' ? 'Your mic check comes first' : phase === 'preparing' ? 'Connecting your microphone…' : phase === 'countdown' ? 'Microphone ready' : phase === 'recording' ? 'You’re on the mic' : phase === 'transcribing' ? 'Preparing your transcript…' : 'Round complete';
 
   return (
-    <section className="screen-stack solo-recorder">
+    <section className={`screen-stack solo-recorder solo-scene solo-recorder--${phase}`}>
       <div className="recorder-topline">{canLeave && <BackButton onClick={onBack}>Leave practice</BackButton>}<span className="topic-category">{topic.category}</span></div>
-      <div className="game-panel recording-stage">
+      <div className="recording-stage solo-speaking-stage">
         <h1 className="topic-title" dir="auto">{translatedTopic}</h1>
         {translatedTopic !== topic.topic && <p className="translation-original">Original: {topic.topic}</p>}
         <div className={`recording-status${phase === 'recording' ? ' is-live' : ''}`} role="status">{phase === 'completed' ? <Check size={16} /> : <Mic size={16} />}{status}</div>
