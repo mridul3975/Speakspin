@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Flame, Handshake, MessageCircle, RotateCcw, ThumbsUp, Trophy } from 'lucide-react';
+import { ArrowRight, Flame, Handshake, MessageCircle, RotateCcw, ThumbsUp } from 'lucide-react';
 import { GameButton, PlayerAvatar, StatusNotice } from '../game/GameUI';
 import { playWinnerFanfare, playLoserSound, playReactionPop, playRatingUp, playRatingDown } from '../../utils/battleAudio';
 import { prepareBattleMicrophone } from './battleMicrophone';
@@ -126,28 +126,20 @@ export function BattleResults({
       if (mounted.current) setPreparingMic(false);
     }
   };
-  return <div className="screen-stack battle-results">
-    <section className={`game-panel battle-outcome battle-outcome--${outcome}`}>
-      <Trophy size={38} aria-hidden="true" /><h1>{outcome === 'win' ? 'Round won.' : outcome === 'draw' ? 'A close match.' : 'A round to build on.'}</h1><p>{outcome === 'win' ? 'Your words made the difference. Ready for another?' : outcome === 'draw' ? 'Level scores. There’s a rematch waiting to happen.' : 'Your challenger takes this one. Find one thing to improve, then go again.'}</p>
-      <div className="result-comparison"><div className="result-player"><PlayerAvatar avatar={me.avatar} /><h2 title={me.name || 'You'}>{me.name || 'You'}</h2><strong className="result-score">{mine}<span>/100</span></strong></div><span className="versus-mark">VS</span><div className="result-player result-player--rival"><PlayerAvatar avatar={opponent.avatar} rival /><h2 title={opponent.name || 'Challenger'}>{opponent.name || 'Challenger'}</h2><strong className="result-score">{theirs}<span>/100</span></strong></div></div>
-      <div className="rating-change"><span>{me.rating} <ArrowRight size={15} /> {me.newRating} ELO</span><strong className={Number(me.ratingChange) >= 0 ? 'rating-change--positive' : 'rating-change--negative'}>{Number(me.ratingChange) >= 0 ? '+' : ''}{me.ratingChange || 0}</strong></div>
-      {opponentWantsRematch && !rematchRequested && <StatusNotice>Your challenger wants a rematch.</StatusNotice>}{error && <StatusNotice tone="error">{error}</StatusNotice>}
-      <div className="game-actions">{rematchRequested ? <StatusNotice>Rematch requested. Waiting for your challenger.</StatusNotice> : <GameButton onClick={requestRematch} disabled={preparingMic}><RotateCcw size={17} />{preparingMic ? 'Checking microphone…' : opponentWantsRematch ? 'Accept rematch' : 'Rematch'}</GameButton>}<GameButton variant="secondary" onClick={onNewOpponent}>New opponent<ArrowRight size={17} /></GameButton><GameButton variant="ghost" onClick={onLeave}>Leave arena</GameButton></div>
+  return <div className={`battle-scene battle-settlement battle-settlement--${outcome}`}>
+    <section className="battle-outcome-scene">
+      <div className="battle-outcome-heading"><img src="/images/game/rank-crest.webp" alt="" width="547" height="500" /><div><h1>{outcome === 'win' ? 'Your round. Your win.' : outcome === 'draw' ? 'A match worth repeating.' : 'The next round is yours to change.'}</h1><p>{outcome === 'win' ? 'Your words made the difference. Ready for another?' : outcome === 'draw' ? 'Level scores. There’s a rematch waiting to happen.' : 'Your challenger takes this one. Take one thing forward, then go again.'}</p></div></div>
+      <div className="battle-scoreboard"><div className="battle-score-player"><PlayerAvatar avatar={me.avatar} /><h2 title={me.name || 'You'}>{me.name || 'You'}</h2><strong>{mine}<span>/100</span></strong></div><span className="battle-score-versus">VS</span><div className="battle-score-player battle-score-player--rival"><PlayerAvatar avatar={opponent.avatar} rival /><h2 title={opponent.name || 'Challenger'}>{opponent.name || 'Challenger'}</h2><strong>{theirs}<span>/100</span></strong></div></div>
+      <div className="battle-rating-settlement"><span>{me.rating}<ArrowRight size={16} />{me.newRating} ELO</span><strong className={Number(me.ratingChange) >= 0 ? 'rating-change--positive' : 'rating-change--negative'}>{Number(me.ratingChange) >= 0 ? '+' : ''}{me.ratingChange || 0}</strong></div>
+      {opponentWantsRematch && !rematchRequested && <StatusNotice>Your challenger wants a rematch.</StatusNotice>}
+      {error && <StatusNotice tone="error">{error}</StatusNotice>}
+      <div className="battle-replay-actions">{rematchRequested ? <StatusNotice>Rematch requested. Waiting for your challenger.</StatusNotice> : <GameButton onClick={requestRematch} disabled={preparingMic}><RotateCcw size={17} />{preparingMic ? 'Checking microphone…' : opponentWantsRematch ? 'Accept rematch' : 'Rematch'}</GameButton>}<GameButton variant="secondary" onClick={onNewOpponent}>New opponent<ArrowRight size={17} /></GameButton><GameButton variant="ghost" onClick={onLeave}>Leave arena</GameButton></div>
     </section>
-    <section className="game-panel result-details"><h2 className="section-title">Take something into your next round</h2>{me.overallFeedback && <p>{me.overallFeedback}</p>}<div className="feedback-pair">{Array.isArray(me.strengths) && me.strengths.length > 0 && <div><h3>Keep doing</h3><ul>{me.strengths.map((text, index) => <li key={index}>{text}</li>)}</ul></div>}{Array.isArray(me.improvements) && me.improvements.length > 0 && <div><h3>Try next time</h3><ul>{me.improvements.map((text, index) => <li key={index}>{text}</li>)}</ul></div>}</div><details><summary>Your score breakdown</summary><div className="category-score-list">{Object.entries(me.categories || {}).map(([key, value]) => <div key={key}><div><span>{categoryName(key)}</span><strong>{value.score}/100</strong></div><div className="score-track"><span style={{
-                width: `${Math.min(100, Math.max(0, Number(value.score) || 0))}%`
-              }} /></div>{value.feedback && <p>{value.feedback}</p>}</div>)}</div></details><details><summary>Your transcript</summary><p dir="auto">{me.transcript || 'No transcript was received for this round.'}</p></details></section>
-    <section className="reactions-row" aria-label="React to the round"><MessageCircle size={18} aria-hidden="true" /><span>Good game?</span>{REACTIONS.map(({
-        value,
-        label,
-        Icon
-      }) => <button className="reaction-choice" key={value} onClick={() => {
-        onSendReaction(value);
-        setReaction(`You: ${label}`);
-        playReactionPop();
-        clearTimeout(reactionTimeout.current);
-        reactionTimeout.current = setTimeout(() => setReaction(''), 4000);
-      }}><Icon size={17} />{label}</button>)}<span className="reaction-status" role="status">{reaction}</span></section>
+    <section className="battle-coach"><h2>Take something into your next round.</h2>{me.overallFeedback && <p>{me.overallFeedback}</p>}<div className="battle-feedback-pair">{Array.isArray(me.strengths) && me.strengths.length > 0 && <div><h3>Keep doing</h3><ul>{me.strengths.map((text, index) => <li key={index}>{text}</li>)}</ul></div>}{Array.isArray(me.improvements) && me.improvements.length > 0 && <div><h3>Try next time</h3><ul>{me.improvements.map((text, index) => <li key={index}>{text}</li>)}</ul></div>}</div>
+      <details><summary>Your score breakdown</summary><div className="battle-category-scores">{Object.entries(me.categories || {}).map(([key, value]) => <div key={key}><div><span>{categoryName(key)}</span><strong>{value.score}/100</strong></div><div className="battle-score-track"><span style={{ width: `${Math.min(100, Math.max(0, Number(value.score) || 0))}%` }} /></div>{value.feedback && <p>{value.feedback}</p>}</div>)}</div></details>
+      <details><summary>Your transcript</summary><p dir="auto">{me.transcript || 'No transcript was received for this round.'}</p></details>
+    </section>
+    <section className="battle-reactions" aria-label="React to the round"><span><MessageCircle size={18} aria-hidden="true" />Good game?</span>{REACTIONS.map(({ value, label, Icon }) => <button className="reaction-choice" key={value} onClick={() => { onSendReaction(value); setReaction(`You: ${label}`); playReactionPop(); clearTimeout(reactionTimeout.current); reactionTimeout.current = setTimeout(() => setReaction(''), 4000); }}><Icon size={17} />{label}</button>)}<span className="battle-reaction-status" role="status">{reaction}</span></section>
   </div>;
 }
 export default BattleResults;
